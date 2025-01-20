@@ -11,16 +11,33 @@ const CenterContainer = styled.div`
 `;
 
 const SideContainer = styled.div`
-  height: 100vh;
+  width: 240px;
+  height: 100%;
   position: fixed;
-  left: 0;
   top: 0;
+  left: 0;
   bottom: 0;
-  width: 300px;
 `;
 
 const flexContainer = styled.div`
   display : flex;
 `;
 
-export { CenterContainer, SideContainer, flexContainer };
+
+const LogoContainer = styled.div`
+  display : flex;
+  justify-content: center;
+  align-items: center;
+  padding : 40px 0 ;
+`;
+
+const MainContainer = styled.div`
+  width: 100%;
+  height: 100vh;
+  padding : 0 80px;
+
+`;
+
+
+
+export { CenterContainer, SideContainer, flexContainer, LogoContainer, MainContainer };

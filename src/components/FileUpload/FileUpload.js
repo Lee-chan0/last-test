@@ -5,12 +5,13 @@ import { useEffect, useState } from "react";
 const UploadFileMainContainer = styled.div`
   width: 100%;
   display : flex;
+  justify-content: center;
   gap : 16px;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
 `;
 
 const UploadFileForm = styled.form`
-  width: 120px;
+  width: 128px;
   display: flex;
   flex-direction: column;
   gap : 4px;
@@ -41,7 +42,7 @@ const UploadFilePreviewImage = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  width: 120px;
+  width: 128px;
   height: 80px;
 
   img {
@@ -59,37 +60,29 @@ const UploadFilePreviewImage = styled.div`
 function FileUpload() {
   const [fileLists, setFileLists] = useState([]);
 
-  // 오늘 배운것 : 
-  // URL.revoke어쩌고 하면 메모리 누수를 방지할 수 있다.
-  // onChnage는 인풋태그에 해야한다.
-  // 파일업로드시, 업로드 로직이 다 끝나고 나면, e.target.value = ""와 같이 초기화 해주어야 
-  // 브라우저가 같은값이 들어와도 다른값이라고 인식하고 onChange이벤트를 트리거한다.
-
-  // 1. URL.revoke어쩌고 해결
-  // 2. 파일 업데이트 및 파일 업로드 코드 리팩토링
-  // 3. 사이드 네브바 fixed안먹히는듯 수정
-
-
   const uploadFileChange = (e, index) => {
     const file = e.target.files[0];
-    console.log(index);
 
     if (file) {
       const blobFile = URL.createObjectURL(file);
-      if (index !== undefined) {
+
+      index !== undefined ?
         setFileLists((prev) => {
-          const updateFileLists = [...prev];
-          const result = updateFileLists.map((item, idx) => (
+          const updateFileLists = [...prev].map((item, idx) => (
             idx === index ? { file, preview: blobFile } : item
           ))
-          return result;
-        })
-      } else {
-        setFileLists((prev) => [...prev, { file, preview: blobFile }])
-      }
+          return updateFileLists;
+        }) : setFileLists((prev) => [...prev, { file, preview: blobFile }]);
     }
     e.target.value = "";
   }
+
+  useEffect(() => {
+    return () => {
+      fileLists.forEach((item) => URL.revokeObjectURL(item.preview));
+    }
+  }, [fileLists]);
+
 
   return (
     <UploadFileMainContainer>

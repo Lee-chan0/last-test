@@ -36,7 +36,6 @@ const CreateRadioInput = styled.input`
 
 const CreateInput = styled.input`
   border-radius: 4px;
-  border : 1px solid black;
 
   &:focus {
     border : none;

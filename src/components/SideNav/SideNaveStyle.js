@@ -11,8 +11,9 @@ const MainContainer = styled(flexContainer)`
 
 const ArticleViewContainer = styled.div`
   width: 100%;
+  height: 100vh;
   background-color: ${({ theme }) => theme.blue.blue100};
-  margin-left: 24px;
+  margin-left: 264px;
 
   & > * {
     margin-bottom : 40px;
@@ -52,7 +53,6 @@ const NavigationSideBarContainer = styled(SideContainer)`
   border : 3px solid ${({ theme }) => theme.blue.blue500};
   border-bottom: none;
 
-  position: relative;
   background-color: ${({ theme }) => theme.blue.blue100};
 `;
 
