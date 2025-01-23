@@ -32,9 +32,9 @@ const CarouselItems = styled.li`
   margin : 24px 8px;
   transition : transform 0.3s ease;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+  will-change: box-shadow, transform;
 
   &:hover {
-    will-change: box-shadow, transform;
     background-color: ${({ theme }) => theme.gray.gray100};
     cursor: pointer;
     transform : scale(1.05);
@@ -87,14 +87,6 @@ const CarouselImageBox = styled.div`
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   transition: transform 0.3s ease;
-  will-change: transform, box-shadow;
-
-
-  &:hover {
-    transform: scale(125%);
-    border-radius: 4px;
-    box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
-  }
 `;
 
 const AutoArrowControlBox = styled.div``;

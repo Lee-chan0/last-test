@@ -34,7 +34,7 @@ function ArrowButton({ direction, onClick }) {
   const throttleOnClick = useMemo(() => {
     return throttle((direction) => {
       onClick(direction);
-    }, 800)
+    }, 1000)
   }, [onClick]);
 
   useEffect(() => {
