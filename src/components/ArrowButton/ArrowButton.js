@@ -1,6 +1,9 @@
 import leftArrow from '../../assets/mingcute_left-fill.png'
 import rightArrow from '../../assets/mingcute_right-fill.png'
 import styled from 'styled-components';
+import { useMemo, useEffect } from 'react';
+import { throttle } from 'lodash';
+
 
 
 const ArrowBtn = styled.div`
@@ -13,18 +16,39 @@ const ArrowBtn = styled.div`
   position : absolute;
   z-index: 2;
   top : 50%;
-  ${({ $direction }) => $direction === 'left' ? 'left : 20px' : 'right : 20px'};
   transform: translateY(-50%);
+  ${({ $direction }) => $direction === 'left' ? 'left : 20px' : 'right : 20px'};
+  transition : opacity 0.3s ease;
 
   cursor: pointer;
+
+  &:hover {
+    opacity : 0.6;
+  }
 `;
 
 
 
 function ArrowButton({ direction, onClick }) {
 
+  const throttleOnClick = useMemo(() => {
+    return throttle((direction) => {
+      onClick(direction);
+    }, 800)
+  }, [onClick]);
+
+  useEffect(() => {
+    return () => {
+      throttleOnClick.cancel();
+    }
+  }, [throttleOnClick]);
+
+
   return (
-    <ArrowBtn $direction={direction} src={direction === 'left' ? leftArrow : rightArrow} onClick={() => onClick(direction)} />
+    <ArrowBtn
+      $direction={direction} src={direction === 'left' ? leftArrow : rightArrow}
+      onClick={() => throttleOnClick(direction)}
+    />
   )
 }
 export default ArrowButton;

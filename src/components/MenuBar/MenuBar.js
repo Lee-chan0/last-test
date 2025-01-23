@@ -3,18 +3,16 @@ import { SearchInput } from "../SearchInput/SearchInputStyle";
 import { Link } from "react-router-dom";
 
 const MenuBarSearchInput = styled(SearchInput)`
-  width: 240px;
+  width: 500px;
   height: 32px;
   border-radius: 9999px;
 `;
 
 const MenuBarContainer = styled.div`
   width: 100%;
-  display: flex;
-  align-items: center;
+  display : flex;
   background-color: ${({ theme }) => theme.blue.blue100};
   border-radius: 4px;
-  justify-content: space-between;
   padding : 4px 24px;
   gap : 16px;
   margin-bottom: 40px;
@@ -23,10 +21,11 @@ const MenuBarContainer = styled.div`
 const MenuBarLists = styled.ul`
   display : flex;
   align-items: center;
+  justify-content: center;
   width: 100%;
 
   & > * {
-    flex-grow: 1;
+    flex : 0 0 20%;
   }
 `;
 
