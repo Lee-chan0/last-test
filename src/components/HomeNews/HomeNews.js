@@ -2,6 +2,8 @@ import styled from "styled-components";
 import ArrowButton from '../ArrowButton/ArrowButton';
 import { articles } from '../../mock';
 import { useEffect, useRef, useState } from "react";
+import { getVideoId } from "../VideoNews/VideoBox";
+import youtubeIcon from '../../assets/prime_youtube.png';
 
 export const CarouselMainContainer = styled.div`
   width: 100%;
@@ -11,6 +13,7 @@ export const CarouselMainContainer = styled.div`
   border-radius: 4px;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
   position : relative;
+  margin-bottom : 40px;
 `;
 
 export const CarouselTitle = styled.h1`
@@ -75,7 +78,6 @@ const CarouselContent = styled.span`
   text-overflow: ellipsis;
 `;
 
-
 const CarouselImageBox = styled.div`
   background-color: black;
   width: 144px;
@@ -91,12 +93,52 @@ const CarouselImageBox = styled.div`
 
 const AutoArrowControlBox = styled.div``;
 
-function HomeNews({ articleType }) {
-  const arrowRef = useRef(null);
-  const [autoDirection, setAutoDirection] = useState('right');
-  const [mousePause, setMousePause] = useState(false);
+const CarouselVideoItems = styled(CarouselItems)`
+  border-radius: 0%;
+  border-top-right-radius : 4px;
+  border-top-left-radius : 4px;
 
-  const moveToScroll = (direction, autoAmount = 250) => {
+  & > .thumbnail {
+    border : 2px solid rgba(13,80,215, 0.5);
+    border-top : none;
+  }
+`;
+
+const CarouselVideoTitleBox = styled.div`
+  display : flex;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  border : 2px solid rgba(13,80,215, 0.5);
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+
+  img {
+    margin : 0 8px;
+  }
+
+  & > ${CarouselTitle} {
+    font-size : 16px;
+    margin : 0;
+    margin-right : 8px;
+
+    display : -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`;
+
+function HomeNews({ articleType, videoUrls }) {
+  const arrowRef = useRef(null);
+  const [mousePause, setMousePause] = useState(false);
+  const videoRef = useRef([]);
+
+  const NewsArticleType = articleType.articleTypeName;
+
+  const moveToScroll = (direction, autoAmount = 350) => {
     if (!direction) return;
     const amount = autoAmount;
 
@@ -107,16 +149,13 @@ function HomeNews({ articleType }) {
 
     if (direction === 'right') {
       if (currentLocation >= lastLocation - 1) {
-        setAutoDirection('left');
         container.scrollTo({ left: 0, behavior: "smooth" });
       }
       else {
         container.scrollBy({ left: amount, behavior: "smooth" });
-
       };
     } else if (direction === 'left') {
       if (currentLocation === 0) {
-        setAutoDirection('right');
         container.scrollTo({ left: lastLocation, behavior: "smooth" });
       }
       else {
@@ -129,9 +168,17 @@ function HomeNews({ articleType }) {
     if (mousePause) return;
 
     let animate;
+    let autoDirection = 'right';
 
     const autoMove = () => {
       const autoAmount = 3;
+      const currentLocation = arrowRef.current.scrollLeft;
+      const lastLocation = arrowRef.current.scrollWidth - arrowRef.current.offsetWidth;
+
+      if (currentLocation === 0) autoDirection = 'right';
+      else if (currentLocation >= lastLocation - 1) autoDirection = 'left';
+
+
       moveToScroll(autoDirection, autoAmount);
       animate = requestAnimationFrame(autoMove);
     }
@@ -141,14 +188,14 @@ function HomeNews({ articleType }) {
     return () => {
       cancelAnimationFrame(animate);
     }
-  }, [autoDirection, mousePause]);
+  }, [mousePause]);
 
   return (
     <CarouselMainContainer>
-      <CarouselTitle>{articleType[0].articleTypeName}</CarouselTitle>
+      <CarouselTitle>{NewsArticleType}</CarouselTitle>
       <AutoArrowControlBox onMouseEnter={() => setMousePause(true)} onMouseLeave={() => setMousePause(false)}>
         <CarouselLists ref={arrowRef}>
-          {
+          {!videoUrls ?
             articles.map((item) => {
               const { articleId, articleTitle, articleContent, articleImgUrl } = item;
               return (
@@ -159,12 +206,33 @@ function HomeNews({ articleType }) {
                 </CarouselItems>
               )
             })
+            :
+            videoUrls?.map((videoItem) => {
+              const { videoUrlId, videoTitle, videoUrl } = videoItem;
+              return (
+                <CarouselVideoItems
+                  ref={(el) => videoRef.current[videoUrlId] = el}
+                  key={videoUrlId}
+                  id={`video-${videoUrlId}`}
+                >
+                  <CarouselVideoTitleBox>
+                    <img src={youtubeIcon} alt="video-img" style={{ width: '24px', height: "24px" }} />
+                    <CarouselTitle>{videoTitle}</CarouselTitle>
+                  </CarouselVideoTitleBox>
+                  <img
+                    className="thumbnail"
+                    src={`https://img.youtube.com/vi/${getVideoId(videoUrl)}/mqdefault.jpg`}
+                    alt={`image-${videoUrlId}`}
+                  />
+                </CarouselVideoItems>
+              )
+            })
           }
         </CarouselLists>
         <ArrowButton direction={'left'} onClick={moveToScroll} />
         <ArrowButton direction={'right'} onClick={moveToScroll} />
       </AutoArrowControlBox>
-    </CarouselMainContainer>
+    </CarouselMainContainer >
   )
 };
 

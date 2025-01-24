@@ -4,7 +4,6 @@ import BrandCard from "../BrandCard/BrandCard";
 
 
 const BrandListsContainer = styled(CarouselMainContainer)`
-  margin-top : 40px;
 `;
 
 const BrandListsTitle = styled(CarouselTitle)`
@@ -12,9 +11,9 @@ const BrandListsTitle = styled(CarouselTitle)`
 
 const BrandListsBox = styled.div`
   display : grid;
-  grid-template : repeat(2, 88px) / repeat(6, 1fr);
+  grid-template: repeat(2, 88px) / repeat(6, 1fr);
   gap : 16px;
-  margin: 24px 0;
+  margin : 24px 0;
 `;
 
 
