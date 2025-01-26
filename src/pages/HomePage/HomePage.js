@@ -23,9 +23,9 @@ function HomePage() {
       </LogoContainer>
       <MenuBar />
       <TodayNewsBanner />
-      <HomeNews articleType={articleTypes[0]} />
+      <HomeNews articleType={articleTypes} />
       <BrandLists />
-      <VideoBox articleType={articleTypes[1]} />
+      <VideoBox articleType={articleTypes} />
     </MainContainer>
   )
 }

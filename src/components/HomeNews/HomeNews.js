@@ -1,13 +1,17 @@
-import styled from "styled-components";
-import ArrowButton from '../ArrowButton/ArrowButton';
+import styled, { css } from "styled-components";
 import { articles } from '../../mock';
 import { useEffect, useRef, useState } from "react";
 import { getVideoId } from "../VideoNews/VideoBox";
 import youtubeIcon from '../../assets/prime_youtube.png';
+import PreviewYouTube from "../PreviewYoutube/PreviewYouTube";
+
+const borderRadius = css`
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+`;
 
 export const CarouselMainContainer = styled.div`
   width: 100%;
-  overflow: hidden;
   background-color: ${({ theme }) => theme.blue.blue100};
   padding : 24px 40px;
   border-radius: 4px;
@@ -24,7 +28,7 @@ export const CarouselTitle = styled.h1`
 
 const CarouselLists = styled.ul`
   display: flex;
-  overflow: hidden;
+  overflow: auto;
 `;
 
 const CarouselItems = styled.li`
@@ -86,63 +90,77 @@ const CarouselImageBox = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  ${borderRadius};
   transition: transform 0.3s ease;
 `;
 
 const AutoArrowControlBox = styled.div``;
 
 const CarouselVideoItems = styled(CarouselItems)`
-  border-radius: 0%;
-  border-top-right-radius : 4px;
-  border-top-left-radius : 4px;
-
-  & > .thumbnail {
-    border : 2px solid rgba(13,80,215, 0.5);
-    border-top : none;
-  }
+  position : relative;
 `;
 
 const CarouselVideoTitleBox = styled.div`
   display : flex;
   align-items: center;
-  width: 100%;
   height: 30px;
-  border : 2px solid rgba(13,80,215, 0.5);
-  border-top-right-radius: 4px;
-  border-top-left-radius: 4px;
+  border : 1px solid ${({ theme }) => theme.gray.gray100};
+  ${borderRadius};
+  overflow: auto;
 
   img {
-    margin : 0 8px;
+    width: 24px;
+    height: 24px;
+    margin-left : 8px;
   }
 
   & > ${CarouselTitle} {
     font-size : 16px;
-    margin : 0;
-    margin-right : 8px;
+    margin : 0 8px;
 
     display : -webkit-box;
-    -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
-
+    -webkit-box-orient : vertical;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 `;
 
 function HomeNews({ articleType, videoUrls }) {
-  const arrowRef = useRef(null);
+  const scrollRef = useRef(null);
+  const videoRef = useRef(null);
   const [mousePause, setMousePause] = useState(false);
-  const videoRef = useRef([]);
+  const [videoBoxId, setVideoBoxId] = useState(null);
+  const [showVideoBox, setShowVideoBox] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const NewsArticleType = articleType.articleTypeName;
+  const topNewsArticleType = articleType[0].articleTypeName;
+  const videoNewsArticleType = articleType[1].articleTypeName;
 
-  const moveToScroll = (direction, autoAmount = 350) => {
+  const handleMouseMove = (e) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  }
+
+  const handleVideoMouseHover = (id) => {
+    if (id === null) return;
+    setVideoBoxId(id);
+
+    videoRef.current = setTimeout(() => {
+      setShowVideoBox(true)
+    }, 1500);
+  }
+
+  const handleVideoMouseLeave = () => {
+    setVideoBoxId(null);
+    setShowVideoBox(false);
+    clearTimeout(videoRef.current);
+  }
+
+  const moveToScroll = (direction, autoAmount) => {
     if (!direction) return;
     const amount = autoAmount;
 
-    const container = arrowRef.current;
+    const container = scrollRef.current;
 
     const currentLocation = container.scrollLeft;
     const lastLocation = container.scrollWidth - container.offsetWidth;
@@ -172,8 +190,8 @@ function HomeNews({ articleType, videoUrls }) {
 
     const autoMove = () => {
       const autoAmount = 3;
-      const currentLocation = arrowRef.current.scrollLeft;
-      const lastLocation = arrowRef.current.scrollWidth - arrowRef.current.offsetWidth;
+      const currentLocation = scrollRef.current.scrollLeft;
+      const lastLocation = scrollRef.current.scrollWidth - scrollRef.current.offsetWidth;
 
       if (currentLocation === 0) autoDirection = 'right';
       else if (currentLocation >= lastLocation - 1) autoDirection = 'left';
@@ -192,9 +210,9 @@ function HomeNews({ articleType, videoUrls }) {
 
   return (
     <CarouselMainContainer>
-      <CarouselTitle>{NewsArticleType}</CarouselTitle>
+      <CarouselTitle>{!videoUrls ? topNewsArticleType : videoNewsArticleType}</CarouselTitle>
       <AutoArrowControlBox onMouseEnter={() => setMousePause(true)} onMouseLeave={() => setMousePause(false)}>
-        <CarouselLists ref={arrowRef}>
+        <CarouselLists ref={scrollRef}>
           {!videoUrls ?
             articles.map((item) => {
               const { articleId, articleTitle, articleContent, articleImgUrl } = item;
@@ -207,30 +225,28 @@ function HomeNews({ articleType, videoUrls }) {
               )
             })
             :
-            videoUrls?.map((videoItem) => {
+            videoUrls.map((videoItem) => {
               const { videoUrlId, videoTitle, videoUrl } = videoItem;
               return (
                 <CarouselVideoItems
-                  ref={(el) => videoRef.current[videoUrlId] = el}
                   key={videoUrlId}
-                  id={`video-${videoUrlId}`}
+                  onMouseEnter={() => handleVideoMouseHover(videoUrlId)}
+                  onMouseLeave={handleVideoMouseLeave}
+                  onMouseMove={handleMouseMove}
                 >
+                  {videoBoxId === videoUrlId && showVideoBox &&
+                    <PreviewYouTube x={mousePosition.x} y={mousePosition.y} videoUrl={videoUrl} />
+                  }
                   <CarouselVideoTitleBox>
-                    <img src={youtubeIcon} alt="video-img" style={{ width: '24px', height: "24px" }} />
+                    <img src={youtubeIcon} alt="video-Icon" />
                     <CarouselTitle>{videoTitle}</CarouselTitle>
                   </CarouselVideoTitleBox>
-                  <img
-                    className="thumbnail"
-                    src={`https://img.youtube.com/vi/${getVideoId(videoUrl)}/mqdefault.jpg`}
-                    alt={`image-${videoUrlId}`}
-                  />
+                  <img src={`https://img.youtube.com/vi/${getVideoId(videoUrl)}/mqdefault.jpg`} alt={`thumbnail-${videoUrlId}`} />
                 </CarouselVideoItems>
               )
             })
           }
         </CarouselLists>
-        <ArrowButton direction={'left'} onClick={moveToScroll} />
-        <ArrowButton direction={'right'} onClick={moveToScroll} />
       </AutoArrowControlBox>
     </CarouselMainContainer >
   )

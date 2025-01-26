@@ -181,4 +181,38 @@ const videoUrls = [
   },
 ];
 
-export { articles, brandLogos, videoUrls };
+const bannerObj = [
+  {
+    bannerId: 0,
+    bannerTitle: "속보: 국내 증시 사상 최고치 경신",
+    bannerSubTitle: "전문가들, '시장의 강세가 지속될 것' 전망",
+    bannerImgUrl: "https://i.namu.wiki/i/w7GkIKr6Qac-0SCYEn7DdYBpkpZed9FaVNTBFE7aIQvm7p39bo7gs2Pb1ZWfX3dPVd0JmA3oX50T5kl-MU7wfw.webp"
+  },
+  {
+    bannerId: 1,
+    bannerTitle: "스포츠: 지역 대표팀, 챔피언십 우승 쾌거",
+    bannerSubTitle: "감독, '선수들의 단합이 승리의 원동력'",
+    bannerImgUrl: "https://png.pngtree.com/thumb_back/fh260/background/20230613/pngtree-small-white-rabbit-in-the-grass-image_2915502.jpg"
+  },
+  {
+    bannerId: 2,
+    bannerTitle: "날씨: 내일 전국에 강한 비 예보",
+    bannerSubTitle: "기상청, '침수 피해 주의 및 대비 필요'",
+    bannerImgUrl: "https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?wrtSn=13262118&filePath=L2Rpc2sxL25ld2RhdGEvMjAyMC8yMS9DTFMxMDAwNi82MmZhMWExMy03ZjRmLTQ1NWMtYTZlNy02ZTk2YjhjMjBkYTk=&thumbAt=Y&thumbSe=b_tbumb&wrtTy=10006"
+  },
+  {
+    bannerId: 3,
+    bannerTitle: "기술: 최신 스마트폰 출시, 혁신적인 기능 주목",
+    bannerSubTitle: "업계, '스마트폰 혁신이 새로운 트렌드 형성'",
+    bannerImgUrl: "https://cdn.crowdpic.net/detail-thumb/thumb_d_2F583E5543F7E19139C6FCFFBF9607A6.jpg"
+  },
+  {
+    bannerId: 4,
+    bannerTitle: "건강: 전문가들이 추천하는 하루 10분 운동법",
+    bannerSubTitle: "'간단한 스트레칭이 건강 유지에 효과적'",
+    bannerImgUrl: "https://png.pngtree.com/thumb_back/fh260/background/20230316/pngtree-heaven-gate-ladder-background-image_1948845.jpg"
+  },
+];
+
+
+export { articles, brandLogos, videoUrls, bannerObj };

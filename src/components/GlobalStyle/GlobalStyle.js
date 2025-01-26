@@ -14,6 +14,7 @@ const GlobalStyled = createGlobalStyle`
     font-size : 16px;
     font-family : 'Pretendard', sans-serif;
     color : ${({ theme }) => theme.gray.gray900};
+
   }
 
   .ql-toolbar.ql-snow {
@@ -35,6 +36,20 @@ const GlobalStyled = createGlobalStyle`
 
   ul , ol {
     list-style: none;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: ${({ theme }) => theme.blue.blue500};
+      border-radius: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: ${({ theme }) => theme.blue.blue700};
+      cursor: pointer;
+    }
   }
 
   button {

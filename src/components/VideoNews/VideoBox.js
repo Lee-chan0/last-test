@@ -1,6 +1,7 @@
 import HomeNews from '../HomeNews/HomeNews';
 import { videoUrls } from '../../mock';
 
+
 export const getVideoId = (url) => {
   if (url.includes("youtube.com/shorts/")) {
     // 쇼츠 링크: shorts/ 뒤의 ID 추출
@@ -19,8 +20,13 @@ export const getVideoId = (url) => {
 };
 
 function VideoBox({ articleType }) {
-  const VideoArticleType = articleType;
-  return <HomeNews articleType={VideoArticleType} videoUrls={videoUrls} />
+  return (
+    <HomeNews videoUrls={videoUrls} articleType={articleType} />
+  )
 }
 
 export default VideoBox;
+
+
+
+
