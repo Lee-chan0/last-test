@@ -9,6 +9,15 @@ const ViewMoreBox = styled.button`
   justify-content: center;
   background-color: ${({ theme }) => theme.blue.blue100};
   margin : 0;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+
+  transition: box-shadow 0.3s;
+
+  will-change: box-shadow;
+
+  &:hover {
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.4);
+  }
 
   span {
     color : ${({ theme }) => theme.gray.gray400};

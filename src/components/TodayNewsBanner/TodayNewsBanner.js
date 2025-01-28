@@ -1,199 +1,194 @@
-import { useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
-import ArrowButton from '../ArrowButton/ArrowButton';
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 import { bannerObj } from '../../mock';
 import BannerTitleWrap from "../BannerTitleWrap/BannerTitleWrap";
 
-
-
 const MainContainer = styled.div`
-  overflow: hidden;
   display : flex;
+  margin-bottom : 40px;
+  flex-direction: column;
+
+  gap : 24px;
+
+  width: 100%;
+  height: 560px;
+
+  background-color: ${({ theme }) => theme.blue.blue100};
+  padding : 24px;
+  border-radius: 4px;
+  
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const Container = styled.div`
-  width: 640px;
-  height: 320px;
-  position : relative;
-  margin : 0 auto;
-  margin-bottom : 40px;
-  display : flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  height: 100%;
 `;
 
-const BannerBlurContainer = styled.div`
+const BlurContainer = styled.div`
   width: 100%;
-  height: 90%;
-  display : flex;
-  justify-content: center;
-
-  position: relative;
-
-
+  height: 100%;
+  position : relative;
 
   &::before {
     content : "";
-    position: absolute;
-    top: 0;
+    position : absolute;
+    top : 0;
     left : 0;
     width: 100%;
     height: 100%;
     background-image: url(${({ $src, $activeIndex }) => $src ? $src[$activeIndex] : ""});
     background-position: center;
-    background-repeat: no-repeat;
     background-size: cover;
+    background-repeat: no-repeat;
+
     filter : blur(10px);
+    z-index: 0;
   }
 `;
 
-const ListContainer = styled.ul`
-  width: 50%;
+const BannerArticleLists = styled.ul`
+  width: 100%;
   height: 100%;
-  display : flex;
-  align-items: center;
-  perspective: 400px;
+  display: flex;
+  overflow: hidden;
 `;
 
-const prevStyle = css`
-    ${({ $amount }) => `transform : translateX(-${$amount}px)  scale(0.8)`};
-`;
-
-const nextStyle = css`
-    ${({ $amount }) => `transform : translateX(-${$amount}px)  scale(0.8)`};
-`;
-
-const ListItemContainer = styled.li`
-  flex : 0 0 100%;
+const BannerImgBox = styled.div`
+  width: 100%;
   height: 80%;
-  margin-right: 40px;
+  background-image: url(${({ $src }) => $src ? $src : ""});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition : transform 0.5s;
+
+
+`;
+
+const BannerArticleItem = styled.li`
+  flex : 0 0 100%;
+  height: 100%;
+  overflow: hidden;
+  position : relative;
+
+  display : flex;
+  justify-content: center;
+  align-items: center;
 
   will-change: transform;
-  transform-style: preserve-3d;
-  transition: transform 0.5s ease;
 
-  opacity: .5;
-  ${({ $amount }) => `transform : translateX(-${$amount}px)`};
+  transition : transform 0.7s;
 
-  &:nth-child(${({ $prevIndex }) => $prevIndex + 1}) {
-    ${prevStyle};
-  }
-
-  &:nth-child(${({ $nextIndex }) => $nextIndex + 1}) {
-    ${nextStyle};
-  }
-
-  &:nth-child(${({ $activeIndex }) => $activeIndex + 1 ? $activeIndex + 1 : ""}) {
-    opacity : 1;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.02);
   }
 `;
 
-
-const BannerTitlesBox = styled.div`
+const BannerScaleControlBox = styled.div`
   width: 100%;
-  position: absolute;
-  bottom : 0;
   display : flex;
-  flex-direction: column;
-  gap : 8px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color : ${({ theme }) => theme.blue.blue100};
+  justify-content: center;
+`;
 
-  padding : 8px 16px;
-  border-radius: 4px;
+
+const BannerTitles = styled.div`
+  width: 90%;
+
+  position : absolute;
+  bottom : 16px;
+  
+  display: flex;
+  justify-content: center;
+
+  background-image : linear-gradient(to left, rgba(51,118,253, 0.1) 0%, rgba(51,118,253, 0.8) 100%);
+  background-size: cover;
+  background-position: center;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  color : #fff;
 `;
 
 const BannerTitle = styled.h1`
+  font-size : 28px;
 
-`;
+  text-align: center;
 
-const BannerSubTitle = styled.p`
-  color : ${({ theme }) => theme.gray.gray400};
-`;
+  width: 80%;
 
-const BannerImgBox = styled.img`
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient : vertical;
 
-  position : relative;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  margin : 16px 8px;
+
+  line-height: 1.3;
 `;
 
 
 
 function TodayNewsBanner() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [prevIndex, setPrevIndex] = useState(activeIndex - 1);
-  const [nextIndex, setNextIndex] = useState(activeIndex + 1);
-  const domRef = useRef(null);
-  const [amount, setAmount] = useState(0);
   const [blurImg, setBlurImg] = useState([]);
-
-  const handleArrowClick = (direction) => {
-    if (!direction) return;
-
-    const container = domRef.current;
-    const listAmount = container.offsetWidth;
-
-    if (direction === 'right') {
-      if (activeIndex === bannerObj.length - 1) return;
-
-      setAmount((prev) => prev + listAmount + 40); //margin값 40
-      setActiveIndex((prev) => prev < bannerObj.length - 1 ? prev + 1 : prev);
-
-    } else if (direction === 'left') {
-      if (activeIndex === 0) return;
-
-      setAmount((prev) => prev - listAmount - 40);
-      setActiveIndex((prev) => prev > 0 ? prev - 1 : prev);
-    }
-  }
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [indexContorl, setIndexControl] = useState(false);
 
   useEffect(() => {
-    const blurImg = bannerObj.map((item) => {
+    const blurBannerImg = bannerObj.map((item) => {
       const { bannerImgUrl } = item;
       return bannerImgUrl;
-    })
+    });
 
-    setBlurImg(blurImg);
+    setBlurImg(blurBannerImg);
   }, []);
 
+
   useEffect(() => {
-    setPrevIndex(activeIndex - 1);
-    setNextIndex(activeIndex + 1);
-  }, [activeIndex]);
+    if (indexContorl) return;
+    const count = setInterval(() => {
+      if (activeIndex < bannerObj.length - 1) {
+        setActiveIndex((prev) => prev + 1);
+      } else {
+        setActiveIndex(0);
+      }
+    }, 3000);
+
+    return () => clearInterval(count);
+  }, [indexContorl, activeIndex]);
 
   return (
     <MainContainer>
       <Container>
-        <BannerBlurContainer $src={blurImg} $activeIndex={activeIndex}>
-          <ListContainer ref={domRef}>
+        <BlurContainer $src={blurImg} $activeIndex={activeIndex}>
+          <BannerArticleLists>
             {
-              bannerObj.map((item) => {
-                const { bannerId, bannerTitle, bannerSubTitle, bannerImgUrl } = item;
+              bannerObj.map((i) => {
+                const { bannerId, bannerTitle, bannerImgUrl } = i;
                 return (
-                  <ListItemContainer
-                    key={bannerId}
-                    $activeIndex={activeIndex}
-                    $prevIndex={prevIndex}
-                    $nextIndex={nextIndex}
-                    $amount={amount}
-                  >
-                    <BannerImgBox src={bannerImgUrl} alt="" />
-                    <BannerTitlesBox>
-                      <BannerTitle>{bannerTitle}</BannerTitle>
-                      <BannerSubTitle>{bannerSubTitle}</BannerSubTitle>
-                    </BannerTitlesBox>
-                  </ListItemContainer>
+                  activeIndex === bannerId && (
+                    <BannerArticleItem key={bannerId}>
+                      <BannerImgBox $src={bannerImgUrl}>
+                        <BannerScaleControlBox>
+                          <BannerTitles>
+                            <BannerTitle>{bannerTitle}</BannerTitle>
+                          </BannerTitles>
+                        </BannerScaleControlBox>
+                      </BannerImgBox>
+                    </BannerArticleItem>
+                  )
                 )
               })
             }
-          </ListContainer>
-        </BannerBlurContainer>
-        <ArrowButton direction={'right'} onClick={handleArrowClick} />
-        <ArrowButton direction={'left'} onClick={handleArrowClick} />
+          </BannerArticleLists>
+        </BlurContainer>
       </Container>
-      <BannerTitleWrap />
+      <BannerTitleWrap setActiveIndex={setActiveIndex} setIndexControl={setIndexControl} activeIndex={activeIndex} />
     </MainContainer>
   )
 }

@@ -14,7 +14,7 @@ const GlobalStyled = createGlobalStyle`
     font-size : 16px;
     font-family : 'Pretendard', sans-serif;
     color : ${({ theme }) => theme.gray.gray900};
-
+    scroll-behavior: smooth;
   }
 
   .ql-toolbar.ql-snow {

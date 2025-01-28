@@ -24,20 +24,14 @@ const flexContainer = styled.div`
 `;
 
 
-const LogoContainer = styled.div`
-  display : flex;
-  justify-content: center;
-  align-items: center;
-  padding : 40px 0 ;
-`;
+
 
 const MainContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100%;
   padding : 0 80px;
-
 `;
 
 
 
-export { CenterContainer, SideContainer, flexContainer, LogoContainer, MainContainer };
+export { CenterContainer, SideContainer, flexContainer, MainContainer };

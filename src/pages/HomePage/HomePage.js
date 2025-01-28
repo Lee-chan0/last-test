@@ -1,10 +1,10 @@
-import { LogoContainer, MainContainer } from '../../components/Container/ContainerStyle';
-import logoImage from '../../assets/Group 1.png';
+import { MainContainer } from '../../components/Container/ContainerStyle';
 import MenuBar from '../../components/MenuBar/MenuBar';
 import TodayNewsBanner from '../../components/TodayNewsBanner/TodayNewsBanner';
 import HomeNews from '../../components/HomeNews/HomeNews';
 import BrandLists from '../../components/BrandLists/BrandLists';
 import VideoBox from '../../components/VideoNews/VideoBox';
+import LogoContainer from '../../components/LogoCotainer/LogoContainer';
 
 export const articleTypes = [
   {
@@ -18,9 +18,7 @@ export const articleTypes = [
 function HomePage() {
   return (
     <MainContainer>
-      <LogoContainer>
-        <img src={logoImage} alt="logo" />
-      </LogoContainer>
+      <LogoContainer />
       <MenuBar />
       <TodayNewsBanner />
       <HomeNews articleType={articleTypes} />

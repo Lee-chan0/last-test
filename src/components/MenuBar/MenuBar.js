@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { SearchInput } from "../SearchInput/SearchInputStyle";
 import { Link } from "react-router-dom";
+import { categories } from "../../mock";
 
 const MenuBarSearchInput = styled(SearchInput)`
   width: 500px;
@@ -39,18 +40,18 @@ const MenuBarItem = styled.li`
   }
 `;
 
-const menuBarObj = {
-  title: ['정치뉴스', '사회뉴스', '국제뉴스', '동영상', '커뮤니티']
-}
-
 
 function MenuBar() {
   return (
     <MenuBarContainer>
       <MenuBarLists>
         {
-          menuBarObj.title.map((item, index) => {
-            return <MenuBarItem key={index}><Link>{item}</Link></MenuBarItem>
+          categories.map((item) => {
+            return (
+              <MenuBarItem key={item.categoryId}>
+                <Link to={`/news-list/category/${item.categoryId}`}>{item.categoryTitle}</Link>
+              </MenuBarItem>
+            )
           })
         }
       </MenuBarLists>
