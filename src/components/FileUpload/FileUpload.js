@@ -1,114 +1,117 @@
 import styled from "styled-components";
 import addImageIcon from '../../assets/ri_image-add-fill.png';
 import { useEffect, useState } from "react";
+import React from "react";
 
-const UploadFileMainContainer = styled.div`
+const FileMainContainer = styled.div`
   width: 100%;
-  display : flex;
-  justify-content: center;
-  gap : 16px;
-  flex-wrap: wrap-reverse;
+  height: 100%;
+  padding : 0 24px;
+  display: flex;
+  gap : 8px;
+  flex-wrap: wrap;
 `;
 
-const UploadFileForm = styled.form`
-  width: 128px;
-  display: flex;
+
+const FileInput = styled.input`
+  display : none;
+`;
+
+const FileUpdateBox = styled.div`
+  width: 139px;
+  height: 120px;
+  display : flex;
   flex-direction: column;
   gap : 4px;
 `;
 
-const UploadFileLabel = styled.label`
+
+const FileSelectBtn = styled.label`
   width: 100%;
   background-color: ${({ theme }) => theme.blue.blue500};
-  font-size : 14px;
+  cursor: pointer;
   color : #fff;
-  padding : 4px 8px;
-  border-radius: 4px;
+  font-size : 14px;
+  font-weight: bold;
   text-align: center;
+  padding : 4px 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 
   &:hover {
     background-color: ${({ theme }) => theme.blue.blue700};
-    cursor: pointer;
   }
 `;
 
-const UploadFileInput = styled.input`
-  display : none;
-`;
-
-const UploadFilePreviewImage = styled.div`
-  background-color: rgba(0, 0, 0, 0.1);
+const FilePreviewBox = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background-color: ${({ theme }) => theme.gray.gray400};
   display : flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
-  width: 128px;
-  height: 80px;
 
   img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
-  & > .add-image-icon {
+  & > .add-image {
     width: 24px;
     height: 24px;
     opacity: 0.5;
   }
 `;
 
-function FileUpload() {
-  const [fileLists, setFileLists] = useState([]);
+function FileUpload({ fileList, setFileList }) {
 
-  const uploadFileChange = (e, index) => {
+  const handleChangeFile = (e, index) => {
     const file = e.target.files[0];
+    if (!file) return;
 
-    if (file) {
-      const blobFile = URL.createObjectURL(file);
-
-      index !== undefined ?
-        setFileLists((prev) => {
-          const updateFileLists = [...prev].map((item, idx) => (
-            idx === index ? { file, preview: blobFile } : item
-          ))
-          return updateFileLists;
-        }) : setFileLists((prev) => [...prev, { file, preview: blobFile }]);
+    const preview = URL.createObjectURL(file);
+    if (index === undefined) {
+      setFileList((prev) => [...prev, { file, preview }]);
+    } else {
+      setFileList((prev) => prev.map((item, i) => index === i ? { file, preview } : item));
     }
     e.target.value = "";
   }
 
   useEffect(() => {
     return () => {
-      fileLists.forEach((item) => URL.revokeObjectURL(item.preview));
+      fileList.forEach((item) => URL.revokeObjectURL(item.preview));
     }
-  }, [fileLists]);
-
+  }, [fileList]);
 
   return (
-    <UploadFileMainContainer>
+    <FileMainContainer>
       {
-        fileLists.map((item, index) => (
-          <UploadFileForm key={index}>
-            <UploadFileLabel htmlFor={`image-${index}`}>
-              <UploadFileInput type="file" id={`image-${index}`} onChange={(e) => uploadFileChange(e, index)} />
-              파일 선택
-            </UploadFileLabel>
-            <UploadFilePreviewImage>
-              <img src={item.preview} alt={`img-${index}`} />
-            </UploadFilePreviewImage>
-          </UploadFileForm>
-        ))
+        fileList.map((item, index) => {
+          const { preview } = item;
+          return (
+            <React.Fragment key={index}>
+              <FileInput type="file" id={`file-${index}`} onChange={(e) => handleChangeFile(e, index)} />
+              <FileUpdateBox>
+                <FileSelectBtn htmlFor={`file-${index}`}>파일 선택</FileSelectBtn>
+                <FilePreviewBox>
+                  <img src={preview} alt="add-image" />
+                </FilePreviewBox>
+              </FileUpdateBox>
+            </React.Fragment>
+          )
+        })
       }
-      <UploadFileForm>
-        <UploadFileLabel>
-          <UploadFileInput type="file" onChange={(e) => uploadFileChange(e)} />
-          파일 선택
-        </UploadFileLabel>
-        <UploadFilePreviewImage>
-          <img src={addImageIcon} alt="add-image" className="add-image-icon" />
-        </UploadFilePreviewImage>
-      </UploadFileForm>
-    </UploadFileMainContainer>
+      <FileInput type="file" id={`file-upload`} onChange={handleChangeFile} />
+      <FileUpdateBox>
+        <FileSelectBtn htmlFor={`file-upload`}>파일 선택</FileSelectBtn>
+        <FilePreviewBox>
+          <img src={addImageIcon} alt="add-image" className="add-image" />
+        </FilePreviewBox>
+      </FileUpdateBox>
+    </FileMainContainer>
   )
 }
 

@@ -6,19 +6,37 @@ import logoImage from '../../assets/Group 1.png';
 import videoFile from '../../assets/0119.mp4';
 import userImage from '../../assets/mdi_user-outline.png';
 import { useState } from 'react';
-
+import { queryClient } from '../../Main';
+import { useMutation } from '@tanstack/react-query';
+import { loginFunc } from '../../utils/api';
+import { useNavigate } from 'react-router-dom';
 
 
 function SignInForm() {
   const [focusState, setFocusState] = useState({
-    id: false,
+    loginId: false,
     password: false,
   });
-
   const [inputContent, setInputContent] = useState({
-    id: '',
+    loginId: '',
     password: ''
   });
+  const loginMutation = useMutation({
+    mutationFn: (userInfo) => loginFunc(userInfo),
+    onSuccess: (data) => {
+      localStorage.setItem('token', `Bearer ${data.token}`);
+      queryClient.invalidateQueries(['userInfo']);
+      setInputContent({
+        loginId: '',
+        password: ''
+      })
+      setFocusState({
+        loginId: false,
+        password: false
+      })
+    }
+  })
+  const navigate = useNavigate();
 
   const handleFocus = (field) => {
     setFocusState((prev) => ({
@@ -42,29 +60,39 @@ function SignInForm() {
       [htmlId]: content,
     }))
   }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    loginMutation.mutate(inputContent, {
+      onSuccess: () => {
+        navigate('/truescope-administrator/editor-page');
+      }
+    });
+  }
+
   return (
     <SignInCenterContainer>
       <SignInFormVideoContainer loop autoPlay playsInline muted>
         <source src={videoFile} type='video/mp4' />
       </SignInFormVideoContainer>
       <SignInFormMainContainer>
-        <SignInFormformContainer>
+        <SignInFormformContainer onSubmit={handleSubmit}>
           <SignInFormLogoImage src={logoImage} alt='logo' />
           <SignInFormLabel htmlFor='id'>
             <img src={userImage} width={'20px'} height={'20px'} alt="adminImage" />
             관리자 로그인
           </SignInFormLabel>
           <SignInFormLabel>
-            <div className={focusState.id || inputContent.id ? "move-left-id" : ''}>ID</div>
-            <SignInFormInputText id='id' type='text' onFocus={() => handleFocus("id")}
-              onBlur={() => handleBlur("id")} onChange={handleChange} />
+            <div className={focusState.loginId || inputContent.loginId ? "move-left-id" : ''}>ID</div>
+            <SignInFormInputText id='loginId' value={inputContent.loginId} type='text' onFocus={() => handleFocus("loginId")}
+              onBlur={() => handleBlur("loginId")} onChange={handleChange} />
           </SignInFormLabel>
           <SignInFormLabel>
             <div className={focusState.password || inputContent.password ? "move-left-password" : ''}>PASSWORD</div>
-            <SignInFormInputText id='password' type='password' onFocus={() => handleFocus("password")}
+            <SignInFormInputText id='password' value={inputContent.password} type='password' onFocus={() => handleFocus("password")}
               onBlur={() => handleBlur("password")} onChange={handleChange} />
           </SignInFormLabel>
-          <SignInFormButton><div>LOGIN</div></SignInFormButton>
+          <SignInFormButton type='submit'><div>LOGIN</div></SignInFormButton>
           <SignInSpan as='a' href='/truescope-administrator/signup'>회원가입</SignInSpan>
         </SignInFormformContainer>
       </SignInFormMainContainer>

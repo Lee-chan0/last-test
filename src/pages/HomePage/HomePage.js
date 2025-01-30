@@ -5,6 +5,8 @@ import HomeNews from '../../components/HomeNews/HomeNews';
 import BrandLists from '../../components/BrandLists/BrandLists';
 import VideoBox from '../../components/VideoNews/VideoBox';
 import LogoContainer from '../../components/LogoCotainer/LogoContainer';
+import Nav from '../../components/Nav/Nav';
+import Footer from '../../components/Footer/Footer';
 
 export const articleTypes = [
   {
@@ -17,14 +19,18 @@ export const articleTypes = [
 
 function HomePage() {
   return (
-    <MainContainer>
-      <LogoContainer />
-      <MenuBar />
-      <TodayNewsBanner />
-      <HomeNews articleType={articleTypes} />
-      <BrandLists />
-      <VideoBox articleType={articleTypes} />
-    </MainContainer>
+    <>
+      <Nav />
+      <MainContainer>
+        <LogoContainer />
+        <MenuBar />
+        <TodayNewsBanner />
+        <HomeNews articleType={articleTypes} />
+        <BrandLists />
+        <VideoBox articleType={articleTypes} />
+      </MainContainer>
+      <Footer />
+    </>
   )
 }
 

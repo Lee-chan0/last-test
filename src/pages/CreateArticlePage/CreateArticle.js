@@ -9,8 +9,6 @@ const CreateArticleViewContainer = styled(ArticleViewContainer)`
   height: 100%;
 `;
 
-
-
 function CreateArticlePage() {
   return (
     <MainContainer>

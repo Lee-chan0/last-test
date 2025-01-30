@@ -1,8 +1,7 @@
 import Quill from "quill";
 import 'quill/dist/quill.snow.css';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import FileUpload from "../FileUpload/FileUpload";
 
 const BoardContainer = styled.div`
   padding : 0 24px;
@@ -13,12 +12,11 @@ const BoardToQuill = styled.div`
   height: 500px;
 `;
 
-function Board() {
+function Board({ articleValues, setArticleValues }) {
   const quillRef = useRef(null); // quill에디터가 생성될 DOM엘리먼트를 참조
-  const [content, setContent] = useState("");
-
 
   useEffect(() => {
+    if (!quillRef.current) return;
     const quillInstance = new Quill(quillRef.current, {
       theme: "snow",
       modules: {
@@ -31,15 +29,16 @@ function Board() {
     })
 
     quillInstance.on("text-change", () => {
-      setContent(quillInstance.root.innerHTML); //html로 저장
+      setArticleValues((prev) => ({
+        ...prev,
+        articleContent: quillInstance.root.innerHTML
+      }))
     })
-  }, []);
-
+  }, [setArticleValues]);
 
   return (
     <BoardContainer>
       <BoardToQuill ref={quillRef} style={{ borderBottomLeftRadius: '4px', borderBottomRightRadius: '4px', marginBottom: '24px' }} />
-      <FileUpload />
     </BoardContainer>
   )
 }
