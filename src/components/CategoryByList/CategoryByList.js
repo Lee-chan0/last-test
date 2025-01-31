@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { articles } from '../../mock';
 import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -16,6 +17,10 @@ const Container = styled.div`
 
 const ArticleLists = styled.ul`
   width: 100%;
+
+  a {
+    text-decoration: none;
+  }
 `;
 
 const ArticleItem = styled.li`
@@ -86,24 +91,27 @@ const ArticleContent = styled.span`
   color : ${({ theme }) => theme.gray.gray600};
 `;
 
+function CategoryByList({ categoriesId, entireArticleArr, plainText }) {
 
-
-
-function CategoryByList({ SideSticky }) {
   return (
     <Container>
       <ArticleLists>
         {
-          articles.map((item) => {
-            const { articleId, articleImgUrl, articleContent, articleCategory, articleTitle } = item;
+          entireArticleArr.map((item) => {
+            const { articleId, articleImageUrls, articleContent, articleTitle, Category } = item;
+            const { categoryId } = Category;
+
             return (
-              <ArticleItem key={articleId}>
-                <ArticleImgBox $src={articleImgUrl} />
-                <ArticleContents>
-                  <ArticleTitle>{articleTitle}</ArticleTitle>
-                  <ArticleContent>{articleContent}</ArticleContent>
-                </ArticleContents>
-              </ArticleItem>
+              (+categoriesId === categoryId) &&
+              <Link key={articleId} to={`/news-list/article/${articleId}`}>
+                <ArticleItem >
+                  <ArticleImgBox $src={JSON.parse(articleImageUrls)[0]} />
+                  <ArticleContents>
+                    <ArticleTitle>{articleTitle}</ArticleTitle>
+                    <ArticleContent>{plainText(articleContent)}</ArticleContent>
+                  </ArticleContents>
+                </ArticleItem>
+              </Link>
             )
           })
         }

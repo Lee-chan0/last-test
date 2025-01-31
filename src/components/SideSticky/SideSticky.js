@@ -103,7 +103,7 @@ const SideItemContent = styled.span`
   font-size : 13px;
 `;
 
-function SideSticky() {
+function SideSticky({ entireArticleArr }) {
   const [newArticles, setNewArticles] = useState([]);
 
   useEffect(() => {

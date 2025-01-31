@@ -11,7 +11,7 @@ const MainContainer = styled(flexContainer)`
 
 const ArticleViewContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: ${({ theme }) => theme.blue.blue100};
   margin-left: 264px;
 
@@ -37,11 +37,18 @@ const SearchContainer = styled.div`
   display : flex;
   align-items: center;
   justify-content: space-between;
+  padding : 8px 24px;
+  margin : 0;
+  margin-top: -24px;
 `;
 
-const WroteArticle = styled.span``;
+const WroteArticle = styled.span`
+  color : ${({ theme }) => theme.gray.gray600};
+`;
 
 const SearchBar = styled(SearchInput)`
+  height: 30px;
+  padding : 0 48px 0 16px;
   &:focus
    {outline: 2px solid ${({ theme }) => theme.blue.blue500};}
 `;

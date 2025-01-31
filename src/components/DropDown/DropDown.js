@@ -1,12 +1,14 @@
 import styled from "styled-components";
-import dropboxImage from "../../assets/formkit_down.png";
-import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories } from "../../utils/api";
+import { useNavigate } from "react-router-dom";
 
 const DropDownContainer = styled.div`
   width: 100%;
 `;
 
-const DropDownOptions = styled.div`
+const DropDownOptions = styled.button`
+  background-color: ${({ theme }) => theme.blue.blue100};
   width: 100%;
   height: 50px;
   display: flex;
@@ -15,87 +17,50 @@ const DropDownOptions = styled.div`
   padding : 0 24px;
   font-size : 18px;
   cursor: pointer;
-  
-  img {
-    transition: transform 0.3s ease;
-    transform: ${({ $activeItemIndex }) => $activeItemIndex ? 'rotate(180deg)' : 'rotate(0deg)'};
-    padding : 0;
-    width: 28px;
-    height: 12px;
-  }
 `;
 
 const DropDownOptionsLine = styled.div`
   border-bottom: 3px solid ${({ theme }) => theme.blue.blue500};
 `;
 
-const DropDownLists = styled.ul`
-  width: 100%;
-  height: ${({ $height }) => $height}px;
-  overflow: hidden;
-  transition : height 0.3s ease;
-`;
+function DropDown({ articlesArr, setFilterArticles }) {
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories
+  });
+  const navigate = useNavigate();
+  const categoryiesArr = categories?.categories || [];
 
-const DropDownItem = styled.li`
-  width: 100%;
-  height: 25px;
-  font-size: 14px;
-  display : flex;
-  align-items: center;
-  padding : 0 24px;
-  border-bottom : 1px solid ${({ theme }) => theme.gray.gray400};
-  background-color: #fff;
-
-  &:hover {
-    background-color: blanchedalmond;
-    cursor: pointer;
+  const handleClickFilter = (e) => {
+    const value = e.target.value;
+    if (value) {
+      const filterArticles = articlesArr.filter((item) => item.Category.categoryName === value);
+      setFilterArticles(filterArticles);
+      navigate('/truescope-administrator/editor-page', { replace: true });
+    } else {
+      setFilterArticles([]);
+    }
   }
-`;
-
-const DropDownObject = [
-  {
-    title: '정치',
-    options: ['정치 일반', '외교']
-  },
-  {
-    title: '국제',
-    options: ['일본', '일본 경제', '일본 정치']
-  },
-  {
-    title: '사회',
-    options: ['노동']
-  }
-]
-
-
-function DropDown() {
-  const [activeItemIndex, setActiveItemIndex] = useState(null);
-  const [heights, setHeights] = useState([]);
-  const DropDownRef = useRef([]);
-
-  const handleClick = (index) => {
-    const newHeights = DropDownRef.current.map((item) => (item ? item.scrollHeight : 0));
-    setActiveItemIndex((prev) => (prev === index ? null : index));
-    setHeights(newHeights);
-  };
 
   return (
     <DropDownContainer>
       {
-        DropDownObject.map((item, index) => (
-          <DropDownOptionsLine key={index}>
-            <DropDownOptions onClick={() => handleClick(index)} $activeItemIndex={activeItemIndex === index ? true : false}>
-              {item?.title}
-              <img src={dropboxImage} alt="drop-image" />
-            </DropDownOptions>
-            <DropDownLists ref={(dom) => (DropDownRef.current[index] = dom)} $height={activeItemIndex === index ? heights[index] : 0} >
-              {item?.options.map((objItem, index) => (
-                <DropDownItem key={index}>{objItem}</DropDownItem>
-              ))}
-            </DropDownLists>
-          </DropDownOptionsLine>
-        ))
+        categoryiesArr.map((item) => {
+          const { categoryId, categoryName } = item;
+          return (
+            <DropDownOptionsLine key={categoryId}>
+              <DropDownOptions onClick={handleClickFilter} value={categoryName}>
+                {categoryName}
+              </DropDownOptions>
+            </DropDownOptionsLine>
+          )
+        })
       }
+      <DropDownOptionsLine>
+        <DropDownOptions style={{ color: "rgba(0, 0, 0, 0.3)" }} onClick={handleClickFilter}>
+          전체보기
+        </DropDownOptions>
+      </DropDownOptionsLine>
     </DropDownContainer>
   );
 }

@@ -6,13 +6,12 @@ import { Link } from 'react-router-dom';
 
 
 
-function SideNav() {
-
+function SideNav({ articlesArr, setFilterArticles }) {
   return (
     <NavigationSideBarContainer>
       <SideNavMainContainer>
         <Link to='/truescope-administrator/editor-page'><img src={logoImage} alt="logo" width={'100%'} /></Link>
-        <DropDown />
+        <DropDown articlesArr={articlesArr} setFilterArticles={setFilterArticles} />
       </SideNavMainContainer>
       <AddButton as='a' href='create-article'>
         <img src={pencilImage} alt="pencil" />

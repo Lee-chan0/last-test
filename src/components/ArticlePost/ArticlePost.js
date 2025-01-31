@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import SideSticky from "../SideSticky/SideSticky";
-import { articles } from "../../mock";
 import ArticleActorDescription from "../ArticleActorDescription/ArticleActorDescription";
 import ArticlePostImages from "../ArticlePostImages/ArticlePostImages";
+import { useEffect, useState } from "react";
+import React from "react";
+import DOMPurify from 'dompurify';
 
 const MainContainer = styled.div`
   display: flex;
@@ -43,17 +45,49 @@ const ArticleContentContainer = styled.div`
   box-shadow : 0 0 5px 1px rgba(0, 0, 0, 0.3);
 `;
 
-function ArticlePost() {
+function ArticlePost({ entireArticleArr, articlesId }) {
+  const [article, setArticle] = useState([]);
+
+  const createMarkUp = (html) => {
+    return { __html: DOMPurify.sanitize(html) };
+  }
+
+  useEffect(() => {
+    if (entireArticleArr.length === 0) return;
+
+    const filterArticles = entireArticleArr.filter((item) => item.articleId === +articlesId);
+    setArticle(filterArticles);
+
+  }, [entireArticleArr, articlesId]);
+
   return (
     <MainContainer>
       <ArticleContainer>
         <ArticleDescriptionsBox>
-          <ArticleTitle>기사 제목</ArticleTitle>
-          <ArticleSubTitle>기사 소제목</ArticleSubTitle>
+          {
+            article.map((item) => {
+              const { articleId, articleSubTitle, articleTitle, articleImageUrls } = item;
+              return (
+                <React.Fragment key={articleId}>
+                  <ArticleTitle>{articleTitle}</ArticleTitle>
+                  <ArticleSubTitle>{articleSubTitle}</ArticleSubTitle>
+                </React.Fragment>
+              )
+            })
+          }
           <ArticleActorDescription />
         </ArticleDescriptionsBox>
         <ArticleContentContainer>
-
+          {
+            article.map((item) => {
+              const { articleContent, articleId } = item;
+              return (
+                <React.Fragment key={articleId}>
+                  <div dangerouslySetInnerHTML={createMarkUp(articleContent)} />
+                </React.Fragment>
+              )
+            })
+          }
         </ArticleContentContainer>
         <ArticlePostImages />
       </ArticleContainer>

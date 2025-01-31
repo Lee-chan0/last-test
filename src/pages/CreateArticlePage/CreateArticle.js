@@ -3,6 +3,9 @@ import { ArticleViewContainer, DescriptionBar } from "../../components/SideNav/S
 import SideNav from "../../components/SideNav/SideNav";
 import CreateArticleForm from "../../components/CreateArticle/CreateArticleForm";
 import styled from "styled-components";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getArticles } from "../../utils/api";
 
 
 const CreateArticleViewContainer = styled(ArticleViewContainer)`
@@ -10,9 +13,16 @@ const CreateArticleViewContainer = styled(ArticleViewContainer)`
 `;
 
 function CreateArticlePage() {
+  const { data: allArticles } = useQuery({
+    queryKey: ['articles'],
+    queryFn: getArticles
+  });
+  const articlesArr = allArticles?.articles || [];
+  const [filterArticles, setFilterArticles] = useState([]);
+
   return (
     <MainContainer>
-      <SideNav />
+      <SideNav articlesArr={articlesArr} setFilterArticles={setFilterArticles} />
       <CreateArticleViewContainer>
         <DescriptionBar>
           <div>기사작성</div>

@@ -10,7 +10,6 @@ export async function signupFunc(userInfo) {
       'Content-Type': 'application/json'
     }
   });
-
   return response.data;
 }
 

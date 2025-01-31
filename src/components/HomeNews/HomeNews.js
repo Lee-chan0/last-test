@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { getVideoId } from "../VideoNews/VideoBox";
 import youtubeIcon from '../../assets/prime_youtube.png';
 import PreviewYouTube from "../PreviewYoutube/PreviewYouTube";
+import DOMpurify from 'dompurify';
 
 const borderRadius = css`
   border-top-right-radius: 4px;
@@ -126,16 +127,20 @@ const CarouselVideoTitleBox = styled.div`
   }
 `;
 
-function HomeNews({ articleType, videoUrls }) {
+function HomeNews({ articleType, videoUrls, entireArticleArr }) {
   const scrollRef = useRef(null);
   const videoRef = useRef(null);
   const [mousePause, setMousePause] = useState(false);
   const [videoBoxId, setVideoBoxId] = useState(null);
   const [showVideoBox, setShowVideoBox] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [topArticles, setTopArticles] = useState([]);
 
-  const topNewsArticleType = articleType[0].articleTypeName;
-  const videoNewsArticleType = articleType[1].articleTypeName;
+  const plainText = (html) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  }
 
   const handleMouseMove = (e) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
@@ -160,27 +165,34 @@ function HomeNews({ articleType, videoUrls }) {
     if (!direction) return;
     const amount = autoAmount;
 
-    const container = scrollRef.current;
+    const container = scrollRef?.current;
 
-    const currentLocation = container.scrollLeft;
-    const lastLocation = container.scrollWidth - container.offsetWidth;
+    const currentLocation = container?.scrollLeft;
+    const lastLocation = container?.scrollWidth - container?.offsetWidth;
 
     if (direction === 'right') {
       if (currentLocation >= lastLocation - 1) {
-        container.scrollTo({ left: 0, behavior: "smooth" });
+        container?.scrollTo({ left: 0, behavior: "smooth" });
       }
       else {
-        container.scrollBy({ left: amount, behavior: "smooth" });
+        container?.scrollBy({ left: amount, behavior: "smooth" });
       };
     } else if (direction === 'left') {
       if (currentLocation === 0) {
-        container.scrollTo({ left: lastLocation, behavior: "smooth" });
+        container?.scrollTo({ left: lastLocation, behavior: "smooth" });
       }
       else {
-        container.scrollBy({ left: -amount, behavior: "smooth" });
+        container?.scrollBy({ left: -amount, behavior: "smooth" });
       };
     }
   }
+
+  useEffect(() => {
+    const filterOfTop = entireArticleArr?.filter((item) => item.articleType === 'TOP');
+    setTopArticles(filterOfTop);
+
+  }, [entireArticleArr]);
+
 
   useEffect(() => {
     if (mousePause) return;
@@ -190,8 +202,8 @@ function HomeNews({ articleType, videoUrls }) {
 
     const autoMove = () => {
       const autoAmount = 3;
-      const currentLocation = scrollRef.current.scrollLeft;
-      const lastLocation = scrollRef.current.scrollWidth - scrollRef.current.offsetWidth;
+      const currentLocation = scrollRef?.current?.scrollLeft;
+      const lastLocation = scrollRef?.current?.scrollWidth - scrollRef?.current?.offsetWidth;
 
       if (currentLocation === 0) autoDirection = 'right';
       else if (currentLocation >= lastLocation - 1) autoDirection = 'left';
@@ -210,17 +222,17 @@ function HomeNews({ articleType, videoUrls }) {
 
   return (
     <CarouselMainContainer>
-      <CarouselTitle>{!videoUrls ? topNewsArticleType : videoNewsArticleType}</CarouselTitle>
+      <CarouselTitle>{articleType}</CarouselTitle>
       <AutoArrowControlBox onMouseEnter={() => setMousePause(true)} onMouseLeave={() => setMousePause(false)}>
         <CarouselLists ref={scrollRef}>
           {!videoUrls ?
-            articles.map((item) => {
-              const { articleId, articleTitle, articleContent, articleImgUrl } = item;
+            topArticles?.map((item) => {
+              const { articleId, articleTitle, articleContent, articleImageUrls } = item;
               return (
                 <CarouselItems key={articleId}>
-                  <CarouselImageBox $imgSrc={articleImgUrl} />
+                  <CarouselImageBox $imgSrc={JSON.parse(articleImageUrls)[0]} />
                   <CarouselTitle>{articleTitle}</CarouselTitle>
-                  <CarouselContent>{articleContent}</CarouselContent>
+                  <CarouselContent>{plainText(articleContent)}</CarouselContent>
                 </CarouselItems>
               )
             })

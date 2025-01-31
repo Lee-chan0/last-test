@@ -6,18 +6,32 @@ import ArticlePost from "../../components/ArticlePost/ArticlePost";
 import LogoContainer from "../../components/LogoCotainer/LogoContainer";
 import Nav from "../../components/Nav/Nav";
 import Footer from '../../components/Footer/Footer';
+import { useQuery } from "@tanstack/react-query";
+import { getArticles, getCategories } from "../../utils/api";
 
 function ArticlePage() {
   const { articleId } = useParams();
+  const { data: entireArticle } = useQuery({
+    queryKey: ['articles'],
+    queryFn: getArticles,
+    staleTime: 1000 * 60 * 5
+  });
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    staleTime: 1000 * 60 * 5
+  })
+  const entireArticleArr = entireArticle?.articles || [];
+  const categoryArr = categories?.categories || [];
 
   return (
     <>
       <Nav />
       <MainContainer>
         <LogoContainer />
-        <MenuBar />
+        <MenuBar categoryArr={categoryArr} />
         <TopButton />
-        <ArticlePost />
+        <ArticlePost entireArticleArr={entireArticleArr} articlesId={articleId} />
       </MainContainer>
       <Footer />
     </>

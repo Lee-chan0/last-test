@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createArticle, findUsers } from "../../utils/api";
 import React, { useState } from "react";
 import FileUpload from "../FileUpload/FileUpload";
+import { useNavigate } from "react-router-dom";
 
 
 const CreateForm = styled.form`
@@ -100,10 +101,14 @@ const INITIAL_ARTICLE_CONTENT = {
 function CreateArticleForm() {
   const [articleValues, setArticleValues] = useState(INITIAL_ARTICLE_CONTENT);
   const [fileList, setFileList] = useState([]);
+  const navigate = useNavigate();
   const createArticleMutation = useMutation({
     mutationFn: (articleInfo) => createArticle(articleInfo),
     onSuccess: () => {
       setArticleValues(INITIAL_ARTICLE_CONTENT);
+    },
+    onError: (error) => {
+      alert(error.response?.data.message);
     }
   })
   const { data: usersInfo } = useQuery({
@@ -133,7 +138,12 @@ function CreateArticleForm() {
       formData.append(key, articleValues[key]);
     });
 
-    createArticleMutation.mutate(formData);
+    createArticleMutation.mutate(formData, {
+      onSuccess: () => {
+        alert('등록이 완료되었습니다.');
+        navigate('/truescope-administrator/editor-page', { replace: true });
+      }
+    });
   }
 
   return (
@@ -155,6 +165,10 @@ function CreateArticleForm() {
                     <TypeTextBox>
                       <TypeText>TOP</TypeText>
                       <CreateRadioInput type='radio' name="articleType" value={'TOP'} onChange={handleChangeValue} />
+                    </TypeTextBox>
+                    <TypeTextBox>
+                      <TypeText>동영상</TypeText>
+                      <CreateRadioInput type='radio' name="articleType" value={'동영상'} onChange={handleChangeValue} />
                     </TypeTextBox>
                   </>
                 }

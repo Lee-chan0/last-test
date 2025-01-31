@@ -41,19 +41,27 @@ const MenuBarItem = styled.li`
 `;
 
 
-function MenuBar() {
+function MenuBar({ categoryArr }) {
+
   return (
     <MenuBarContainer>
       <MenuBarLists>
         {
-          categories.map((item) => {
+          categoryArr?.map((item) => {
+            const { categoryId, categoryName } = item;
             return (
-              <MenuBarItem key={item.categoryId}>
-                <Link to={`/news-list/category/${item.categoryId}`}>{item.categoryTitle}</Link>
+              <MenuBarItem key={categoryId}>
+                <Link to={`/news-list/category/${categoryId}`}>{categoryName}뉴스</Link>
               </MenuBarItem>
             )
           })
         }
+        <MenuBarItem>
+          <Link to={`/`}>동영상</Link>
+        </MenuBarItem>
+        <MenuBarItem>
+          <Link to={`/`}>커뮤니티</Link>
+        </MenuBarItem>
       </MenuBarLists>
       <MenuBarSearchInput />
     </MenuBarContainer>

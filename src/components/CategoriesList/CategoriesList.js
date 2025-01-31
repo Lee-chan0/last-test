@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { categories, articles } from "../../mock";
 import newsArticleIcon from '../../assets/newsArticleIcon.png';
 import { useEffect, useState } from "react";
 import CategoryByList from "../CategoryByList/CategoryByList";
 import SideSticky from "../SideSticky/SideSticky";
 import TopButton from "../TopButton/TopButton";
+import React from "react";
 
 const MainContainer = styled.div`
   display: flex;
@@ -85,77 +85,75 @@ const NewestTitles = styled.div`
 `;
 
 const CategoryListNewestBannerTitle = styled.h2`
-
   font-size: 28px;
 `;
 
 const CategoryListNewestBannerContent = styled.span`
     -webkit-line-clamp: 3;
-    color : ${({ theme }) => theme.gray.gray400};
+    color : ${({ theme }) => theme.blue.blue100};
 `;
 
 
-function CategoriesList({ categoriesId }) {
-  const [bannerObject, setBannerObject] = useState({
-    articleTItle: '',
-    articleContent: '',
-    articleImgUrl: '',
-    articleId: null,
-    articleCategory: ''
-  })
+function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
+  const [smallestId, setSmallestId] = useState(null);
 
-  const mathMin = (arr) => {
-    const smallest = Math.min(...arr);
-
-    const resultObj = articles.find((item) => item.articleId === smallest);
-
-    if (resultObj) {
-      setBannerObject((prev) => ({
-        ...prev,
-        articleTItle: resultObj.articleTitle,
-        articleContent: resultObj.articleContent,
-        articleImgUrl: resultObj.articleImgUrl,
-        articleId: resultObj.articleId,
-        articleCategory: resultObj.articleCategory
-      }));
-    }
+  const plainText = (html) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent;
   }
 
   useEffect(() => {
-    const bannerIdArray = articles.map((articleItem) => articleItem.articleId);
-    mathMin(bannerIdArray);
-  }, []);
+    if (entireArticleArr.length === 0) return;
 
+    const filterCategoryId = entireArticleArr.filter((item) => {
+      return item.Category.categoryId === +categoriesId
+    });
+    const findSmallestArticleId = filterCategoryId.map((item) => item.articleId);
+    const smallest = Math.min(...findSmallestArticleId);
+    setSmallestId(smallest);
+  }, [entireArticleArr, categoriesId]);
   return (
     <MainContainer>
       <ArticleContainer>
         {
-          categories.map((item) => {
-            const { categoryId, categoryTitle } = item;
+          categoryArr.map((item) => {
+            const { categoryId, categoryName } = item;
             return (
-              +categoriesId === categoryId &&
+              (+categoriesId === categoryId) &&
               <CategoryBannerTitleContainer key={categoryId}>
                 <CategoryTitle>
                   <img src={newsArticleIcon} alt="article-icon" />
-                  {categoryTitle}
+                  {categoryName}뉴스
                 </CategoryTitle>
               </CategoryBannerTitleContainer>
             )
           })
         }
         <BannerContainer>
-          <CategoryListNewestBanner $src={bannerObject.articleImgUrl} />
-          <NewestTitles>
-            <CategoryListNewestBannerTitle>{bannerObject.articleTItle}</CategoryListNewestBannerTitle>
-            <CategoryListNewestBannerContent>{bannerObject.articleContent}</CategoryListNewestBannerContent>
-          </NewestTitles>
+          {
+            entireArticleArr.map((item) => {
+              const { articleId, articleTitle, articleContent, articleImageUrls, Category } = item;
+              return (
+                (articleId === smallestId) &&
+                <React.Fragment key={articleId}>
+                  <CategoryListNewestBanner $src={JSON.parse(articleImageUrls)[0]} />
+                  <NewestTitles>
+                    <CategoryListNewestBannerTitle>{articleTitle}</CategoryListNewestBannerTitle>
+                    <CategoryListNewestBannerContent>{plainText(articleContent)}</CategoryListNewestBannerContent>
+                  </NewestTitles>
+                </React.Fragment>
+              )
+            })
+          }
         </BannerContainer>
-        <CategoryByList />
+        <CategoryByList categoriesId={categoriesId} categoryArr={categoryArr} entireArticleArr={entireArticleArr} plainText={plainText} />
       </ArticleContainer>
-      <SideSticky />
+      <SideSticky entireArticleArr={entireArticleArr} />
       <TopButton />
     </MainContainer>
   )
 }
 
 export default CategoriesList;
+

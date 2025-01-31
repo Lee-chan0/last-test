@@ -40,7 +40,7 @@ function SignUpForm() {
     signUpMutation.mutate(userInformation);
     setUserInformation(INITIAL_USERINFO);
     alert("회원가입이 완료되었습니다.");
-    navigate("/truescope-administrator/signin");
+    navigate("/truescope-administrator/signin", { replace: true });
   }
 
   return (

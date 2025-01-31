@@ -65,7 +65,7 @@ function SignInForm() {
     e.preventDefault();
     loginMutation.mutate(inputContent, {
       onSuccess: () => {
-        navigate('/truescope-administrator/editor-page');
+        navigate('/truescope-administrator/editor-page', { replace: true });
       }
     });
   }
