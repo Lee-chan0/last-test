@@ -12,7 +12,7 @@ const BoardToQuill = styled.div`
   height: 500px;
 `;
 
-function Board({ articleValues, setArticleValues }) {
+function Board({ setArticleValues }) {
   const quillRef = useRef(null); // quill에디터가 생성될 DOM엘리먼트를 참조
 
   useEffect(() => {

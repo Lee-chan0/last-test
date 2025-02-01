@@ -31,18 +31,30 @@ const ArticleTitle = styled.h1`
   font-size : 28px;
 `;
 
-const ArticleSubTitle = styled.p`
-
-`;
+const ArticleSubTitle = styled.p``;
 
 const ArticleContentContainer = styled.div`
   width: 100%;
-  height: 1500px;
+  height: 100%;
+
+  padding : 40px;
+
+  display : flex;
+  justify-content: center;
 
   margin-top : 24px;
   background-color: ${({ theme }) => theme.gray.gray100};
   border-radius: 4px;
   box-shadow : 0 0 5px 1px rgba(0, 0, 0, 0.3);
+
+  img {
+    width: 100%;
+    margin-bottom : 8px;
+  }
+
+  p {
+    font-size : 14px;
+  }
 `;
 
 function ArticlePost({ entireArticleArr, articlesId }) {
@@ -66,7 +78,7 @@ function ArticlePost({ entireArticleArr, articlesId }) {
         <ArticleDescriptionsBox>
           {
             article.map((item) => {
-              const { articleId, articleSubTitle, articleTitle, articleImageUrls } = item;
+              const { articleId, articleSubTitle, articleTitle } = item;
               return (
                 <React.Fragment key={articleId}>
                   <ArticleTitle>{articleTitle}</ArticleTitle>
@@ -75,7 +87,7 @@ function ArticlePost({ entireArticleArr, articlesId }) {
               )
             })
           }
-          <ArticleActorDescription />
+          <ArticleActorDescription article={article} />
         </ArticleDescriptionsBox>
         <ArticleContentContainer>
           {
@@ -89,7 +101,7 @@ function ArticlePost({ entireArticleArr, articlesId }) {
             })
           }
         </ArticleContentContainer>
-        <ArticlePostImages />
+        <ArticlePostImages article={article} />
       </ArticleContainer>
       <SideSticky />
     </MainContainer>
