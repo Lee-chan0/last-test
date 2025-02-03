@@ -5,6 +5,7 @@ import CategoryByList from "../CategoryByList/CategoryByList";
 import SideSticky from "../SideSticky/SideSticky";
 import TopButton from "../TopButton/TopButton";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const MainContainer = styled.div`
   display: flex;
@@ -93,14 +94,28 @@ const CategoryListNewestBannerContent = styled.span`
     color : ${({ theme }) => theme.blue.blue100};
 `;
 
-
 function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
   const [smallestId, setSmallestId] = useState(null);
+  const navigate = useNavigate();
 
   const plainText = (html) => {
     if (!html) return "";
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent;
+  }
+
+  const handleClickArticle = (id) => {
+    const viewArticleArr = JSON.parse(localStorage.getItem("articles")) || [];
+
+    if (!viewArticleArr.includes(id)) {
+      viewArticleArr.unshift(id);
+      if (viewArticleArr.length > 5) {
+        viewArticleArr.pop();
+      }
+
+      localStorage.setItem("articles", JSON.stringify(viewArticleArr));
+    }
+    navigate(`/news-list/article/${id}`);
   }
 
   useEffect(() => {
@@ -110,7 +125,7 @@ function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
       return item.Category.categoryId === +categoriesId
     });
     const findSmallestArticleId = filterCategoryId.map((item) => item.articleId);
-    const smallest = Math.min(...findSmallestArticleId);
+    const smallest = Math.max(...findSmallestArticleId);
     setSmallestId(smallest);
   }, [entireArticleArr, categoriesId]);
   return (
@@ -137,7 +152,7 @@ function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
               return (
                 (articleId === smallestId) &&
                 <React.Fragment key={articleId}>
-                  <CategoryListNewestBanner $src={JSON.parse(articleImageUrls)[0]} />
+                  <CategoryListNewestBanner $src={JSON.parse(articleImageUrls)[0]} onClick={() => handleClickArticle(articleId)} />
                   <NewestTitles>
                     <CategoryListNewestBannerTitle>{articleTitle}</CategoryListNewestBannerTitle>
                     <CategoryListNewestBannerContent>{plainText(articleContent)}</CategoryListNewestBannerContent>

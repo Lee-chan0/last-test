@@ -57,7 +57,6 @@ function changeCreatedAt(createdAt) {
 }
 
 function ArticleContents({ articlesArr, filterArticles }) {
-
   return (
     <ArticleContentMainContainer>
       <ArticleLists

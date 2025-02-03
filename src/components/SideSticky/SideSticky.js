@@ -1,6 +1,5 @@
 import styled, { css } from "styled-components";
 import eyeIcon from '../../assets/eye-line.png';
-import { articles } from '../../mock';
 import { useEffect, useState } from "react";
 
 const boxShadow = css`
@@ -52,6 +51,7 @@ const SideItem = styled.li`
   justify-content: space-between;
 
   transition: transform 0.3s, box-shadow 0.3s;
+  will-change: transform, box-shadow;
 
   &:hover {
     background-color: ${({ theme }) => theme.gray.gray100};
@@ -103,31 +103,44 @@ const SideItemContent = styled.span`
   font-size : 13px;
 `;
 
-function SideSticky({ entireArticleArr }) {
-  const [newArticles, setNewArticles] = useState([]);
+function SideSticky({ entireArticleArr, isVideo }) {
+  const [viewArticles, setViewArticles] = useState([]);
+
+  const plainText = (html) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  }
 
   useEffect(() => {
-    const newArticles = articles.filter((i) => i.articleId < 5);
+    const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
 
-    setNewArticles(newArticles);
-  }, []);
+    if (entireArticleArr?.length === 0 || viewArticleArray?.length === 0) return;
+
+    setViewArticles(() => {
+      const filterArray = entireArticleArr?.filter((item) => {
+        return viewArticleArray.includes(item.articleId);
+      })
+      return filterArray;
+    })
+  }, [entireArticleArr]);
 
   return (
     <Container>
       <SideLists>
         <SideTitle>
           <img src={eyeIcon} alt="viewIcon" />
-          많이 본 기사
+          {!isVideo ? `최근 본 기사` : `최근 본 동영상`}
         </SideTitle>
         {
-          newArticles.map((item) => {
-            const { articleId, articleImgUrl, articleContent, articleTitle } = item;
+          viewArticles?.map((item) => {
+            const { articleId, articleTitle, articleContent, articleImageUrls } = item;
             return (
               <SideItem key={articleId}>
-                <SideImgBox $src={articleImgUrl} />
+                <SideImgBox $src={JSON.parse(articleImageUrls)[0]} />
                 <SideContentsBox>
                   <SideItemTitle>{articleTitle}</SideItemTitle>
-                  <SideItemContent>{articleContent}</SideItemContent>
+                  <SideItemContent>{plainText(articleContent)}</SideItemContent>
                 </SideContentsBox>
               </SideItem>
             )

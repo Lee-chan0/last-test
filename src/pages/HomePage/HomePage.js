@@ -8,7 +8,7 @@ import LogoContainer from '../../components/LogoCotainer/LogoContainer';
 import Nav from '../../components/Nav/Nav';
 import Footer from '../../components/Footer/Footer';
 import { useQuery } from '@tanstack/react-query';
-import { getArticles, getCategories } from '../../utils/api';
+import { getArticles, getCategories, getTodayArticle, getTopArticles } from '../../utils/api';
 
 export const articleTypes = [
   {
@@ -22,17 +22,27 @@ export const articleTypes = [
 function HomePage() {
   const { data: entireArticle } = useQuery({
     queryKey: ['articles'],
-    queryFn: getArticles,
-    staleTime: 1000 * 60 * 5
+    queryFn: getArticles
   })
   const entireArticleArr = entireArticle?.articles || [];
+
   const { data: categories } = useQuery({
     queryKey: ['categories'],
-    queryFn: getCategories,
-    staleTime: 1000 * 60 * 5
+    queryFn: getCategories
   });
   const categoryArr = categories?.categories || [];
 
+  const { data: todayArticle } = useQuery({
+    queryKey: ['todayArticle'],
+    queryFn: (limit) => getTodayArticle(limit = 5),
+  });
+  const todayArticleArr = todayArticle?.todayArticle || [];
+
+  const { data: topNewsArticles } = useQuery({
+    queryKey: ['topNews'],
+    queryFn: (limit) => getTopArticles(limit = 10),
+  })
+  const topNewsArticlesArr = topNewsArticles?.topArticles || [];
 
   return (
     <>
@@ -40,8 +50,8 @@ function HomePage() {
       <MainContainer>
         <LogoContainer />
         <MenuBar categoryArr={categoryArr} />
-        <TodayNewsBanner />
-        <HomeNews articleType={'TOP 뉴스'} entireArticleArr={entireArticleArr} />
+        <TodayNewsBanner todayArticleArr={todayArticleArr} />
+        <HomeNews articleType={'TOP 뉴스'} topNewsArticlesArr={topNewsArticlesArr} />
         <BrandLists />
         <VideoBox articleType={'동영상'} />
       </MainContainer>

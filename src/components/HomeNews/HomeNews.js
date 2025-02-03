@@ -1,10 +1,9 @@
 import styled, { css } from "styled-components";
-import { articles } from '../../mock';
 import { useEffect, useRef, useState } from "react";
 import { getVideoId } from "../VideoNews/VideoBox";
 import youtubeIcon from '../../assets/prime_youtube.png';
 import PreviewYouTube from "../PreviewYoutube/PreviewYouTube";
-import DOMpurify from 'dompurify';
+import { useNavigate } from "react-router-dom";
 
 const borderRadius = css`
   border-top-right-radius: 4px;
@@ -30,6 +29,10 @@ export const CarouselTitle = styled.h1`
 const CarouselLists = styled.ul`
   display: flex;
   overflow: auto;
+
+  a {
+    text-decoration: none;
+  }
 `;
 
 const CarouselItems = styled.li`
@@ -127,14 +130,30 @@ const CarouselVideoTitleBox = styled.div`
   }
 `;
 
-function HomeNews({ articleType, videoUrls, entireArticleArr }) {
+function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
   const scrollRef = useRef(null);
   const videoRef = useRef(null);
   const [mousePause, setMousePause] = useState(false);
   const [videoBoxId, setVideoBoxId] = useState(null);
   const [showVideoBox, setShowVideoBox] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [topArticles, setTopArticles] = useState([]);
+  const navigate = useNavigate();
+
+  const handleClickArticle = (id) => {
+    const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
+
+    if (!viewArticleArray.includes(id)) {
+      viewArticleArray.unshift(id);
+
+      if (viewArticleArray.length > 5) {
+        viewArticleArray.pop();
+      }
+
+      localStorage.setItem("articles", JSON.stringify(viewArticleArray))
+    }
+
+    navigate(`news-list/article/${id}`);
+  }
 
   const plainText = (html) => {
     if (!html) return "";
@@ -188,20 +207,13 @@ function HomeNews({ articleType, videoUrls, entireArticleArr }) {
   }
 
   useEffect(() => {
-    const filterOfTop = entireArticleArr?.filter((item) => item.articleType === 'TOP');
-    setTopArticles(filterOfTop);
-
-  }, [entireArticleArr]);
-
-
-  useEffect(() => {
     if (mousePause) return;
 
     let animate;
     let autoDirection = 'right';
 
     const autoMove = () => {
-      const autoAmount = 3;
+      const autoAmount = 1;
       const currentLocation = scrollRef?.current?.scrollLeft;
       const lastLocation = scrollRef?.current?.scrollWidth - scrollRef?.current?.offsetWidth;
 
@@ -226,10 +238,10 @@ function HomeNews({ articleType, videoUrls, entireArticleArr }) {
       <AutoArrowControlBox onMouseEnter={() => setMousePause(true)} onMouseLeave={() => setMousePause(false)}>
         <CarouselLists ref={scrollRef}>
           {!videoUrls ?
-            topArticles?.map((item) => {
+            topNewsArticlesArr?.map((item) => {
               const { articleId, articleTitle, articleContent, articleImageUrls } = item;
               return (
-                <CarouselItems key={articleId}>
+                <CarouselItems key={articleId} onClick={() => handleClickArticle(articleId)}>
                   <CarouselImageBox $imgSrc={JSON.parse(articleImageUrls)[0]} />
                   <CarouselTitle>{articleTitle}</CarouselTitle>
                   <CarouselContent>{plainText(articleContent)}</CarouselContent>

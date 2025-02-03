@@ -12,7 +12,10 @@ import NewsListPage from "./pages/NewsListPage/NewsListPage";
 import ArticlePage from "./pages/ArticlePage/ArticlePage";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import Nav from "./components/Nav/Nav";
+import EntireArticlePage from "./pages/EntireArticlePage/EntireArticlePage";
+import VideoEditorPage from "./pages/VideoEditorPage/VideoEditorPage";
+import VideoPage from "./pages/VideoPage/VideoPage";
+import VideoArticlePage from "./pages/VideoArticlePage/VideoArticlePage";
 
 export const queryClient = new QueryClient;
 
@@ -41,13 +44,17 @@ function Main() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="news-list">
+                <Route path="video/video-articles" element={<VideoPage />} />
+                <Route path="video/video-articles/:videoArticleId" element={<VideoArticlePage />} />
                 <Route path="category/:categoriesId" element={<NewsListPage />} />
                 <Route path="article/:articleId" element={<ArticlePage />} />
+                <Route path="articles/entireArticle" element={<EntireArticlePage />} />
               </Route>
               <Route path="truescope-administrator">
                 <Route path="signup" element={<SignUpPage />} />
                 <Route path="signin" element={<SignInPage />} />
                 <Route path="editor-page" element={<EditorPage />} />
+                <Route path="video-editor" element={<VideoEditorPage />} />
                 <Route path="create-article" element={<CreateArticlePage />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />

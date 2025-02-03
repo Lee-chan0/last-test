@@ -13,13 +13,11 @@ function ArticlePage() {
   const { articleId } = useParams();
   const { data: entireArticle } = useQuery({
     queryKey: ['articles'],
-    queryFn: getArticles,
-    staleTime: 1000 * 60 * 5
+    queryFn: getArticles
   });
   const { data: categories } = useQuery({
     queryKey: ['categories'],
-    queryFn: getCategories,
-    staleTime: 1000 * 60 * 5
+    queryFn: getCategories
   })
   const entireArticleArr = entireArticle?.articles || [];
   const categoryArr = categories?.categories || [];

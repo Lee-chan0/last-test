@@ -85,6 +85,8 @@ const TypeTextBox = styled.div`
 const TypeText = styled.span`
   font-weight: normal;
   font-size : 14px;
+
+  ${({ $articleType }) => ($articleType === '동영상') && `cursor : pointer; color : blue;`}
 `;
 
 const formTextTitle = ['기사 형태', '카테고리', '이름', '제목', '소제목'];
@@ -115,6 +117,19 @@ function CreateArticleForm() {
     queryKey: ['users'],
     queryFn: findUsers
   });
+
+  const handleChangeVideo = (articleType) => {
+
+    const newWindow = window.open(
+      `/truescope-administrator/video-editor?query=${encodeURIComponent(articleType)}`,
+      "videoEditorWindow",
+      "width=540, height=400"
+    );
+
+    if (!newWindow) {
+      alert("팝업이 차단되었습니다. 브라우저 설정을 확인하세요.");
+    }
+  }
 
   const handleChangeValue = (e) => {
     const domName = e.target.name;
@@ -167,8 +182,7 @@ function CreateArticleForm() {
                       <CreateRadioInput type='radio' name="articleType" value={'TOP'} onChange={handleChangeValue} />
                     </TypeTextBox>
                     <TypeTextBox>
-                      <TypeText>동영상</TypeText>
-                      <CreateRadioInput type='radio' name="articleType" value={'동영상'} onChange={handleChangeValue} />
+                      <TypeText $articleType="동영상" onClick={() => handleChangeVideo('동영상')}>동영상</TypeText>
                     </TypeTextBox>
                   </>
                 }

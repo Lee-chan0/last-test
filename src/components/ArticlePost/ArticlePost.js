@@ -31,7 +31,9 @@ const ArticleTitle = styled.h1`
   font-size : 28px;
 `;
 
-const ArticleSubTitle = styled.p``;
+const ArticleSubTitle = styled.p`
+  color : ${({ theme }) => theme.gray.gray600};
+`;
 
 const ArticleContentContainer = styled.div`
   width: 100%;
@@ -49,11 +51,12 @@ const ArticleContentContainer = styled.div`
 
   img {
     width: 100%;
-    margin-bottom : 8px;
+    margin : 8px 0;
   }
 
   p {
-    font-size : 14px;
+    font-size : 15px;
+    line-height: 1.6;
   }
 `;
 
@@ -92,10 +95,13 @@ function ArticlePost({ entireArticleArr, articlesId }) {
         <ArticleContentContainer>
           {
             article.map((item) => {
-              const { articleContent, articleId } = item;
+              const { articleContent, articleId, articleImageUrls } = item;
               return (
                 <React.Fragment key={articleId}>
-                  <div dangerouslySetInnerHTML={createMarkUp(articleContent)} />
+                  <div>
+                    {/* <img src={JSON.parse(articleImageUrls)[0]} alt="article-main-image" /> 메인이미지를 첫번째로 업로드하는 사진으로 쓸건지?*/}
+                    <div dangerouslySetInnerHTML={createMarkUp(articleContent)} />
+                  </div>
                 </React.Fragment>
               )
             })
@@ -103,7 +109,7 @@ function ArticlePost({ entireArticleArr, articlesId }) {
         </ArticleContentContainer>
         <ArticlePostImages article={article} />
       </ArticleContainer>
-      <SideSticky />
+      <SideSticky entireArticleArr={entireArticleArr} />
     </MainContainer>
   )
 }

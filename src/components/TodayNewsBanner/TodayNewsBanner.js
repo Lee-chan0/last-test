@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { bannerObj } from '../../mock';
 import BannerTitleWrap from "../BannerTitleWrap/BannerTitleWrap";
+import { useNavigate } from "react-router-dom";
 
 const MainContainer = styled.div`
   display : flex;
@@ -134,33 +134,53 @@ const BannerTitle = styled.h1`
 
 
 
-function TodayNewsBanner() {
+function TodayNewsBanner({ todayArticleArr }) {
   const [blurImg, setBlurImg] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [indexContorl, setIndexControl] = useState(false);
+  const [indexControl, setIndexControl] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClickArticle = (id) => {
+    const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
+
+    if (!viewArticleArray.includes(id)) {
+      viewArticleArray.unshift(id);
+
+      if (viewArticleArray.length > 5) {
+        viewArticleArray.pop();
+      }
+
+      localStorage.setItem("articles", JSON.stringify(viewArticleArray))
+    }
+
+    navigate(`news-list/article/${id}`);
+  }
 
   useEffect(() => {
-    const blurBannerImg = bannerObj.map((item) => {
-      const { bannerImgUrl } = item;
-      return bannerImgUrl;
+    if (todayArticleArr.length === 0) return;
+
+    const blurBannerImg = todayArticleArr.map((item) => {
+      const { articleImageUrls } = item;
+      const blurUrl = JSON.parse(articleImageUrls)[0];
+      return blurUrl;
     });
-
     setBlurImg(blurBannerImg);
-  }, []);
 
+  }, [todayArticleArr]);
 
   useEffect(() => {
-    if (indexContorl) return;
+    if (indexControl) return;
+
     const count = setInterval(() => {
-      if (activeIndex < bannerObj.length - 1) {
+      if (activeIndex < todayArticleArr.length - 1) {
         setActiveIndex((prev) => prev + 1);
-      } else {
+      } else if (activeIndex === todayArticleArr.length - 1) {
         setActiveIndex(0);
       }
     }, 3000);
 
     return () => clearInterval(count);
-  }, [indexContorl, activeIndex]);
+  }, [indexControl, todayArticleArr, activeIndex]);
 
   return (
     <MainContainer>
@@ -168,27 +188,33 @@ function TodayNewsBanner() {
         <BlurContainer $src={blurImg} $activeIndex={activeIndex}>
           <BannerArticleLists>
             {
-              bannerObj.map((i) => {
-                const { bannerId, bannerTitle, bannerImgUrl } = i;
+              todayArticleArr.map((i, index) => {
+                const { articleId, articleTitle, articleImageUrls, articleType } = i;
+
                 return (
-                  activeIndex === bannerId && (
-                    <BannerArticleItem key={bannerId}>
-                      <BannerImgBox $src={bannerImgUrl}>
-                        <BannerScaleControlBox>
-                          <BannerTitles>
-                            <BannerTitle>{bannerTitle}</BannerTitle>
-                          </BannerTitles>
-                        </BannerScaleControlBox>
-                      </BannerImgBox>
-                    </BannerArticleItem>
-                  )
+                  (activeIndex === index) &&
+                  <BannerArticleItem key={articleId} onClick={() => handleClickArticle(articleId)}>
+                    <BannerImgBox $src={JSON.parse(articleImageUrls)[0]}>
+                      <BannerScaleControlBox>
+                        <BannerTitles>
+                          <BannerTitle>{articleTitle}123</BannerTitle>
+                        </BannerTitles>
+                      </BannerScaleControlBox>
+                    </BannerImgBox>
+                  </BannerArticleItem>
                 )
               })
             }
           </BannerArticleLists>
         </BlurContainer>
       </Container>
-      <BannerTitleWrap setActiveIndex={setActiveIndex} setIndexControl={setIndexControl} activeIndex={activeIndex} />
+      <BannerTitleWrap
+        setActiveIndex={setActiveIndex}
+        setIndexControl={setIndexControl}
+        activeIndex={activeIndex}
+        todayArticleArr={todayArticleArr}
+        onClick={handleClickArticle}
+      />
     </MainContainer>
   )
 }

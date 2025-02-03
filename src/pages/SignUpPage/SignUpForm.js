@@ -7,7 +7,6 @@ import {
 } from './SignUpFromStyle';
 import { useMutation } from '@tanstack/react-query';
 import { signupFunc } from '../../utils/api';
-import { queryClient } from '../../Main';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +19,9 @@ const INITIAL_USERINFO = {
 function SignUpForm() {
   const signUpMutation = useMutation({
     mutationFn: (userInformation) => signupFunc(userInformation),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['userInfo'] })
+    onSuccess: () => {
+      alert("회원가입이 완료되었습니다.");
+    }
   });
   const [userInformation, setUserInformation] = useState(INITIAL_USERINFO)
   const navigate = useNavigate();
@@ -39,7 +40,6 @@ function SignUpForm() {
     e.preventDefault();
     signUpMutation.mutate(userInformation);
     setUserInformation(INITIAL_USERINFO);
-    alert("회원가입이 완료되었습니다.");
     navigate("/truescope-administrator/signin", { replace: true });
   }
 

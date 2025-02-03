@@ -1,7 +1,4 @@
 import styled, { css } from "styled-components";
-import { bannerObj } from "../../mock";
-
-
 
 const Container = styled.div`
   width: 100%;
@@ -37,8 +34,8 @@ const WrapItem = styled.li`
 
   transition: all .5s;
 
-  background-color : ${({ $activeIndex, $bannerId }) => $activeIndex === $bannerId ? `rgba(51,118,253, 0.8)` : ``};
-  color : ${({ $activeIndex, $bannerId }) => $activeIndex === $bannerId ? `#fff` : `#000`};
+  background-color : ${({ $activeIndex, $index }) => $activeIndex === $index ? `rgba(51,118,253, 0.8)` : ``};
+  color : ${({ $activeIndex, $index }) => $activeIndex === $index ? `#fff` : `#000`};
 
   &:hover {
     cursor: pointer;
@@ -70,10 +67,10 @@ const WrapSubTitle = styled.p`
   ${titleStyle};
 `;
 
-function BannerTitleWrap({ setActiveIndex, activeIndex, setIndexControl }) {
+function BannerTitleWrap({ setActiveIndex, activeIndex, setIndexControl, todayArticleArr, onClick }) {
 
-  const handleMouseHover = (id) => {
-    setActiveIndex(id);
+  const handleMouseHover = (idx) => {
+    setActiveIndex(idx);
     setIndexControl(true);
   }
 
@@ -85,19 +82,20 @@ function BannerTitleWrap({ setActiveIndex, activeIndex, setIndexControl }) {
     <Container>
       <WrapLists>
         {
-          bannerObj.map((item) => {
-            const { bannerId, bannerTitle, bannerSubTitle } = item;
+          todayArticleArr.map((item, index) => {
+            const { articleId, articleTitle, articleSubTitle } = item;
             return (
               <WrapItem
-                key={bannerId}
-                onMouseEnter={() => handleMouseHover(bannerId)}
+                key={articleId}
+                onMouseEnter={() => handleMouseHover(index)}
                 onMouseLeave={handleMouseLeave}
                 $activeIndex={activeIndex}
-                $bannerId={bannerId}
+                $index={index}
+                onClick={() => onClick(articleId)}
               >
                 <WrapTitles>
-                  <WrapTitle>{bannerTitle}</WrapTitle>
-                  <WrapSubTitle>{bannerSubTitle}</WrapSubTitle>
+                  <WrapTitle>{articleTitle}</WrapTitle>
+                  <WrapSubTitle>{articleSubTitle}</WrapSubTitle>
                 </WrapTitles>
               </WrapItem>
             )

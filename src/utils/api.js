@@ -34,8 +34,23 @@ export async function getCategories() {
 }
 
 // articles
+export async function getVideoArticle(articleId) {
+  const response = await axios.get(`${BASE_URL}/videoArticles/${articleId}`)
+  return response.data;
+}
+
+export async function getVideoArticles() {
+  const response = await axios.get(`${BASE_URL}/videoArticles`)
+  return response.data;
+}
+
 export async function getArticles() {
   const response = await axios.get(`${BASE_URL}/articles`);
+  return response.data;
+}
+
+export async function getIncludeVideoArticles() {
+  const response = await axios.get(`${BASE_URL}/articles/videos`)
   return response.data;
 }
 
@@ -51,5 +66,15 @@ export async function createArticle(formData) {
       'Authorization': `${localStorage.getItem('token')}`
     }
   })
+  return response.data;
+}
+
+export async function getTodayArticle(limit = 5) {
+  const response = await axios.get(`${BASE_URL}/articles/today?limit=${limit}`);
+  return response.data;
+}
+
+export async function getTopArticles(limit = 5) {
+  const response = await axios.get(`${BASE_URL}/articles/top?limit=${limit}`);
   return response.data;
 }
