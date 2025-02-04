@@ -2,7 +2,11 @@ import styled from "styled-components";
 import { getVideoId } from "../VideoNews/VideoBox";
 import videoIcon from '../../assets/ri_video-line222.png';
 import SideSticky from "../SideSticky/SideSticky";
-import { useNavigate } from "react-router-dom";
+import noImage from '../../assets/thumnailEx.jpg';
+import { SearchInput } from "../SearchInput/SearchInputStyle";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ViewMoreBox } from '../ViewMore/ViewMoreStyle';
 
 const MainContainer = styled.div`
   display : flex;
@@ -18,6 +22,14 @@ const PageTitleBox = styled.div`
   display : flex;
   align-items: center;
   gap : 4px;
+
+  position: relative;
+
+  & > .searched-description {
+    color : ${({ theme }) => theme.gray.gray600};
+    margin-left : 16px;
+    font-weight: bold;
+  }
 
   img {
     width: 32px;
@@ -35,8 +47,8 @@ const VideosContainer = styled.div`
   height: 100%;
   display : grid;
   padding : 16px;
-  grid-template-rows : repeat(3, 1fr);
   grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 150px;
   gap : 16px;
   background-color: ${({ theme }) => theme.blue.blue100};
   border-radius: 4px;
@@ -72,7 +84,7 @@ const VideoImgBox = styled.div`
   flex : 0 0 75%;
   flex-grow: 2;
   border-radius: 4px;
-  background-image: url(${({ $src }) => $src ? $src : ""});
+  background-image: url(${({ $src, $noimage }) => $src ? $src : $noimage});
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -91,6 +103,11 @@ const VideoTitleBox = styled.div`
 
 const VideoTitle = styled.span`
   width: 100%;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+
   overflow: hidden;
   text-overflow: ellipsis;
   font-size : 13px;
@@ -98,10 +115,35 @@ const VideoTitle = styled.span`
   color : ${({ theme }) => theme.blue.blue700};
 `;
 
-function VideoArticleList({ videoArticlesArr }) {
-  const navigate = useNavigate();
+const VideoSearchInput = styled(SearchInput)`
+  border : 1px solid rgba(79, 120, 242, 0.5);
+  height: 100%;
+  padding : 8px 12px;
+  position : absolute;
+  right : 0;
+`;
 
-  const handleClickArticle = (id) => {
+
+function VideoArticleList({ videoArticlesArr }) {
+  const [searchContent, setSearchContent] = useState("");
+  const [searchText] = useSearchParams();
+  const navigate = useNavigate();
+  const [searchedArticles, setSearchedArticles] = useState([]);
+  const [lastSearchText, setLastSearchText] = useState("");
+  const word = searchText.get("searchword") || "";
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (searchContent.trim() === "") {
+        alert("검색어를 입력해주세요.");
+        return;
+      }
+      navigate(`?searchword=${encodeURIComponent(searchContent)}`, { replace: true });
+      setSearchContent("");
+    }
+  }
+
+  const handleClickArticle = (id, url) => {
     const viewArticleArray = JSON.parse(localStorage.getItem("video-articles")) || [];
 
     if (!viewArticleArray.includes(id)) {
@@ -113,9 +155,27 @@ function VideoArticleList({ videoArticlesArr }) {
 
       localStorage.setItem("video-articles", JSON.stringify(viewArticleArray));
     }
-
-    navigate(`/news-list/video/video-articles/${id}`);
+    window.open(url);
   }
+
+  useEffect(() => {
+    if (!word) return;
+
+    const filterArticles = videoArticlesArr.filter((article) => {
+      return article.articleTitle.toLowerCase().includes(word.toLowerCase());
+    })
+
+    if (filterArticles.length === 0) {
+      alert(`${word}에 대한 검색결과가 없습니다.`);
+      setSearchedArticles([]);
+      setSearchContent("");
+      navigate(`/news-list/video/video-articles`, { replace: true });
+    } else {
+      setSearchedArticles(filterArticles);
+      setLastSearchText(word);
+    }
+
+  }, [videoArticlesArr, searchText, navigate, word]);
 
   return (
     <MainContainer>
@@ -123,22 +183,49 @@ function VideoArticleList({ videoArticlesArr }) {
         <PageTitleBox>
           <img src={videoIcon} alt="video-icon" />
           <PageTitle>동영상</PageTitle>
+          {searchedArticles.length !== 0 &&
+            <p className="searched-description">"{lastSearchText}"에 대한 검색결과</p>
+          }
+          <VideoSearchInput
+            type="text"
+            value={searchContent}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => setSearchContent(e.target.value)}
+          />
         </PageTitleBox>
         <VideosContainer>
           {
-            videoArticlesArr.map((item) => {
-              const { articleId, articleTitle, articleContent } = item;
-              return (
-                <VideosCard key={articleId} onClick={() => handleClickArticle(articleId)}>
-                  <VideoImgBox $src={`https://img.youtube.com/vi/${getVideoId(articleContent)}/sddefault.jpg`} />
-                  <VideoTitleBox>
-                    <VideoTitle>{articleTitle}</VideoTitle>
-                  </VideoTitleBox>
-                </VideosCard>
+            (searchedArticles.length === 0) ?
+              (
+                videoArticlesArr.map((item) => {
+                  const { articleId, articleTitle, articleContent } = item;
+                  return (
+                    <VideosCard key={articleId} onClick={() => handleClickArticle(articleId, articleContent)}>
+                      <VideoImgBox $noimage={noImage} $src={`https://img.youtube.com/vi/${getVideoId(articleContent)}/sddefault.jpg`} />
+                      <VideoTitleBox>
+                        <VideoTitle>{articleTitle}</VideoTitle>
+                      </VideoTitleBox>
+                    </VideosCard>
+                  )
+                })
               )
-            })
+              :
+              (
+                searchedArticles.map((item) => {
+                  const { articleId, articleTitle, articleContent } = item;
+                  return (
+                    <VideosCard key={articleId} onClick={() => handleClickArticle(articleId, articleContent)}>
+                      <VideoImgBox $noimage={noImage} $src={`https://img.youtube.com/vi/${getVideoId(articleContent)}/sddefault.jpg`} />
+                      <VideoTitleBox>
+                        <VideoTitle>{articleTitle}</VideoTitle>
+                      </VideoTitleBox>
+                    </VideosCard>
+                  )
+                })
+              )
           }
         </VideosContainer>
+        <ViewMoreBox style={{ marginBottom: "40px" }}><span>View More</span></ViewMoreBox>
       </Container>
       <SideSticky entireArticleArr={videoArticlesArr} isVideo={true} />
     </MainContainer>

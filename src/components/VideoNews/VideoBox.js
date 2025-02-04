@@ -19,9 +19,9 @@ export const getVideoId = (url) => {
   return null; // 비디오 ID를 찾지 못한 경우
 };
 
-function VideoBox({ articleType }) {
+function VideoBox({ articleType, homeVideoArticleArr }) {
   return (
-    <HomeNews videoUrls={videoUrls} articleType={articleType} />
+    <HomeNews isVideo={true} articleType={articleType} homeVideoArticleArr={homeVideoArticleArr} />
   )
 }
 

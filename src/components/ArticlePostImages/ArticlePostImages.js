@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import closeBtn from '../../assets/ion_close.png';
 import React from "react";
 import leftButton from '../../assets/mingcute_left-fill.png'

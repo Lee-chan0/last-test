@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const MenuBarSearchInput = styled(SearchInput)`
-  width: 500px;
+  width: 300px;
   height: 32px;
   border-radius: 9999px;
   margin : 4px 4px;
+  border : 2px solid rgba(81, 135, 244, 0.5);
+  margin-right : 24px;
 `;
 
 const MenuBarContainer = styled.div`
@@ -17,14 +19,15 @@ const MenuBarContainer = styled.div`
   border-radius: 4px;
   gap : 16px;
   margin-bottom: 40px;
+
+
 `;
 
 const MenuBarLists = styled.ul`
   display : flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-
+  width: 70%;
   & > * {
     flex : 0 0 20%;
   }

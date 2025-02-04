@@ -39,9 +39,14 @@ export async function getVideoArticle(articleId) {
   return response.data;
 }
 
-export async function getVideoArticles() {
-  const response = await axios.get(`${BASE_URL}/videoArticles`)
-  return response.data;
+export async function getVideoArticles(limit) {
+  if (!limit) {
+    const response = await axios.get(`${BASE_URL}/videoArticles`);
+    return response.data;
+  } else {
+    const response = await axios.get(`${BASE_URL}/videoArticles?limit=${limit}`);
+    return response.data;
+  }
 }
 
 export async function getArticles() {

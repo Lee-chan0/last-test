@@ -7,10 +7,17 @@ import { Link } from 'react-router-dom';
 
 
 function SideNav({ articlesArr, setFilterArticles }) {
+
+  const clickLogo = () => {
+    window.location.reload();
+  }
+
   return (
     <NavigationSideBarContainer>
       <SideNavMainContainer>
-        <Link to='/truescope-administrator/editor-page'><img src={logoImage} alt="logo" width={'100%'} /></Link>
+        <Link to='/truescope-administrator/editor-page'>
+          <img src={logoImage} alt="logo" width={'100%'} onClick={clickLogo} />
+        </Link>
         <DropDown articlesArr={articlesArr} setFilterArticles={setFilterArticles} />
       </SideNavMainContainer>
       <AddButton as='a' href='create-article'>

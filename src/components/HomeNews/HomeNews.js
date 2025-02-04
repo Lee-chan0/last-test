@@ -2,8 +2,9 @@ import styled, { css } from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import { getVideoId } from "../VideoNews/VideoBox";
 import youtubeIcon from '../../assets/prime_youtube.png';
-import PreviewYouTube from "../PreviewYoutube/PreviewYouTube";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import YouTube from "react-youtube";
+import closeBtn from '../../assets/whiteClose.png';
 
 const borderRadius = css`
   border-top-right-radius: 4px;
@@ -28,7 +29,8 @@ export const CarouselTitle = styled.h1`
 
 const CarouselLists = styled.ul`
   display: flex;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
 
   a {
     text-decoration: none;
@@ -101,43 +103,139 @@ const CarouselImageBox = styled.div`
 const AutoArrowControlBox = styled.div``;
 
 const CarouselVideoItems = styled(CarouselItems)`
-  position : relative;
+  width: 300px;
+  height: 200px;
+
+  & > .thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
 `;
 
 const CarouselVideoTitleBox = styled.div`
   display : flex;
-  align-items: center;
+  width: 300px;
   height: 30px;
-  border : 1px solid ${({ theme }) => theme.gray.gray100};
-  ${borderRadius};
-  overflow: auto;
+  align-items: center;
+  padding : 0 8px;
+  
 
-  img {
-    width: 24px;
-    height: 24px;
-    margin-left : 8px;
-  }
-
-  & > ${CarouselTitle} {
+  ${CarouselTitle} {
+    text-overflow: ellipsis;
     font-size : 16px;
-    margin : 0 8px;
+    line-height: 30px;
+    margin : 0;
+    width: 100%;
 
     display : -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient : vertical;
+
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
 `;
 
-function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
+const YoutubeContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position : fixed;
+  top : 0;
+  left: 0;
+  z-index: 1;
+  background-color : rgba(0, 0, 0, 0.5);
+
+  display : ${({ $isFocus }) => $isFocus ? 'flex' : 'none'};
+  justify-content: center;
+  align-items: center;
+`;
+
+const YoutubePreviewContainer = styled.div`
+  width: 500px;
+  height: 350px;
+  display : flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`;
+
+const PreviewBox = styled.div`
+  width: 100%;
+  position : absolute;
+  top : -10%;
+  left: 0;
+  z-index: -1;
+  display : flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PreviewDescription = styled.span`
+  color : ${({ theme }) => theme.gray.gray100};
+  background-color: ${({ theme }) => theme.blue.blue700};
+  padding : 8px 16px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  font-weight: bold;
+`;
+
+const CloseYoutubeBtn = styled.div`
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  background-color: ${({ theme }) => theme.blue.blue700};
+  background-image: url(${closeBtn});
+  background-position: center;
+  background-size: 24px;
+  background-repeat: no-repeat;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.blue.blue500};
+  }
+`;
+
+function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleArr }) {
   const scrollRef = useRef(null);
-  const videoRef = useRef(null);
   const [mousePause, setMousePause] = useState(false);
-  const [videoBoxId, setVideoBoxId] = useState(null);
-  const [showVideoBox, setShowVideoBox] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [videoUrl, setVideoUrl] = useState("");
+  const [isFocus, setIsFocus] = useState(false);
+  const timeOutRef = useRef(null);
+
+
   const navigate = useNavigate();
+
+  const videoMouseEnter = (url) => {
+    setVideoUrl(url);
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+
+    timeOutRef.current = setTimeout(() => {
+      setIsFocus(true);
+    }, 1500);
+
+  }
+
+  const handleCloseClick = () => {
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+
+    setIsFocus(false);
+  }
 
   const handleClickArticle = (id) => {
     const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
@@ -159,25 +257,6 @@ function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
     if (!html) return "";
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
-  }
-
-  const handleMouseMove = (e) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-  }
-
-  const handleVideoMouseHover = (id) => {
-    if (id === null) return;
-    setVideoBoxId(id);
-
-    videoRef.current = setTimeout(() => {
-      setShowVideoBox(true)
-    }, 1500);
-  }
-
-  const handleVideoMouseLeave = () => {
-    setVideoBoxId(null);
-    setShowVideoBox(false);
-    clearTimeout(videoRef.current);
   }
 
   const moveToScroll = (direction, autoAmount) => {
@@ -207,6 +286,28 @@ function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
   }
 
   useEffect(() => {
+    const body = document.querySelector("body");
+    if (isFocus) {
+      body.style.overflowY = "hidden";
+    } else {
+      body.style.overflowY = "auto";
+    }
+  }, [isFocus]);
+
+  useEffect(() => {
+    const keyDown = (e) => {
+      if (e.key === "Escape") {
+        setIsFocus(false);
+      }
+    }
+    window.addEventListener("keydown", keyDown);
+
+    return () => {
+      window.removeEventListener("keydown", keyDown);
+    }
+  }, []);
+
+  useEffect(() => {
     if (mousePause) return;
 
     let animate;
@@ -224,7 +325,6 @@ function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
       moveToScroll(autoDirection, autoAmount);
       animate = requestAnimationFrame(autoMove);
     }
-
     autoMove();
 
     return () => {
@@ -234,10 +334,40 @@ function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
 
   return (
     <CarouselMainContainer>
-      <CarouselTitle>{articleType}</CarouselTitle>
+      <YoutubeContainer $isFocus={isFocus}>
+        <YoutubePreviewContainer>
+          <PreviewBox>
+            <PreviewDescription>미리보기</PreviewDescription>
+            <CloseYoutubeBtn onClick={handleCloseClick} />
+          </PreviewBox>
+          <YouTube
+            videoId={getVideoId(videoUrl)}
+            opts={{
+              width: "500",
+              height: "350",
+              playerVars: {
+                rel: 0,
+                modestbranding: 1,
+              }
+            }}
+          />
+        </YoutubePreviewContainer>
+      </YoutubeContainer>
+      {
+        (isVideo)
+          ?
+          <Link
+            to={'/news-list/video/video-articles'}
+            style={{ textDecoration: "none" }}
+          >
+            <CarouselTitle>{'동영상'}</CarouselTitle>
+          </Link>
+          :
+          <CarouselTitle>{'TOP 뉴스'}</CarouselTitle>
+      }
       <AutoArrowControlBox onMouseEnter={() => setMousePause(true)} onMouseLeave={() => setMousePause(false)}>
         <CarouselLists ref={scrollRef}>
-          {!videoUrls ?
+          {(!isVideo) ?
             topNewsArticlesArr?.map((item) => {
               const { articleId, articleTitle, articleContent, articleImageUrls } = item;
               return (
@@ -249,23 +379,28 @@ function HomeNews({ articleType, videoUrls, topNewsArticlesArr }) {
               )
             })
             :
-            videoUrls.map((videoItem) => {
-              const { videoUrlId, videoTitle, videoUrl } = videoItem;
+            homeVideoArticleArr.map((videoItem) => {
+              const { articleId, articleContent, articleTitle } = videoItem;
               return (
                 <CarouselVideoItems
-                  key={videoUrlId}
-                  onMouseEnter={() => handleVideoMouseHover(videoUrlId)}
-                  onMouseLeave={handleVideoMouseLeave}
-                  onMouseMove={handleMouseMove}
+                  key={articleId}
+                  onMouseEnter={() => videoMouseEnter(articleContent)}
+                  onMouseLeave={() => {
+                    if (timeOutRef.current) {
+                      clearTimeout(timeOutRef.current);
+                      timeOutRef.current = null;
+                    }
+                  }}
                 >
-                  {videoBoxId === videoUrlId && showVideoBox &&
-                    <PreviewYouTube x={mousePosition.x} y={mousePosition.y} videoUrl={videoUrl} />
-                  }
                   <CarouselVideoTitleBox>
                     <img src={youtubeIcon} alt="video-Icon" />
-                    <CarouselTitle>{videoTitle}</CarouselTitle>
+                    <CarouselTitle>{articleTitle}</CarouselTitle>
                   </CarouselVideoTitleBox>
-                  <img src={`https://img.youtube.com/vi/${getVideoId(videoUrl)}/mqdefault.jpg`} alt={`thumbnail-${videoUrlId}`} />
+                  <img
+                    src={`https://img.youtube.com/vi/${getVideoId(articleContent)}/mqdefault.jpg`}
+                    alt={`thumbnail-${articleId}`}
+                    className="thumbnail"
+                  />
                 </CarouselVideoItems>
               )
             })

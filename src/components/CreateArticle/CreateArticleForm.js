@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import sectionLineIcon from '../../assets/ci_line-m.png';
 import Board from "../Board/Board";
-import { queryClient } from "../../Main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createArticle, findUsers } from "../../utils/api";
 import React, { useState } from "react";

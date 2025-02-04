@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -20,14 +19,7 @@ const Dots = styled.div`
 `;
 
 function ImagesDot({ imageUrls, currentIndex }) {
-  const [imagesLength, setImagesLength] = useState(null);
 
-  useEffect(() => {
-    if (imageUrls.length === 0) return;
-
-    setImagesLength(imageUrls.length);
-
-  }, [imageUrls]);
   return (
     <Container>
       {

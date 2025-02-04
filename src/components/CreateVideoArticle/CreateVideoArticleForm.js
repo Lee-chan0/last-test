@@ -8,9 +8,14 @@ const Container = styled.div`
   width: 100%;
   height: 100vh;
   display : flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.blue.blue100};
+
+  & > strong {
+    margin-bottom : 4px;
+  }
 `;
 
 const VideoForm = styled.form`
@@ -82,7 +87,7 @@ const SubmitBtn = styled.button`
   }
 `;
 
-const titleArr = ['제목', '소제목'];
+const titleArr = ['제목'];
 
 const INITIAL_ARTICLE_CONTENT = {
   articleTitle: "",
@@ -136,6 +141,7 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
   console.log(articleContents);
   return (
     <Container>
+      <strong>Youtube링크만 넣어주세요.</strong>
       <VideoForm onSubmit={submutVideoForm}>
         <VideoLabel>
           <VideoLabelTitle>카테고리</VideoLabelTitle>
@@ -172,8 +178,8 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
               <VideoLabel key={index}>
                 <VideoLabelTitle>{item}</VideoLabelTitle>
                 <VideoInput type="text"
-                  name={(item === '제목') ? `articleTitle` : `articleSubTitle`}
-                  value={(item === '제목') ? articleContents.articleTitle : articleContents.articleSubTitle}
+                  name={`articleTitle`}
+                  value={articleContents.articleTitle}
                   onChange={onChangeValues}
                 />
               </VideoLabel>

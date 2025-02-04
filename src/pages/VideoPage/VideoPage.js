@@ -4,14 +4,14 @@ import Footer from "../../components/Footer/Footer";
 import LogoContainer from "../../components/LogoCotainer/LogoContainer";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import Nav from "../../components/Nav/Nav";
-import { getCategories, getIncludeVideoArticles, getVideoArticles } from "../../utils/api";
+import { getCategories, getVideoArticles } from "../../utils/api";
 import VideoArticleList from "../../components/VideoArticleList/VideoArticleList";
 
 
 function VideoPage() {
   const { data: videoArticles } = useQuery({
     queryKey: ['videoArticles'],
-    queryFn: getVideoArticles
+    queryFn: () => getVideoArticles(null)
   })
   const videoArticlesArr = videoArticles?.videoArticles || [];
 

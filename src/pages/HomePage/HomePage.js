@@ -8,7 +8,7 @@ import LogoContainer from '../../components/LogoCotainer/LogoContainer';
 import Nav from '../../components/Nav/Nav';
 import Footer from '../../components/Footer/Footer';
 import { useQuery } from '@tanstack/react-query';
-import { getArticles, getCategories, getTodayArticle, getTopArticles } from '../../utils/api';
+import { getCategories, getTodayArticle, getTopArticles, getVideoArticles } from '../../utils/api';
 
 export const articleTypes = [
   {
@@ -20,12 +20,7 @@ export const articleTypes = [
 ]
 
 function HomePage() {
-  const { data: entireArticle } = useQuery({
-    queryKey: ['articles'],
-    queryFn: getArticles
-  })
-  const entireArticleArr = entireArticle?.articles || [];
-
+  const videoLimit = 10;
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories
@@ -44,6 +39,12 @@ function HomePage() {
   })
   const topNewsArticlesArr = topNewsArticles?.topArticles || [];
 
+  const { data: findVideoArticles } = useQuery({
+    queryKey: ['homevideo'],
+    queryFn: () => getVideoArticles(videoLimit),
+  })
+  const homeVideoArticleArr = findVideoArticles?.videoArticles || [];
+
   return (
     <>
       <Nav />
@@ -53,7 +54,7 @@ function HomePage() {
         <TodayNewsBanner todayArticleArr={todayArticleArr} />
         <HomeNews articleType={'TOP 뉴스'} topNewsArticlesArr={topNewsArticlesArr} />
         <BrandLists />
-        <VideoBox articleType={'동영상'} />
+        <VideoBox articleType={'동영상'} homeVideoArticleArr={homeVideoArticleArr} />
       </MainContainer>
       <Footer />
     </>

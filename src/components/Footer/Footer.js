@@ -76,9 +76,9 @@ function Footer() {
         </FooterCompanyContents>
       </ListsContainer>
       <FooterIconsContainer>
-        <a href="#"><img src={shareIcon} alt="shareIcon" /></a>
-        <a href="#"><img src={twitterIcon} alt="twitterIcon" /></a>
-        <a href="#"><img src={youtubeIcon} alt="youtubeIcon" /></a>
+        <a href="/"><img src={shareIcon} alt="shareIcon" /></a>
+        <a href="/"><img src={twitterIcon} alt="twitterIcon" /></a>
+        <a href="/"><img src={youtubeIcon} alt="youtubeIcon" /></a>
       </FooterIconsContainer>
     </Container>
   )

@@ -1,9 +1,9 @@
 import {
-  SignInFormMainContainer, SignInFormVideoContainer, SignInFormLogoImage, SignInSpan,
-  SignInFormformContainer, SignInFormInputText, SignInFormButton, SignInFormLabel, SignInCenterContainer
+  SignInFormMainContainer, SignInFormLogoImage, SignInSpan,
+  SignInFormformContainer, SignInFormInputText, SignInFormButton,
+  SignInFormLabel, SignInCenterContainer
 } from './SignInFromStyle';
 import logoImage from '../../assets/Group 1.png';
-import videoFile from '../../assets/0119.mp4';
 import userImage from '../../assets/mdi_user-outline.png';
 import { useState } from 'react';
 import { queryClient } from '../../Main';
@@ -72,9 +72,6 @@ function SignInForm() {
 
   return (
     <SignInCenterContainer>
-      <SignInFormVideoContainer loop autoPlay playsInline muted>
-        <source src={videoFile} type='video/mp4' />
-      </SignInFormVideoContainer>
       <SignInFormMainContainer>
         <SignInFormformContainer onSubmit={handleSubmit}>
           <SignInFormLogoImage src={logoImage} alt='logo' />

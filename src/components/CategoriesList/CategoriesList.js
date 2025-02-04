@@ -148,7 +148,7 @@ function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
         <BannerContainer>
           {
             entireArticleArr.map((item) => {
-              const { articleId, articleTitle, articleContent, articleImageUrls, Category } = item;
+              const { articleId, articleTitle, articleContent, articleImageUrls } = item;
               return (
                 (articleId === smallestId) &&
                 <React.Fragment key={articleId}>

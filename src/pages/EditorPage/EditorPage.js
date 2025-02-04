@@ -2,7 +2,7 @@ import SideNav from "../../components/SideNav/SideNav";
 import { ArticleViewContainer, DescriptionBar, SearchContainer, SearchBar, MainContainer } from "../../components/SideNav/SideNaveStyle";
 import { WroteArticle } from "../../components/SideNav/SideNaveStyle";
 import { useQuery } from "@tanstack/react-query";
-import { getArticles, getIncludeVideoArticles } from "../../utils/api";
+import { getIncludeVideoArticles } from "../../utils/api";
 import ArticleContents from "../../components/ArticleContents/ArticleContents";
 import { useState } from "react";
 

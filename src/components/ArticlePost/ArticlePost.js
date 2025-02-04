@@ -95,7 +95,7 @@ function ArticlePost({ entireArticleArr, articlesId }) {
         <ArticleContentContainer>
           {
             article.map((item) => {
-              const { articleContent, articleId, articleImageUrls } = item;
+              const { articleContent, articleId } = item;
               return (
                 <React.Fragment key={articleId}>
                   <div>

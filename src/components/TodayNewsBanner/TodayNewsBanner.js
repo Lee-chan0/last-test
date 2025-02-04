@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import BannerTitleWrap from "../BannerTitleWrap/BannerTitleWrap";
 import { useNavigate } from "react-router-dom";
+import noImg from '../../assets/thumnailEx.jpg';
 
 const MainContainer = styled.div`
   display : flex;
@@ -37,7 +38,7 @@ const BlurContainer = styled.div`
     left : 0;
     width: 100%;
     height: 100%;
-    background-image: url(${({ $src, $activeIndex }) => $src ? $src[$activeIndex] : ""});
+    background-image: url(${({ $src, $activeIndex, $noImg }) => $src ? $src[$activeIndex] : $noImg});
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -189,15 +190,15 @@ function TodayNewsBanner({ todayArticleArr }) {
           <BannerArticleLists>
             {
               todayArticleArr.map((i, index) => {
-                const { articleId, articleTitle, articleImageUrls, articleType } = i;
+                const { articleId, articleTitle, articleImageUrls } = i;
 
                 return (
                   (activeIndex === index) &&
                   <BannerArticleItem key={articleId} onClick={() => handleClickArticle(articleId)}>
-                    <BannerImgBox $src={JSON.parse(articleImageUrls)[0]}>
+                    <BannerImgBox $src={JSON.parse(articleImageUrls)[0]} $noImg={noImg}>
                       <BannerScaleControlBox>
                         <BannerTitles>
-                          <BannerTitle>{articleTitle}123</BannerTitle>
+                          <BannerTitle>{articleTitle}</BannerTitle>
                         </BannerTitles>
                       </BannerScaleControlBox>
                     </BannerImgBox>

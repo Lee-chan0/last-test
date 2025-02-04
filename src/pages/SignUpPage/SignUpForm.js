@@ -1,5 +1,4 @@
-import { SignInFormVideoContainer, SignInCenterContainer } from '../SignInPage/SignInFromStyle';
-import videoFile from '../../assets/0119.mp4';
+import { SignInCenterContainer } from '../SignInPage/SignInFromStyle';
 import signUpImage from '../../assets/material-symbols_lock-outline-blue.png';
 import {
   SignUpFormLabel, SignUpFormInputText, SignUpSpan, SignUpFormButton,
@@ -45,9 +44,6 @@ function SignUpForm() {
 
   return (
     <SignInCenterContainer>
-      <SignInFormVideoContainer loop autoPlay playsInline muted>
-        <source src={videoFile} type='video/mp4' />
-      </SignInFormVideoContainer>
       <SignUpFormMainContainer>
         <h1>
           <img src={signUpImage} alt='sign-up' width={'36px'} height={'36px'} />

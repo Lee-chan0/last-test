@@ -15,9 +15,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import EntireArticlePage from "./pages/EntireArticlePage/EntireArticlePage";
 import VideoEditorPage from "./pages/VideoEditorPage/VideoEditorPage";
 import VideoPage from "./pages/VideoPage/VideoPage";
-import VideoArticlePage from "./pages/VideoArticlePage/VideoArticlePage";
 
-export const queryClient = new QueryClient;
+export const queryClient = new QueryClient();
 
 function Main() {
   const StandardByColor = {
@@ -45,7 +44,6 @@ function Main() {
               <Route path="/" element={<HomePage />} />
               <Route path="news-list">
                 <Route path="video/video-articles" element={<VideoPage />} />
-                <Route path="video/video-articles/:videoArticleId" element={<VideoArticlePage />} />
                 <Route path="category/:categoriesId" element={<NewsListPage />} />
                 <Route path="article/:articleId" element={<ArticlePage />} />
                 <Route path="articles/entireArticle" element={<EntireArticlePage />} />

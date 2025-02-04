@@ -1,6 +1,9 @@
 import styled, { css } from "styled-components";
 import eyeIcon from '../../assets/eye-line.png';
 import { useEffect, useState } from "react";
+import { getVideoId } from "../VideoNews/VideoBox";
+import noImg from '../../assets/thumnailEx.jpg';
+import { useNavigate } from "react-router-dom";
 
 const boxShadow = css`
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
@@ -79,6 +82,9 @@ const SideContentsBox = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
 
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   & > * {
     display : -webkit-box;
     -webkit-line-clamp: 1;
@@ -103,13 +109,111 @@ const SideItemContent = styled.span`
   font-size : 13px;
 `;
 
+const SideVideoItem = styled.li`
+  width: 100%;
+  height: 100px;
+  background-color: ${({ theme }) => theme.gray.gray100};
+  display : flex;
+  padding : 8px;
+  margin-bottom : 8px;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  will-change: box-shadow, transform;
+  transition : box-shadow 0.5s, transform 0.5s;
+
+  &:hover {
+    box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.5);
+    transform : scale(1.01);
+  }
+
+  position: relative;
+`;
+
+const SideVideoImgBox = styled.div`
+  background-image: url(${({ $src, $noImg }) => $src ? $src : $noImg});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex : 1 0 100%;
+  border-radius: 4px;
+`;
+
+const SideVideoContentBox = styled.div`
+  opacity:  ${({ $isHover, $videoIndex, $index }) =>
+    (($isHover && $index === $videoIndex) ? 1 : 0)};
+  transform:  ${({ $isHover, $videoIndex, $index }) =>
+    (($isHover && $index === $videoIndex) ? 'translateX(0)' : 'translateX(-10px)')};
+  position: absolute;
+  width: 200px;
+  background-color: ${({ theme }) => theme.blue.blue500};
+  left: -105%;
+  padding: 4px;
+  border-radius: 4px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: ${({ $isHover, $videoIndex, $index }) =>
+    (($isHover && $index === $videoIndex) ? 'auto' : 'none')};
+
+
+  &::after {
+    content: '';
+    position: absolute;
+    right : 9px;
+    top: 70%;
+    width: 0;
+    height: 0;
+    border: 12px solid transparent;
+    border-left-color: ${({ theme }) => theme.blue.blue500};
+    border-right: 0;
+    border-bottom: 0;
+    margin-top: -10px;
+    margin-right: -20px;
+  }
+`;
+
+const SideVideoTitleContainer = styled.div`
+  height: 100%;
+  background-color: ${({ theme }) => theme.blue.blue100};
+  display : flex;
+  align-items: center;
+  padding : 0 4px;
+  border-radius: 2px;
+`;
+
+const SideVideoTitle = styled.h2`
+  width: 100%;
+  word-wrap: break-word;
+  font-size : 15px;
+  height: 100%;
+  color : ${({ theme }) => theme.blue.blue700};
+`;
+
 function SideSticky({ entireArticleArr, isVideo }) {
   const [viewArticles, setViewArticles] = useState([]);
+  const [isHover, setIsHover] = useState(false);
+  const [videoIndex, setVideoIndex] = useState(null);
+  const navigate = useNavigate();
+
+  const handleClickArticle = (id, url) => {
+    if (id) return navigate(`/news-list/article/${id}`);
+
+    if (isVideo) return window.open(url);
+  }
 
   const plainText = (html) => {
     if (!html) return "";
     const doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || "";
+  }
+
+  const handleMouseEnter = (idx) => {
+    setIsHover(true);
+    setVideoIndex(idx);
+  }
+
+  const handleMouseLeave = () => {
+    setIsHover(false);
+    setVideoIndex(null);
   }
 
   useEffect(() => {
@@ -125,6 +229,21 @@ function SideSticky({ entireArticleArr, isVideo }) {
     })
   }, [entireArticleArr]);
 
+  useEffect(() => {
+    if (!isVideo) return;
+
+    const viewVideo = JSON.parse(localStorage.getItem("video-articles")) || [];
+
+    if (entireArticleArr?.length === 0 || viewVideo?.length === 0) return;
+
+    setViewArticles(() => {
+      const filterArray = entireArticleArr?.filter((item) => {
+        return viewVideo.includes(item.articleId);
+      })
+      return filterArray;
+    })
+  }, [entireArticleArr, isVideo]);
+
   return (
     <Container>
       <SideLists>
@@ -133,16 +252,38 @@ function SideSticky({ entireArticleArr, isVideo }) {
           {!isVideo ? `최근 본 기사` : `최근 본 동영상`}
         </SideTitle>
         {
-          viewArticles?.map((item) => {
+          viewArticles?.map((item, index) => {
             const { articleId, articleTitle, articleContent, articleImageUrls } = item;
             return (
-              <SideItem key={articleId}>
-                <SideImgBox $src={JSON.parse(articleImageUrls)[0]} />
-                <SideContentsBox>
-                  <SideItemTitle>{articleTitle}</SideItemTitle>
-                  <SideItemContent>{plainText(articleContent)}</SideItemContent>
-                </SideContentsBox>
-              </SideItem>
+              (!isVideo) ?
+                (
+                  <SideItem key={articleId} onClick={() => handleClickArticle(articleId)}>
+                    <SideImgBox $src={JSON.parse(articleImageUrls)[0]} />
+                    <SideContentsBox>
+                      <SideItemTitle>{articleTitle}</SideItemTitle>
+                      <SideItemContent>{plainText(articleContent)}</SideItemContent>
+                    </SideContentsBox>
+                  </SideItem>
+                )
+                :
+                (
+                  <SideVideoItem
+                    key={articleId}
+                    onMouseEnter={() => handleMouseEnter(index)}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => handleClickArticle(null, articleContent)}
+                  >
+                    <SideVideoImgBox
+                      $noImg={noImg}
+                      $src={`https://img.youtube.com/vi/${getVideoId(articleContent)}/sddefault.jpg`}
+                    />
+                    <SideVideoContentBox $isHover={isHover} $videoIndex={videoIndex} $index={index}>
+                      <SideVideoTitleContainer>
+                        <SideVideoTitle>{articleTitle}</SideVideoTitle>
+                      </SideVideoTitleContainer>
+                    </SideVideoContentBox>
+                  </SideVideoItem>
+                )
             )
           })
         }

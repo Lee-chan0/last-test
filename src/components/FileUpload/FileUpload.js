@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import addImageIcon from '../../assets/ri_image-add-fill.png';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import React from "react";
 
 const FileMainContainer = styled.div`
