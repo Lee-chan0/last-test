@@ -116,7 +116,7 @@ const VideoTitle = styled.span`
 `;
 
 const VideoSearchInput = styled(SearchInput)`
-  border : 1px solid rgba(79, 120, 242, 0.5);
+  border : 2px solid rgba(81, 135, 244, 0.5);
   height: 100%;
   padding : 8px 12px;
   position : absolute;

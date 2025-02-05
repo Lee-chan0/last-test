@@ -77,8 +77,8 @@ function Footer() {
       </ListsContainer>
       <FooterIconsContainer>
         <a href="/"><img src={shareIcon} alt="shareIcon" /></a>
-        <a href="/"><img src={twitterIcon} alt="twitterIcon" /></a>
-        <a href="/"><img src={youtubeIcon} alt="youtubeIcon" /></a>
+        <a href="https://x.com/?lang=ko" target="_blank" rel="noopener noreferrer"><img src={twitterIcon} alt="twitterIcon" /></a>
+        <a href="https://www.youtube.com/@MrsGREENAPPLE_Official" target="_blank" rel="noopener noreferrer"><img src={youtubeIcon} alt="youtubeIcon" /></a>
       </FooterIconsContainer>
     </Container>
   )
