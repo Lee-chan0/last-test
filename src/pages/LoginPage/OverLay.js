@@ -13,11 +13,13 @@ const OverLayContainer = styled.div`
   height: 100%;
 `;
 
-function OverLay({ slideState, onClick, btnState }) {
+function OverLay({ slideState, setSlideState, onClick, btnState, setBtnState }) {
   return (
     <MainContainer>
       <OverLayContainer>
-        <LoginForm slideState={slideState} onClick={onClick} btnState={btnState} />
+        <LoginForm
+          slideState={slideState} onClick={onClick} btnState={btnState} setSlideState={setSlideState} setBtnState={setBtnState}
+        />
       </OverLayContainer>
     </MainContainer>
   )

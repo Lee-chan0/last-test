@@ -128,8 +128,13 @@ const LoginInput = styled.input`
   border : 1px solid ${({ theme }) => theme.blue.blue500};
   border-radius: 3px;
   height: 30px;
+  font-size: 0.7rem;
 
   padding : 0 8px;
+
+  &::placeholder{
+    font-size : 0.7rem;
+  }
 `;
 
 const LoginBtn = styled.button`
@@ -162,19 +167,21 @@ const LoginLink = styled.a`
   }
 `;
 
-const signUpArr = ['ID', 'PASSWORD', 'NAME_POSITION'];
+const signUpArr = ['ID', 'PASSWORD', 'NAME_POSITION', 'CMS_CODE'];
 const signInArr = ['ID', 'PASSWORD'];
 const INITIAL_LOGINVALUES = {
   loginId: "",
   password: "",
   userNamePosition: "",
+  signUpCode: "",
 }
 
-function LoginForm({ slideState, onClick, btnState }) {
+function LoginForm({ slideState, onClick, btnState, setBtnState, setSlideState }) {
   const [focusValues, setfocusValues] = useState({
     loginId: false,
     password: false,
     userNamePosition: false,
+    signUpCode: false,
   });
   const [loginValues, setLoginValues] = useState(INITIAL_LOGINVALUES);
   const placeHolderRef = useRef([]);
@@ -198,8 +205,13 @@ function LoginForm({ slideState, onClick, btnState }) {
 
   const createUserSubmit = (e) => {
     e.preventDefault();
-    createUserMutation.mutate(loginValues);
-    setLoginValues(INITIAL_LOGINVALUES);
+    createUserMutation.mutate(loginValues, {
+      onSuccess: () => {
+        setLoginValues(INITIAL_LOGINVALUES);
+        setBtnState((prev) => !prev);
+        setSlideState((prev) => !prev);
+      }
+    });
   }
 
   const loginSubmit = (e) => {
@@ -208,10 +220,10 @@ function LoginForm({ slideState, onClick, btnState }) {
       onSuccess: (data) => {
         const { token } = data;
         localStorage.setItem('token', `Bearer ${token}`);
+        setLoginValues(INITIAL_LOGINVALUES);
         navigate('/truescope-administrator/editor-page', { replace: true });
       }
     });
-    setLoginValues(INITIAL_LOGINVALUES);
   }
 
   return (
@@ -243,18 +255,31 @@ function LoginForm({ slideState, onClick, btnState }) {
                     $offsetWidthArray={placeHolderRef.current}
                     $loginValues={loginValues}
                     $focusValues={focusValues}
-                    $name={item === 'ID' ? 'loginId' :
-                      item === 'PASSWORD' ? 'password' :
-                        'userNamePosition'}
-                  >
+                    $name={
+                      item === 'ID' ? 'loginId' :
+                        item === 'PASSWORD' ? 'password' :
+                          item === 'NAME_POSITION' ? 'userNamePosition' : 'signUpCode'
+                    }>
                     {item}
                   </PlaceHorderContainer>
                   <LoginInput
+                    value={loginValues[
+                      item === 'ID' ? 'loginId' :
+                        item === 'PASSWORD' ? 'password' :
+                          item === 'NAME_POSITION' ? 'userNamePosition' : 'signUpCode'
+                    ]}
                     type={(item === 'PASSWORD' ? "password" : "text")}
                     name={
                       item === 'ID' ? 'loginId' :
                         item === 'PASSWORD' ? 'password' :
-                          'userNamePosition'
+                          item === 'NAME_POSITION' ? 'userNamePosition' : 'signUpCode'
+                    }
+                    placeholder={
+                      (item === 'NAME_POSITION' && focusValues.userNamePosition && !loginValues.userNamePosition)
+                        ?
+                        "ex) 홍길동 기자"
+                        :
+                        undefined
                     }
                     onChange={changeValue}
                     onFocus={(e) => focusBlurInput(e, true)}
@@ -283,6 +308,9 @@ function LoginForm({ slideState, onClick, btnState }) {
                     {item}
                   </PlaceHorderContainer>
                   <LoginInput
+                    value={loginValues[
+                      item === 'ID' ? "text" : "password"
+                    ]}
                     type={(item === 'ID' ? "text" : "password")}
                     name={item === 'ID' ? "loginId" : "password"}
                     onChange={changeValue}

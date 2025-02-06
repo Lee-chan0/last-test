@@ -32,9 +32,11 @@ function LoginPage() {
   return (
     <LoginMainContainer>
       <OverLay
-        slideState={slideState}
         onClick={clickSlide}
+        slideState={slideState}
+        setSlideState={setSlideState}
         btnState={btnState}
+        setBtnState={setBtnState}
       />
     </LoginMainContainer>
   )
