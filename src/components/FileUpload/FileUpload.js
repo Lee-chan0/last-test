@@ -65,7 +65,7 @@ const FilePreviewBox = styled.div`
   }
 `;
 
-function FileUpload({ fileList, setFileList }) {
+function FileUpload({ fileList, setFileList, isUpdate, articleInfo }) {
 
   const handleChangeFile = (e, index) => {
     const file = e.target.files[0];
@@ -85,6 +85,15 @@ function FileUpload({ fileList, setFileList }) {
       fileList.forEach((item) => URL.revokeObjectURL(item.preview));
     }
   }, [fileList]);
+
+  useEffect(() => {
+    if (!isUpdate) return;
+
+    if (articleInfo.articleImageUrls) {
+      const files = JSON.parse(articleInfo.articleImageUrls);
+      files.forEach((item) => setFileList((prev) => [...prev, { file: null, preview: item }]));
+    }
+  }, [isUpdate, setFileList, articleInfo]);
 
   return (
     <FileMainContainer>

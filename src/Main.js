@@ -14,6 +14,8 @@ import EntireArticlePage from "./pages/EntireArticlePage/EntireArticlePage";
 import VideoEditorPage from "./pages/VideoEditorPage/VideoEditorPage";
 import VideoPage from "./pages/VideoPage/VideoPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import { ToastContainer } from "react-toastify";
+import UpdateArticlePage from "./pages/UpdateArticlePage/UpdateArticlePage";
 
 export const queryClient = new QueryClient();
 
@@ -37,6 +39,12 @@ function Main() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={StandardByColor}>
         <App>
+          <ToastContainer
+            closeButton={false}
+            autoClose={3000}
+            hideProgressBar={true}
+            pauseOnHover={false}
+          />
           <GlobalStyled />
           <BrowserRouter>
             <Routes>
@@ -52,6 +60,7 @@ function Main() {
                 <Route path="editor-page" element={<EditorPage />} />
                 <Route path="video-editor" element={<VideoEditorPage />} />
                 <Route path="create-article" element={<CreateArticlePage />} />
+                <Route path="update-article" element={<UpdateArticlePage />} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

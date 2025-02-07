@@ -1,11 +1,16 @@
 import styled from "styled-components";
 import sectionLineIcon from '../../assets/ci_line-m.png';
 import Board from "../Board/Board";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { createArticle, findUsers } from "../../utils/api";
-import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createArticle } from "../../utils/api";
+import React, { useEffect, useMemo, useState } from "react";
 import FileUpload from "../FileUpload/FileUpload";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useFindUser } from "../../hooks/User/useFindUser";
+import { useCreateArticle } from "../../hooks/Article/useCreateArticle";
+import { useFindArticle } from "../../hooks/Article/useFindArticle";
+import { useUpdateArticle } from "../../hooks/Article/useUpdateArticle";
 
 
 const CreateForm = styled.form`
@@ -95,27 +100,26 @@ const INITIAL_ARTICLE_CONTENT = {
   articleSubTitle: "",
   articleContent: "",
   articleType: "",
-  userNamePosition: "",
   categoryName: "",
 }
 
-function CreateArticleForm() {
+function CreateArticleForm({ isUpdate }) {
   const [articleValues, setArticleValues] = useState(INITIAL_ARTICLE_CONTENT);
   const [fileList, setFileList] = useState([]);
+  const [articleIdState, setArticleIdState] = useState(null);
+
+  const createArticleMutation = useCreateArticle();
+  const updateArticleMutation = useUpdateArticle(articleIdState);
+  const { data: userInformation } = useFindUser();
+  const { data: findArticle } = useFindArticle(articleIdState);
+
+  const [articleParam] = useSearchParams();
   const navigate = useNavigate();
-  const createArticleMutation = useMutation({
-    mutationFn: (articleInfo) => createArticle(articleInfo),
-    onSuccess: () => {
-      setArticleValues(INITIAL_ARTICLE_CONTENT);
-    },
-    onError: (error) => {
-      alert(error.response?.data.message);
-    }
-  })
-  const { data: usersInfo } = useQuery({
-    queryKey: ['users'],
-    queryFn: findUsers
-  });
+
+  const myInfo = userInformation?.userInfo || {};
+  const articleInfo = useMemo(() => {
+    return findArticle?.article || {};
+  }, [findArticle])
 
   const handleChangeVideo = (articleType) => {
 
@@ -141,24 +145,67 @@ function CreateArticleForm() {
   }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
+    if (!isUpdate) {
+      e.preventDefault();
+      const formData = new FormData();
 
-    fileList.forEach((item) => {
-      formData.append("files", item.file);
-    });
+      fileList.forEach((item) => {
+        if (item.file) {
+          formData.append("files", item.file);
+        }
+      });
 
-    Object.keys(articleValues).forEach((key) => {
-      formData.append(key, articleValues[key]);
-    });
+      Object.keys(articleValues).forEach((key) => {
+        formData.append(key, articleValues[key]);
+      });
 
-    createArticleMutation.mutate(formData, {
-      onSuccess: () => {
-        alert('등록이 완료되었습니다.');
-        navigate('/truescope-administrator/editor-page', { replace: true });
-      }
-    });
+      createArticleMutation.mutate(formData, {
+        onSuccess: () => {
+          setArticleValues(INITIAL_ARTICLE_CONTENT);
+          navigate('/truescope-administrator/editor-page', { replace: true });
+        }
+      });
+    } else if (isUpdate) {
+      e.preventDefault();
+      const formData = new FormData();
+
+      Object.keys(articleValues).forEach((key) => {
+        formData.append(key, articleValues[key]);
+      });
+
+
+      updateArticleMutation.mutate(formData, {
+        onSuccess: () => {
+          setArticleValues(INITIAL_ARTICLE_CONTENT);
+          navigate('/truescope-administrator/editor-page', { replace: true });
+        },
+        onError: (e) => {
+          console.log(e);
+        }
+      })
+    }
   }
+
+  useEffect(() => {
+    if (!isUpdate) return;
+    const query = articleParam.get("article");
+    setArticleIdState(query);
+
+  }, [isUpdate, articleParam]);
+
+  useEffect(() => {
+    if (!isUpdate) return;
+
+    setArticleValues({
+      articleTitle: articleInfo.articleTitle || '',
+      articleSubTitle: articleInfo.articleSubTitle || '',
+      articleContent: articleInfo.articleContent || '',
+      articleType: articleInfo.articleType || '',
+      categoryName: articleInfo.Category?.categoryName || '',
+    })
+  }, [articleInfo, isUpdate]);
+
+
 
   return (
     <>
@@ -174,11 +221,17 @@ function CreateArticleForm() {
                   <>
                     <TypeTextBox>
                       <TypeText>일반</TypeText>
-                      <CreateRadioInput type='radio' name="articleType" value={'일반'} onChange={handleChangeValue} />
+                      <CreateRadioInput
+                        type='radio' name="articleType" value={'일반'} onChange={handleChangeValue}
+                        checked={(isUpdate && articleInfo.articleType === '일반')}
+                      />
                     </TypeTextBox>
                     <TypeTextBox>
                       <TypeText>TOP</TypeText>
-                      <CreateRadioInput type='radio' name="articleType" value={'TOP'} onChange={handleChangeValue} />
+                      <CreateRadioInput
+                        type='radio' name="articleType" value={'TOP'} onChange={handleChangeValue}
+                        checked={(isUpdate && articleInfo.articleType === 'TOP')}
+                      />
                     </TypeTextBox>
                     <TypeTextBox>
                       <TypeText $articleType="동영상" onClick={() => handleChangeVideo('동영상')}>동영상</TypeText>
@@ -190,56 +243,64 @@ function CreateArticleForm() {
                   <>
                     <TypeTextBox>
                       <TypeText>정치</TypeText>
-                      <CreateRadioInput type='radio' name="categoryName" value={'정치'} onChange={handleChangeValue} />
+                      <CreateRadioInput
+                        type='radio' name="categoryName" value={'정치'} onChange={handleChangeValue}
+                        checked={(isUpdate &&
+                          articleInfo.Category?.categoryName === '정치')}
+                      />
                     </TypeTextBox>
                     <TypeTextBox>
                       <TypeText>사회</TypeText>
-                      <CreateRadioInput type='radio' name="categoryName" value={'사회'} onChange={handleChangeValue} />
+                      <CreateRadioInput
+                        type='radio' name="categoryName" value={'사회'} onChange={handleChangeValue}
+                        checked={(isUpdate &&
+                          articleInfo.Category?.categoryName === '사회')}
+                      />
                     </TypeTextBox>
                     <TypeTextBox>
                       <TypeText>국제</TypeText>
-                      <CreateRadioInput type='radio' name="categoryName" value={'국제'} onChange={handleChangeValue} />
+                      <CreateRadioInput
+                        type='radio' name="categoryName" value={'국제'} onChange={handleChangeValue}
+                        checked={(isUpdate &&
+                          articleInfo.Category?.categoryName === '국제')}
+                      />
                     </TypeTextBox>
                   </>
                 }
                 {
                   (labelText === '이름') &&
                   <>
-                    <select name="userNamePosition" onChange={handleChangeValue}>
-                      {usersInfo?.users.map((item) => {
-                        const { userId, userNamePosition } = item;
-                        return (
-                          <option
-                            key={userId}
-                            value={userNamePosition}
-                          >
-                            {userNamePosition}
-                          </option>
-                        )
-                      })}
-                    </select>
+                    <span style=
+                      {{ fontSize: '14px', color: "blue", cursor: "text" }}
+                    >
+                      {myInfo?.userNamePosition}
+                    </span>
                   </>
                 }
                 {
                   (labelText === '제목') &&
                   <>
-                    <CreateInput name="articleTitle" value={articleValues.articleTitle} onChange={handleChangeValue} />
+                    <CreateInput name="articleTitle"
+                      value={articleValues.articleTitle}
+                      onChange={handleChangeValue} />
                   </>
                 }
                 {
                   (labelText === '소제목') &&
                   <>
-                    <CreateInput name="articleSubTitle" value={articleValues.articleSubTitle} onChange={handleChangeValue} />
+                    <CreateInput name="articleSubTitle"
+                      value={articleValues.articleSubTitle}
+                      onChange={handleChangeValue} />
                   </>
                 }
               </CreateLabel>
             )
           })
         }
-        <Board articleValues={articleValues} setArticleValues={setArticleValues} />
-        <FileUpload fileList={fileList} setFileList={setFileList} />
+        <Board articleValues={articleValues} setArticleValues={setArticleValues} isUpdate={isUpdate} />
+        <FileUpload fileList={fileList} setFileList={setFileList} isUpdate={isUpdate} articleInfo={articleInfo} />
         <ButtonBox>
-          <CreateArticleSubmitButton type='submit'>업로드</CreateArticleSubmitButton>
+          <CreateArticleSubmitButton type='submit'>{!isUpdate ? '업로드' : '수정'}</CreateArticleSubmitButton>
         </ButtonBox>
       </CreateForm >
     </>

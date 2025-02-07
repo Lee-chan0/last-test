@@ -2,22 +2,22 @@ import { NavigationSideBarContainer, SideNavMainContainer, AddButton } from './S
 import logoImage from '../../assets/Group 1.png';
 import pencilImage from '../../assets/mdi_pencil-outline.png';
 import DropDown from '../DropDown/DropDown';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function SideNav({ articlesArr, setFilterArticles }) {
+  const navigate = useNavigate();
 
   const clickLogo = () => {
+    navigate('/truescope-administrator/editor-page');
     window.location.reload();
   }
 
   return (
     <NavigationSideBarContainer>
       <SideNavMainContainer>
-        <Link to='/truescope-administrator/editor-page'>
-          <img src={logoImage} alt="logo" width={'100%'} onClick={clickLogo} />
-        </Link>
+        <img src={logoImage} alt="logo" width={'100%'} style={{ cursor: "pointer" }} onClick={clickLogo} />
         <DropDown articlesArr={articlesArr} setFilterArticles={setFilterArticles} />
       </SideNavMainContainer>
       <AddButton as='a' href='create-article'>

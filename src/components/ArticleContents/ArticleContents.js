@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
+import { Link, useNavigate } from "react-router-dom";
 
 const ArticleContentMainContainer = styled.div`
   width: 100%;
@@ -34,8 +35,12 @@ const ArticleItem = styled.div`
   }
 
   &.article-title {
-    color : ${({ theme }) => theme.blue.blue700};
     font-weight: bold;
+
+    a {
+      text-decoration: none;
+      color : ${({ theme }) => theme.blue.blue700};
+    }
   }
 
   &.user-name-position {
@@ -57,6 +62,12 @@ function changeCreatedAt(createdAt) {
 }
 
 function ArticleContents({ articlesArr, filterArticles }) {
+  const navigate = useNavigate();
+
+  const clickArticleTitle = (id) => {
+    navigate(`/truescope-administrator/update-article?article=${id}`);
+  }
+
   return (
     <ArticleContentMainContainer>
       <ArticleLists
@@ -88,7 +99,11 @@ function ArticleContents({ articlesArr, filterArticles }) {
                   />
                 </ArticleItem>
                 <ArticleItem className="article-number">{articleId}</ArticleItem>
-                <ArticleItem className="article-title">{articleTitle}</ArticleItem>
+                <ArticleItem className="article-title">
+                  <span style={{ color: "blue", cursor: "pointer" }} onClick={() => clickArticleTitle(articleId)}>
+                    {articleTitle}
+                  </span>
+                </ArticleItem>
                 <ArticleItem className="category">{categoryName}</ArticleItem>
                 <ArticleItem className="user-name-position">{userNamePosition}</ArticleItem>
                 <ArticleItem className="date">{changeCreatedAt(createdAt)}</ArticleItem>
@@ -109,7 +124,11 @@ function ArticleContents({ articlesArr, filterArticles }) {
                   />
                 </ArticleItem>
                 <ArticleItem className="article-number">{articleId}</ArticleItem>
-                <ArticleItem className="article-title">{articleTitle}</ArticleItem>
+                <ArticleItem className="article-title">
+                  <span style={{ color: "blue", cursor: "pointer" }} onClick={() => clickArticleTitle(articleId)}>
+                    {articleTitle}
+                  </span>
+                </ArticleItem>
                 <ArticleItem className="category">{categoryName}</ArticleItem>
                 <ArticleItem className="user-name-position">{userNamePosition}</ArticleItem>
                 <ArticleItem className="date">{changeCreatedAt(createdAt)}</ArticleItem>

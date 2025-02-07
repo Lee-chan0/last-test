@@ -1,144 +1,129 @@
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import BannerTitleWrap from "../BannerTitleWrap/BannerTitleWrap";
-import { useNavigate } from "react-router-dom";
+import styled, { css } from "styled-components";
 import noImg from '../../assets/thumnailEx.jpg';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MainContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  margin-bottom: 40px;
+  position: relative;
+`;
+
+const TodayNewsDescriptionBox = styled.div`
+  width: 100%;
   display : flex;
-  margin-bottom : 40px;
-  flex-direction: column;
-
-  gap : 24px;
-
-  width: 100%;
-  height: 560px;
-
-  background-color: ${({ theme }) => theme.blue.blue100};
-  padding : 24px;
-  border-radius: 4px;
-  
-  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  justify-content: center;
 `;
 
-const Container = styled.div`
-  width: 100%;
-  height: 100%;
+const TodayNewsDescription = styled.span`
+  position : absolute;
+  left : -2px;
+  top : -4px;
+  z-index: 2;
+
+
+  font-weight: bold;
+  color : ${({ theme }) => theme.gray.gray0};
+
+  border-radius: 2px;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.5);
+  padding : 8px 16px;
+
+  background-color: ${({ theme }) => theme.blue.blue500};
 `;
 
-const BlurContainer = styled.div`
+const BannerContainer = styled.div`
   width: 100%;
-  height: 100%;
-  position : relative;
+  height: 360px;
+  display: flex;
+  gap: 8px;
+`;
 
-  &::before {
-    content : "";
-    position : absolute;
-    top : 0;
-    left : 0;
-    width: 100%;
-    height: 100%;
-    background-image: url(${({ $src, $activeIndex, $noImg }) => $src ? $src[$activeIndex] : $noImg});
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+const BannerContainerItem = styled.div`
+  flex : 1 1 0;
+  transition: flex-grow 0.5s ease, opacity 0.5s ease;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
 
-    filter : blur(10px);
-    z-index: 0;
+  display : flex;
+  justify-content: center;
+
+  &:hover {
+    flex-grow: 4;
   }
 `;
 
-const BannerArticleLists = styled.ul`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  overflow: hidden;
+const BannerMainImage = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    ${({ $focusIndex, $index }) => ($focusIndex !== $index) && `filter: brightness(70%) contrast(120%);`};
 `;
 
-const BannerImgBox = styled.div`
-  width: 100%;
-  height: 80%;
-  background-image: url(${({ $src }) => $src ? $src : ""});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  transition : transform 0.5s;
-
-
-`;
-
-const BannerArticleItem = styled.li`
-  flex : 0 0 100%;
+const BannerTextBox = styled.div`
+  width : 80%;
   height: 100%;
-  overflow: hidden;
-  position : relative;
+  position: absolute;
+  bottom : 0;
 
   display : flex;
   justify-content: center;
   align-items: center;
-
-  will-change: transform;
-
-  transition : transform 0.7s;
-
-  &:hover {
-    cursor: pointer;
-    transform: scale(1.02);
-  }
 `;
 
-const BannerScaleControlBox = styled.div`
-  width: 100%;
+const BannerDescriptionBox = styled.div`
+  height: 100%;
+
   display : flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: end;
+  gap : 16px;
 `;
 
-
-const BannerTitles = styled.div`
-  width: 90%;
-
-  position : absolute;
-  bottom : 16px;
-  
-  display: flex;
-  justify-content: center;
-
-  background-image : linear-gradient(to left, rgba(51,118,253, 0.1) 0%, rgba(51,118,253, 0.8) 100%);
-  background-size: cover;
-  background-position: center;
-
-  border-radius: 8px;
-
-  cursor: pointer;
-
-  color : #fff;
-`;
-
-const BannerTitle = styled.h1`
-  font-size : 28px;
-
-  text-align: center;
-
-  width: 80%;
-
-  display: -webkit-box;
+const textStyle = css`
+  display : -webkit-box;
   -webkit-line-clamp: 2;
-  -webkit-box-orient : vertical;
+  -webkit-box-orient: vertical;
 
   overflow: hidden;
   text-overflow: ellipsis;
 
-  margin : 16px 8px;
+  margin : 8px 16px;
+`;
 
-  line-height: 1.3;
+const BannerHelper = styled.div`
+  background-image: linear-gradient(to right, rgba(51, 118, 253, 0.9)0%, rgba(0, 0, 0, 0)100%);
+  border-radius: 4px;
+  margin-bottom : 8px;
+`;
+
+const BannerTitle = styled.h2`
+  font-size : 20px;
+  color : ${({ theme }) => theme.gray.gray100};
+  ${textStyle};
+`;
+
+
+const BannerSubTitle = styled.span`
+  color : ${({ theme }) => theme.gray.gray400};
+  font-size : 14px;
+  ${textStyle};
+`;
+
+const BannerCategoryTitle = styled(BannerTitle)`
+  color : #fff;
+  opacity: 0.6;
+  font-weight: bold;
+  font-size : 18px;
 `;
 
 
 
 function TodayNewsBanner({ todayArticleArr }) {
-  const [blurImg, setBlurImg] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [indexControl, setIndexControl] = useState(false);
+  const [focusIndex, setFocusIndex] = useState(null);
   const navigate = useNavigate();
 
   const handleClickArticle = (id) => {
@@ -157,67 +142,52 @@ function TodayNewsBanner({ todayArticleArr }) {
     navigate(`news-list/article/${id}`);
   }
 
-  useEffect(() => {
-    if (todayArticleArr.length === 0) return;
-
-    const blurBannerImg = todayArticleArr.map((item) => {
-      const { articleImageUrls } = item;
-      const blurUrl = JSON.parse(articleImageUrls)[0];
-      return blurUrl;
-    });
-    setBlurImg(blurBannerImg);
-
-  }, [todayArticleArr]);
-
-  useEffect(() => {
-    if (indexControl) return;
-
-    const count = setInterval(() => {
-      if (activeIndex < todayArticleArr.length - 1) {
-        setActiveIndex((prev) => prev + 1);
-      } else if (activeIndex === todayArticleArr.length - 1) {
-        setActiveIndex(0);
-      }
-    }, 3000);
-
-    return () => clearInterval(count);
-  }, [indexControl, todayArticleArr, activeIndex]);
-
   return (
     <MainContainer>
-      <Container>
-        <BlurContainer $src={blurImg} $activeIndex={activeIndex}>
-          <BannerArticleLists>
-            {
-              todayArticleArr.map((i, index) => {
-                const { articleId, articleTitle, articleImageUrls } = i;
-
-                return (
-                  (activeIndex === index) &&
-                  <BannerArticleItem key={articleId} onClick={() => handleClickArticle(articleId)}>
-                    <BannerImgBox $src={JSON.parse(articleImageUrls)[0]} $noImg={noImg}>
-                      <BannerScaleControlBox>
-                        <BannerTitles>
-                          <BannerTitle>{articleTitle}</BannerTitle>
-                        </BannerTitles>
-                      </BannerScaleControlBox>
-                    </BannerImgBox>
-                  </BannerArticleItem>
-                )
-              })
-            }
-          </BannerArticleLists>
-        </BlurContainer>
-      </Container>
-      <BannerTitleWrap
-        setActiveIndex={setActiveIndex}
-        setIndexControl={setIndexControl}
-        activeIndex={activeIndex}
-        todayArticleArr={todayArticleArr}
-        onClick={handleClickArticle}
-      />
+      <TodayNewsDescriptionBox>
+        <TodayNewsDescription>최신 뉴스</TodayNewsDescription>
+      </TodayNewsDescriptionBox>
+      <BannerContainer>
+        {todayArticleArr.map((item, index) => {
+          const { articleId, articleImageUrls,
+            articleTitle, articleSubTitle, Category } = item;
+          const { categoryName } = Category;
+          const imageUrl = articleImageUrls ? JSON.parse(articleImageUrls)[0] : noImg;
+          return (
+            <BannerContainerItem
+              key={articleId}
+              onMouseEnter={() => setFocusIndex(index)}
+              onMouseLeave={() => setFocusIndex(null)}
+              onClick={() => handleClickArticle(articleId)}
+              $focusIndex={focusIndex}
+              $index={index}
+            >
+              <BannerMainImage
+                src={imageUrl}
+                alt="main-image"
+                $index={index}
+                $focusIndex={focusIndex} />
+              <BannerTextBox>
+                {
+                  (index === focusIndex) ?
+                    <BannerDescriptionBox>
+                      <BannerHelper>
+                        <BannerTitle>{articleTitle}</BannerTitle>
+                        <BannerSubTitle>{articleSubTitle}</BannerSubTitle>
+                      </BannerHelper>
+                    </BannerDescriptionBox>
+                    :
+                    <>
+                      <BannerCategoryTitle>{categoryName}</BannerCategoryTitle>
+                    </>
+                }
+              </BannerTextBox>
+            </BannerContainerItem>
+          );
+        })}
+      </BannerContainer>
     </MainContainer>
-  )
+  );
 }
 
 export default TodayNewsBanner;

@@ -1,14 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { signupFunc } from '../../utils/api';
+import { updateArticle } from "../../utils/api"
 import { toast } from "react-toastify";
 
-export const useCreateUser = () => {
+
+
+export const useUpdateArticle = (articleId) => {
   const queryClient = useQueryClient();
 
-  const createUserMutation = useMutation({
-    mutationFn: signupFunc,
+  const updateArticleMutation = useMutation({
+    mutationFn: (formData) => updateArticle(formData, articleId),
     onSuccess: () => {
-      toast("회원가입이 완료되었습니다.", {
+      queryClient.invalidateQueries(['article', articleId]);
+      queryClient.invalidateQueries(['articles']);
+
+      toast('수정이 완료되었습니다.', {
         style: {
           minHeight: "32px",
           color: "#fff",
@@ -19,12 +24,10 @@ export const useCreateUser = () => {
           margin: "0",
         }
       });
-      queryClient.invalidateQueries(["users"]);
     },
     onError: (e) => {
-      alert(e.response.data.message);
+      console.error(e);
     }
   })
-
-  return createUserMutation;
+  return updateArticleMutation;
 }

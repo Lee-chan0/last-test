@@ -17,23 +17,6 @@ const GlobalStyled = createGlobalStyle`
     scroll-behavior: smooth;
   }
 
-  .ql-toolbar.ql-snow {
-    background-color: ${({ theme }) => theme.blue.blue500};
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    color: white;
-  }
-
-  .ql-toolbar.ql-snow button {
-    background-color: white;
-    border-radius: 9999px;
-  }
-
-  .ql-editor {
-    background-color: ${({ theme }) => theme.gray.gray100};
-    color: #333;
-  }
-
   ul , ol {
     list-style: none;
 

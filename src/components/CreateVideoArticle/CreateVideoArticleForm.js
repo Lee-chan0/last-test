@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { createArticle } from "../../utils/api";
 
@@ -102,12 +102,10 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
   const [articleContents, setArticleContents] = useState(INITIAL_ARTICLE_CONTENT);
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
-  const navigate = useNavigate();
   const videoMutation = useMutation({
     mutationFn: (articleContents) => createArticle(articleContents),
     onSuccess: () => {
       setArticleContents(INITIAL_ARTICLE_CONTENT);
-      window.close();
     }
   })
 
@@ -131,9 +129,8 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
     });
     videoMutation.mutate(articleContents, {
       onSuccess: () => {
-        alert("등록이 완료되었습니다.");
+        alert("동영상등록이 완료되었습니다.");
         window.close();
-        navigate('/truescope-administrator/editor-page', { replace: true });
       }
     });
   }

@@ -27,6 +27,15 @@ export async function findUsers() {
   return response.data;
 }
 
+export async function findUser() {
+  const response = await axios.get(`${BASE_URL}/user`, {
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`
+    }
+  });
+  return response.data;
+}
+
 // categories
 export async function getCategories() {
   const response = await axios.get(`${BASE_URL}/categories`);
@@ -72,6 +81,16 @@ export async function createArticle(formData) {
     }
   })
   return response.data;
+}
+
+export async function updateArticle(formData, articleId) {
+  const respoonse = await axios.patch(`${BASE_URL}/article/${articleId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `${localStorage.getItem('token')}`
+    }
+  });
+  return respoonse.data;
 }
 
 export async function getTodayArticle(limit = 5) {
