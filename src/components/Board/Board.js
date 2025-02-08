@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-
-
 
 function Board({ articleValues, setArticleValues, isUpdate }) {
 
   const handleContentChange = (content) => {
-    console.log(content);
     setArticleValues((prev) => ({
       ...prev,
       articleContent: content
@@ -18,7 +14,7 @@ function Board({ articleValues, setArticleValues, isUpdate }) {
     <ReactQuill
       value={articleValues.articleContent}
       onChange={handleContentChange}
-      style={{ height: '400px', marginBottom: '50px' }}
+      style={{ height: '500px', marginBottom: '40px' }}
       modules={modules}
       formats={formats}
     />

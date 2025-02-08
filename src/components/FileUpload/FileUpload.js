@@ -1,83 +1,102 @@
 import styled from "styled-components";
 import addImageIcon from '../../assets/ri_image-add-fill.png';
-import { useEffect } from "react";
-import React from "react";
+import React, { useEffect } from "react";
 
-const FileMainContainer = styled.div`
+const FileLibraryContainer = styled.div`
   width: 100%;
-  height: 100%;
-  padding : 0 24px;
+  height: 300px;
+  border : 2px solid rgb(51, 118, 253);
   display: flex;
-  gap : 8px;
-  flex-wrap: wrap;
-`;
-
-
-const FileInput = styled.input`
-  display : none;
-`;
-
-const FileUpdateBox = styled.div`
-  width: 139px;
-  height: 120px;
-  display : flex;
   flex-direction: column;
   gap : 4px;
+  padding : 4px;
+  border-radius: 2px;
 `;
 
+const FileLibrayStyleBox = styled.div`
+  border : 1px solid ${({ theme }) => theme.blue.blue500};
+  height: 50%;
+  padding : 8px;
+  gap : 8px;
+  display : grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: auto;
 
-const FileSelectBtn = styled.label`
-  width: 100%;
-  background-color: ${({ theme }) => theme.blue.blue500};
-  cursor: pointer;
-  color : #fff;
-  font-size : 14px;
-  font-weight: bold;
-  text-align: center;
-  padding : 4px 4px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.blue.blue700};
-  }
+  border-radius: 2px;
 `;
 
-const FilePreviewBox = styled.div`
+const NoEditorImageBox = styled.div`
+  flex : 0 0 15%;
+  display : flex;
+  align-items: center;
+`;
+
+const NoEditorLabel = styled.label`
   width: 100%;
   height: 100%;
-  border-radius: 4px;
-  background-color: ${({ theme }) => theme.gray.gray400};
   display : flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+  span {
+    height: 20%;
+    display: block;
+    white-space: nowrap;
+    text-align: center;
+    background-color: ${({ theme }) => theme.blue.blue500};
+    padding : 4px 16px;
+    border-radius: 3px;
+    font-size : 13px;
+    font-weight: bold;
+    color : ${({ theme }) => theme.gray.gray0};
+    transition: background-color 0.3s;
 
-  & > .add-image {
-    width: 24px;
-    height: 24px;
-    opacity: 0.5;
+    margin-top : 4px;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.blue.blue700};
+    }
   }
 `;
 
-function FileUpload({ fileList, setFileList, isUpdate, articleInfo }) {
+const NoEditorImageContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background-color: ${({ theme }) => theme.gray.gray400};
+`;
 
-  const handleChangeFile = (e, index) => {
+const NoEditorImage = styled.div`
+  background-image: url(${({ $src, $noImg }) => $src ? $src : $noImg});
+  background-repeat: no-repeat;
+  background-size: ${({ $src }) => $src ? `cover` : `24px`};
+  background-position: center;
+  width: 100%;
+  height: 100%;
+  opacity: ${({ $src }) => $src ? `1` : `0.5`};
+`;
+
+const NoEditorImageInput = styled.input`
+  display: none;
+`;
+
+function FileUpload({ fileList, setFileList,
+  isUpdate, articleInfo, prevFileLength, setPrevFileLength }) {
+
+  const uploadFile = (e, index) => {
     const file = e.target.files[0];
-    if (!file) return;
-
     const preview = URL.createObjectURL(file);
+
     if (index === undefined) {
-      setFileList((prev) => [...prev, { file, preview }]);
+      setFileList((prev) => [...prev, { file: file, preview: preview, isNew: true }]);
     } else {
-      setFileList((prev) => prev.map((item, i) => index === i ? { file, preview } : item));
+      setFileList((prev) => {
+        const updateArr = [...prev].map((item, i) => {
+          return i === index ? { file: file, preview: preview, isNew: true } : item;
+        })
+        return updateArr;
+      })
     }
-    e.target.value = "";
   }
 
   useEffect(() => {
@@ -87,40 +106,61 @@ function FileUpload({ fileList, setFileList, isUpdate, articleInfo }) {
   }, [fileList]);
 
   useEffect(() => {
+    if (!isUpdate || !articleInfo) return;
+
+    try {
+      JSON.parse(articleInfo.articleImageUrls).forEach((item) => {
+        setFileList((prev) => [...prev, { file: null, preview: item, isNew: false }])
+      })
+    } catch (e) {
+      return;
+    }
+
+  }, [isUpdate, articleInfo, setFileList])
+
+  useEffect(() => {
     if (!isUpdate) return;
 
-    if (articleInfo.articleImageUrls) {
-      const files = JSON.parse(articleInfo.articleImageUrls);
-      files.forEach((item) => setFileList((prev) => [...prev, { file: null, preview: item }]));
+    try {
+      setPrevFileLength(JSON.parse(articleInfo.articleImageUrls).length);
+    } catch (e) {
+      return;
     }
-  }, [isUpdate, setFileList, articleInfo]);
+
+  }, [isUpdate, setPrevFileLength, articleInfo.articleImageUrls]);
 
   return (
-    <FileMainContainer>
-      {
-        fileList.map((item, index) => {
-          const { preview } = item;
-          return (
-            <React.Fragment key={index}>
-              <FileInput type="file" id={`file-${index}`} onChange={(e) => handleChangeFile(e, index)} />
-              <FileUpdateBox>
-                <FileSelectBtn htmlFor={`file-${index}`}>파일 선택</FileSelectBtn>
-                <FilePreviewBox>
-                  <img src={preview} alt="add-image" />
-                </FilePreviewBox>
-              </FileUpdateBox>
-            </React.Fragment>
-          )
-        })
-      }
-      <FileInput type="file" id={`file-upload`} onChange={handleChangeFile} />
-      <FileUpdateBox>
-        <FileSelectBtn htmlFor={`file-upload`}>파일 선택</FileSelectBtn>
-        <FilePreviewBox>
-          <img src={addImageIcon} alt="add-image" className="add-image" />
-        </FilePreviewBox>
-      </FileUpdateBox>
-    </FileMainContainer>
+    <FileLibraryContainer>
+      <FileLibrayStyleBox></FileLibrayStyleBox>
+      <FileLibrayStyleBox>
+        {
+          (fileList.length !== 0) &&
+          fileList.map((item, index) => {
+            const { preview } = item;
+            return (
+              <NoEditorImageBox key={index}>
+                <NoEditorImageInput type="file" id={`file_${index}`} onChange={(e) => uploadFile(e, index)} />
+                <NoEditorLabel htmlFor={`file_${index}`}>
+                  <NoEditorImageContainer>
+                    <NoEditorImage $src={preview} $noImg={addImageIcon} />
+                  </NoEditorImageContainer>
+                  <span>파일 선택</span>
+                </NoEditorLabel>
+              </NoEditorImageBox>
+            )
+          })
+        }
+        <NoEditorImageBox>
+          <NoEditorImageInput type="file" id={`file-${fileList.length}`} onChange={(e) => uploadFile(e)} />
+          <NoEditorLabel htmlFor={`file-${fileList.length}`}>
+            <NoEditorImageContainer>
+              <NoEditorImage $noImg={addImageIcon} />
+            </NoEditorImageContainer>
+            <span>파일 선택</span>
+          </NoEditorLabel>
+        </NoEditorImageBox>
+      </FileLibrayStyleBox>
+    </FileLibraryContainer>
   )
 }
 

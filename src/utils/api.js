@@ -93,6 +93,15 @@ export async function updateArticle(formData, articleId) {
   return respoonse.data;
 }
 
+export async function deleteArticle(articleId) {
+  const response = await axios.delete(`${BASE_URL}/article/${articleId}`, {
+    headers: {
+      'Authorization': `${localStorage.getItem("token")}`
+    }
+  })
+  return response.data;
+}
+
 export async function getTodayArticle(limit = 5) {
   const response = await axios.get(`${BASE_URL}/articles/today?limit=${limit}`);
   return response.data;

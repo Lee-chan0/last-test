@@ -1,5 +1,4 @@
 import HomeNews from '../HomeNews/HomeNews';
-import { videoUrls } from '../../mock';
 
 
 export const getVideoId = (url) => {

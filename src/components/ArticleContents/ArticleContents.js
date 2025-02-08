@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ArticleContentMainContainer = styled.div`
   width: 100%;

@@ -1,16 +1,14 @@
 import styled from "styled-components";
 import sectionLineIcon from '../../assets/ci_line-m.png';
 import Board from "../Board/Board";
-import { useMutation } from "@tanstack/react-query";
-import { createArticle } from "../../utils/api";
 import React, { useEffect, useMemo, useState } from "react";
 import FileUpload from "../FileUpload/FileUpload";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useFindUser } from "../../hooks/User/useFindUser";
 import { useCreateArticle } from "../../hooks/Article/useCreateArticle";
 import { useFindArticle } from "../../hooks/Article/useFindArticle";
 import { useUpdateArticle } from "../../hooks/Article/useUpdateArticle";
+import { useDeleteArticle } from "../../hooks/Article/useDeleteArticle";
 
 
 const CreateForm = styled.form`
@@ -107,9 +105,11 @@ function CreateArticleForm({ isUpdate }) {
   const [articleValues, setArticleValues] = useState(INITIAL_ARTICLE_CONTENT);
   const [fileList, setFileList] = useState([]);
   const [articleIdState, setArticleIdState] = useState(null);
+  const [prevFileLength, setPrevFileLength] = useState(null);
 
   const createArticleMutation = useCreateArticle();
   const updateArticleMutation = useUpdateArticle(articleIdState);
+  const deleteArticleMutation = useDeleteArticle();
   const { data: userInformation } = useFindUser();
   const { data: findArticle } = useFindArticle(articleIdState);
 
@@ -145,6 +145,7 @@ function CreateArticleForm({ isUpdate }) {
   }
 
   const handleSubmit = (e) => {
+
     if (!isUpdate) {
       e.preventDefault();
       const formData = new FormData();
@@ -169,10 +170,20 @@ function CreateArticleForm({ isUpdate }) {
       e.preventDefault();
       const formData = new FormData();
 
+      fileList.forEach((item, idx) => {
+        if (item.isNew) {
+          if (idx < prevFileLength) {
+            formData.append("updateFiles", item.file);
+            formData.append("changeIndex", idx);
+          } else {
+            formData.append("updateFiles", item.file);
+          }
+        }
+      })
+
       Object.keys(articleValues).forEach((key) => {
         formData.append(key, articleValues[key]);
       });
-
 
       updateArticleMutation.mutate(formData, {
         onSuccess: () => {
@@ -184,6 +195,11 @@ function CreateArticleForm({ isUpdate }) {
         }
       })
     }
+  }
+
+  const handleDelete = () => {
+    deleteArticleMutation.mutate(articleIdState);
+    navigate('/truescope-administrator/editor-page', { replace: true });
   }
 
   useEffect(() => {
@@ -298,9 +314,22 @@ function CreateArticleForm({ isUpdate }) {
           })
         }
         <Board articleValues={articleValues} setArticleValues={setArticleValues} isUpdate={isUpdate} />
-        <FileUpload fileList={fileList} setFileList={setFileList} isUpdate={isUpdate} articleInfo={articleInfo} />
+        <FileUpload
+          fileList={fileList} setFileList={setFileList}
+          isUpdate={isUpdate}
+          articleInfo={articleInfo}
+          prevFileLength={prevFileLength}
+          setPrevFileLength={setPrevFileLength}
+        />
         <ButtonBox>
           <CreateArticleSubmitButton type='submit'>{!isUpdate ? '업로드' : '수정'}</CreateArticleSubmitButton>
+          {isUpdate &&
+            <CreateArticleSubmitButton
+              type='button'
+              onClick={handleDelete}
+              style={{ marginLeft: "8px" }}
+            >삭제</CreateArticleSubmitButton>
+          }
         </ButtonBox>
       </CreateForm >
     </>
