@@ -4,23 +4,24 @@ import React, { useEffect } from "react";
 
 const FileLibraryContainer = styled.div`
   width: 100%;
-  height: 300px;
   border : 2px solid rgb(51, 118, 253);
   display: flex;
   flex-direction: column;
   gap : 4px;
   padding : 4px;
   border-radius: 2px;
+
+  position : relative;
 `;
 
 const FileLibrayStyleBox = styled.div`
   border : 1px solid ${({ theme }) => theme.blue.blue500};
-  height: 50%;
+  height: 100%;
   padding : 8px;
   gap : 8px;
   display : grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: auto;
+  grid-auto-rows: 140px;
 
   border-radius: 2px;
 `;
@@ -80,8 +81,27 @@ const NoEditorImageInput = styled.input`
   display: none;
 `;
 
+const NoEditorImageDescription = styled.span`
+  display : flex;
+  width: 100px;
+  font-size: 13px;
+  justify-content: center;
+  font-weight: bold;
+  color : #fff;
+  align-items: center;
+  padding : 8px 16px;
+  background-color: ${({ theme }) => theme.blue.blue500};
+  border-radius: 2px;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.5);
+
+  position : absolute;
+  pointer-events: none;
+  top : -10px;
+  left: -10px;
+`;
+
 function FileUpload({ fileList, setFileList,
-  isUpdate, articleInfo, prevFileLength, setPrevFileLength }) {
+  isUpdate, articleInfo, setPrevFileLength }) {
 
   const uploadFile = (e, index) => {
     const file = e.target.files[0];
@@ -131,7 +151,7 @@ function FileUpload({ fileList, setFileList,
 
   return (
     <FileLibraryContainer>
-      <FileLibrayStyleBox></FileLibrayStyleBox>
+      <NoEditorImageDescription>추가 이미지</NoEditorImageDescription>
       <FileLibrayStyleBox>
         {
           (fileList.length !== 0) &&

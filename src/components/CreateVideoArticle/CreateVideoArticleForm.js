@@ -1,8 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { createArticle } from "../../utils/api";
+import { useFindArticle } from "../../hooks/Article/useFindArticle";
+import { useUpdateArticle } from "../../hooks/Article/useUpdateArticle";
+import { useDeleteArticle } from "../../hooks/Article/useDeleteArticle";
 
 const Container = styled.div`
   width: 100%;
@@ -98,44 +101,79 @@ const INITIAL_ARTICLE_CONTENT = {
   categoryName: "",
 }
 
-function CreateVideoArticleForm({ categoriesArr, usersArr }) {
+function CreateVideoArticleForm({ categoriesArr, userArr }) {
   const [articleContents, setArticleContents] = useState(INITIAL_ARTICLE_CONTENT);
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
+  const update = searchParams.get("update") || "";
+  const articleId = searchParams.get("articleId") || "";
+  const { data: articleInfo } = useFindArticle(articleId);
   const videoMutation = useMutation({
     mutationFn: (articleContents) => createArticle(articleContents),
     onSuccess: () => {
       setArticleContents(INITIAL_ARTICLE_CONTENT);
     }
   })
+  const updateArticleMutation = useUpdateArticle(articleId);
+  const deleteArticleMutation = useDeleteArticle();
+
+  const Updatearticle = useMemo(() => {
+    return articleInfo?.article || [];
+  }, [articleInfo])
 
   const onChangeValues = (e) => {
     const domName = e.target.name;
     const domValue = e.target.value;
 
-    setArticleContents((prev) => ({
-      ...prev,
-      articleType: query,
-      [domName]: domValue
-    }))
+    if (userArr.userNamePosition) {
+      setArticleContents((prev) => ({
+        ...prev,
+        articleType: query,
+        userNamePosition: userArr.userNamePosition,
+        [domName]: domValue
+      }))
+    }
   }
 
   const submutVideoForm = (e) => {
     e.preventDefault();
     const formData = new FormData();
 
-    Object.keys(articleContents).forEach((key) => {
-      formData.append(key, articleContents[key]);
-    });
-    videoMutation.mutate(articleContents, {
-      onSuccess: () => {
-        alert("동영상등록이 완료되었습니다.");
-        window.close();
-      }
-    });
+    if (!update) {
+      Object.keys(articleContents).forEach((key) => {
+        formData.append(key, articleContents[key]);
+      });
+      videoMutation.mutate(articleContents, {
+        onSuccess: () => {
+          alert("동영상등록이 완료되었습니다.");
+          window.close();
+        }
+      });
+    } else if (update) {
+      Object.keys(articleContents).forEach((key) => {
+        formData.append(key, articleContents[key]);
+      });
+      updateArticleMutation.mutate(formData, articleId);
+    }
   }
 
-  console.log(articleContents);
+  const clickDeleteBtn = () => {
+    deleteArticleMutation.mutate(articleId);
+  }
+
+  useEffect(() => {
+    if (!update) return;
+
+    setArticleContents({
+      articleTitle: Updatearticle.articleTitle || "",
+      articleSubTitle: Updatearticle.articleSubTitle || "",
+      articleContent: Updatearticle.articleContent || "",
+      articleType: Updatearticle.articleType || "",
+      userNamePosition: userArr.userNamePosition || "",
+      categoryName: Updatearticle?.Category?.categoryName || ""
+    })
+  }, [Updatearticle, update, userArr.userNamePosition])
+
   return (
     <Container>
       <strong>Youtube링크만 넣어주세요.</strong>
@@ -148,7 +186,11 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
                 const { categoryName, categoryId } = item;
                 return (
                   <RadioTitleContainer key={categoryId}>
-                    <VideoRadioInput type="radio" name="categoryName" value={`${categoryName}`} onChange={onChangeValues} />
+                    <VideoRadioInput type="radio" name="categoryName"
+                      value={`${categoryName}`}
+                      onChange={onChangeValues}
+                      checked={(update && articleContents.categoryName === `${categoryName}`)}
+                    />
                     <VideoRadioTItle>{categoryName}</VideoRadioTItle>
                   </RadioTitleContainer>
                 )
@@ -158,16 +200,7 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
         </VideoLabel>
         <VideoLabel>
           <VideoLabelTitle>이름</VideoLabelTitle>
-          <select name="userNamePosition" className="user-names" onChange={onChangeValues}>
-            {
-              usersArr.map((item) => {
-                const { userId, userNamePosition } = item;
-                return (
-                  <option key={userId} value={`${userNamePosition}`}>{userNamePosition}</option>
-                )
-              })
-            }
-          </select>
+          <div className="user-names" >{userArr?.userNamePosition}</div>
         </VideoLabel>
         {
           titleArr.map((item, index) => {
@@ -185,9 +218,12 @@ function CreateVideoArticleForm({ categoriesArr, usersArr }) {
         }
         <VideoLabel className="url-input">
           <VideoLabelTitle>URL </VideoLabelTitle>
-          <VideoInput type="url" required name="articleContent" value={articleContents.articleContent} onChange={onChangeValues} />
+          <VideoInput type="url" required name="articleContent"
+            value={articleContents.articleContent}
+            onChange={onChangeValues} />
         </VideoLabel>
-        <SubmitBtn type='submit'>등록</SubmitBtn>
+        <SubmitBtn type='submit'>{update === 'true' ? '수정' : '등록'}</SubmitBtn>
+        {update && <SubmitBtn type='button' onClick={clickDeleteBtn}>삭제</SubmitBtn>}
       </VideoForm>
     </Container>
   )

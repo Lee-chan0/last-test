@@ -130,7 +130,9 @@ function VideoArticleList({ videoArticlesArr }) {
   const navigate = useNavigate();
   const [searchedArticles, setSearchedArticles] = useState([]);
   const [lastSearchText, setLastSearchText] = useState("");
+  const [recentVideo, setRecentVideo] = useState(false);
   const word = searchText.get("searchword") || "";
+  console.log(recentVideo);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -155,6 +157,7 @@ function VideoArticleList({ videoArticlesArr }) {
 
       localStorage.setItem("video-articles", JSON.stringify(viewArticleArray));
     }
+    setRecentVideo((prev) => !prev);
     window.open(url);
   }
 
@@ -176,6 +179,8 @@ function VideoArticleList({ videoArticlesArr }) {
     }
 
   }, [videoArticlesArr, searchText, navigate, word]);
+
+  console.log(recentVideo);
 
   return (
     <MainContainer>
@@ -227,7 +232,7 @@ function VideoArticleList({ videoArticlesArr }) {
         </VideosContainer>
         <ViewMoreBox style={{ marginBottom: "40px" }}><span>View More</span></ViewMoreBox>
       </Container>
-      <SideSticky entireArticleArr={videoArticlesArr} isVideo={true} />
+      <SideSticky entireArticleArr={videoArticlesArr} isVideo={true} recentVideo={recentVideo} />
     </MainContainer>
   )
 }

@@ -43,8 +43,13 @@ export async function getCategories() {
 }
 
 // articles
+export async function getViewMoreArticles({ pageParam }) {
+  const response = await axios.get(`${BASE_URL}/articles/pageNation?pageParam=${pageParam}&limit=10`);
+  return response.data
+}
+
 export async function getVideoArticle(articleId) {
-  const response = await axios.get(`${BASE_URL}/videoArticles/${articleId}`)
+  const response = await axios.get(`${BASE_URL}/videoArticles/${articleId}`);
   return response.data;
 }
 
@@ -109,5 +114,33 @@ export async function getTodayArticle(limit = 5) {
 
 export async function getTopArticles(limit = 5) {
   const response = await axios.get(`${BASE_URL}/articles/top?limit=${limit}`);
+  return response.data;
+}
+
+export async function updateArticleStar(values) {
+  const response = await axios.patch(`${BASE_URL}/important/article`, values, {
+    headers: {
+      'Authorization': `${localStorage.getItem("token")}`
+    }
+  });
+
+  return response.data;
+}
+
+export async function getImportantArticles() {
+  const response = await axios.get(`${BASE_URL}/important/articles`, {
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`
+    }
+  });
+  return response.data;
+}
+
+export async function getMyArticles() {
+  const response = await axios.get(`${BASE_URL}/myArticles`, {
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`
+    }
+  });
   return response.data;
 }

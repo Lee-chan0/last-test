@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import CreateVideoArticleForm from "../../components/CreateVideoArticle/CreateVideoArticleForm";
-import { findUsers, getCategories } from "../../utils/api";
+import { findUser, getCategories } from "../../utils/api";
 
 
 function VideoEditorPage() {
@@ -10,15 +10,15 @@ function VideoEditorPage() {
   });
   const categoriesArr = categories?.categories || [];
 
-  const { data: users } = useQuery({
-    queryKey: ['users'],
-    queryFn: findUsers
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: findUser
   });
-  const usersArr = users?.users || [];
+  const userArr = user?.userInfo || [];
 
   return (
     <>
-      <CreateVideoArticleForm categoriesArr={categoriesArr} usersArr={usersArr} />
+      <CreateVideoArticleForm categoriesArr={categoriesArr} userArr={userArr} />
     </>
   )
 }

@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
 import { useNavigate } from "react-router-dom";
+import ImportantStar from "../ImportantStar/ImportantStar";
+import eyeIcon from '../../assets/eye-line.png';
 
 const ArticleContentMainContainer = styled.div`
   width: 100%;
@@ -64,8 +66,16 @@ function changeCreatedAt(createdAt) {
 function ArticleContents({ articlesArr, filterArticles }) {
   const navigate = useNavigate();
 
-  const clickArticleTitle = (id) => {
-    navigate(`/truescope-administrator/update-article?article=${id}`);
+  const clickArticleTitle = (id, type) => {
+    if (type === '동영상') {
+      navigate(`/truescope-administrator/video-editor?query=${encodeURIComponent(type)}&update=true&articleId=${id}`)
+    } else {
+      navigate(`/truescope-administrator/update-article?article=${id}`);
+    }
+  }
+
+  const clickConfirm = (id) => {
+    navigate(`/news-list/article/${id}`);
   }
 
   return (
@@ -77,7 +87,7 @@ function ArticleContents({ articlesArr, filterArticles }) {
           borderTop: "2px solid #3376FD"
         }}
       >
-        <ArticleItem><input type="checkbox" /></ArticleItem>
+        <ArticleItem><strong>중요</strong></ArticleItem>
         <ArticleItem><strong>번호</strong></ArticleItem>
         <ArticleItem><strong>제목</strong></ArticleItem>
         <ArticleItem><strong>카테고리</strong></ArticleItem>
@@ -88,51 +98,59 @@ function ArticleContents({ articlesArr, filterArticles }) {
       {
         (filterArticles.length === 0) ?
           articlesArr.map((item) => {
-            const { articleId, articleTitle, createdAt, User, Category } = item;
+            const { articleId, articleTitle, createdAt,
+              User, Category, isImportant, articleType } = item;
             const { userNamePosition } = User;
             const { categoryName } = Category;
             return (
               <ArticleLists key={articleId}>
                 <ArticleItem>
-                  <input
-                    type="checkbox"
-                  />
+                  <ImportantStar isImportant={isImportant} articleId={articleId} />
                 </ArticleItem>
                 <ArticleItem className="article-number">{articleId}</ArticleItem>
                 <ArticleItem className="article-title">
-                  <span style={{ color: "blue", cursor: "pointer" }} onClick={() => clickArticleTitle(articleId)}>
+                  <span style={{ color: "blue", cursor: "pointer" }} onClick={() => clickArticleTitle(articleId, articleType)}>
                     {articleTitle}
                   </span>
                 </ArticleItem>
                 <ArticleItem className="category">{categoryName}</ArticleItem>
                 <ArticleItem className="user-name-position">{userNamePosition}</ArticleItem>
                 <ArticleItem className="date">{changeCreatedAt(createdAt)}</ArticleItem>
-                <ArticleItem>0</ArticleItem>
+                <ArticleItem
+                  onClick={() => clickConfirm(articleId)}
+                  style={{ cursor: 'pointer', color: 'blue' }}
+                >
+                  <img src={eyeIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                </ArticleItem>
               </ArticleLists>
             )
           })
           :
           filterArticles.map((item) => {
-            const { articleId, articleTitle, createdAt, User, Category } = item;
+            const { articleId, articleTitle, createdAt,
+              articleType, isImportant, User, Category } = item;
             const { userNamePosition } = User;
             const { categoryName } = Category;
             return (
               <ArticleLists key={articleId}>
                 <ArticleItem>
-                  <input
-                    type="checkbox"
-                  />
+                  <ImportantStar isImportant={isImportant} articleId={articleId} />
                 </ArticleItem>
                 <ArticleItem className="article-number">{articleId}</ArticleItem>
                 <ArticleItem className="article-title">
-                  <span style={{ color: "blue", cursor: "pointer" }} onClick={() => clickArticleTitle(articleId)}>
+                  <span style={{ color: "blue", cursor: "pointer" }} onClick={() => clickArticleTitle(articleId, articleType)}>
                     {articleTitle}
                   </span>
                 </ArticleItem>
                 <ArticleItem className="category">{categoryName}</ArticleItem>
                 <ArticleItem className="user-name-position">{userNamePosition}</ArticleItem>
                 <ArticleItem className="date">{changeCreatedAt(createdAt)}</ArticleItem>
-                <ArticleItem>0</ArticleItem>
+                <ArticleItem
+                  onClick={() => clickConfirm(articleId)}
+                  style={{ cursor: 'pointer', color: 'blue' }}
+                >
+                  <img src={eyeIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                </ArticleItem>
               </ArticleLists>
             )
           })

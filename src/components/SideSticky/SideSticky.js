@@ -188,7 +188,7 @@ const SideVideoTitle = styled.h2`
   color : ${({ theme }) => theme.blue.blue700};
 `;
 
-function SideSticky({ entireArticleArr, isVideo }) {
+function SideSticky({ entireArticleArr, isVideo, recentVideo }) {
   const [viewArticles, setViewArticles] = useState([]);
   const [isHover, setIsHover] = useState(false);
   const [videoIndex, setVideoIndex] = useState(null);
@@ -242,7 +242,7 @@ function SideSticky({ entireArticleArr, isVideo }) {
       })
       return filterArray;
     })
-  }, [entireArticleArr, isVideo]);
+  }, [entireArticleArr, isVideo, recentVideo]);
 
   return (
     <Container>

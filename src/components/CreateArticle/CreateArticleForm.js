@@ -239,14 +239,14 @@ function CreateArticleForm({ isUpdate }) {
                       <TypeText>일반</TypeText>
                       <CreateRadioInput
                         type='radio' name="articleType" value={'일반'} onChange={handleChangeValue}
-                        checked={(isUpdate && articleInfo.articleType === '일반')}
+                        checked={(isUpdate && articleValues.articleType === '일반')}
                       />
                     </TypeTextBox>
                     <TypeTextBox>
                       <TypeText>TOP</TypeText>
                       <CreateRadioInput
                         type='radio' name="articleType" value={'TOP'} onChange={handleChangeValue}
-                        checked={(isUpdate && articleInfo.articleType === 'TOP')}
+                        checked={(isUpdate && articleValues.articleType === 'TOP')}
                       />
                     </TypeTextBox>
                     <TypeTextBox>
@@ -262,7 +262,7 @@ function CreateArticleForm({ isUpdate }) {
                       <CreateRadioInput
                         type='radio' name="categoryName" value={'정치'} onChange={handleChangeValue}
                         checked={(isUpdate &&
-                          articleInfo.Category?.categoryName === '정치')}
+                          articleValues.categoryName === '정치')}
                       />
                     </TypeTextBox>
                     <TypeTextBox>
@@ -270,7 +270,7 @@ function CreateArticleForm({ isUpdate }) {
                       <CreateRadioInput
                         type='radio' name="categoryName" value={'사회'} onChange={handleChangeValue}
                         checked={(isUpdate &&
-                          articleInfo.Category?.categoryName === '사회')}
+                          articleValues.categoryName === '사회')}
                       />
                     </TypeTextBox>
                     <TypeTextBox>
@@ -278,7 +278,7 @@ function CreateArticleForm({ isUpdate }) {
                       <CreateRadioInput
                         type='radio' name="categoryName" value={'국제'} onChange={handleChangeValue}
                         checked={(isUpdate &&
-                          articleInfo.Category?.categoryName === '국제')}
+                          articleValues.categoryName === '국제')}
                       />
                     </TypeTextBox>
                   </>

@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { updateArticle } from "../../utils/api"
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 
 
 export const useUpdateArticle = (articleId) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const updateArticleMutation = useMutation({
     mutationFn: (formData) => updateArticle(formData, articleId),
@@ -13,6 +15,7 @@ export const useUpdateArticle = (articleId) => {
       queryClient.invalidateQueries(['article', articleId]);
       queryClient.invalidateQueries(['articles']);
 
+      navigate('/truescope-administrator/editor-page');
       toast('수정이 완료되었습니다.', {
         style: {
           minHeight: "32px",

@@ -4,6 +4,7 @@ import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
 import entireIcon from '../../assets/icon-park_more-app.png';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MainContainer = styled.div`
   display: flex;
@@ -139,11 +140,12 @@ const EntirePageTitle = styled.h1`
   }
 `;
 
-function EntireArticles({ entireArticleArr }) {
+function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArticles }) {
   const navigate = useNavigate();
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
+  const queryClient = useQueryClient();
 
   const plainText = (html) => {
     if (!html) return;
@@ -168,7 +170,7 @@ function EntireArticles({ entireArticleArr }) {
   useEffect(() => {
     if (!query) return;
 
-    const filterArr = entireArticleArr.filter((item) =>
+    const filterArr = allArticles.filter((item) =>
       item.articleTitle.toLowerCase().includes(query.toLowerCase())
     );
 
@@ -177,8 +179,15 @@ function EntireArticles({ entireArticleArr }) {
     }
 
     setFilteredArticles(filterArr);
+    console.log(filterArr);
 
-  }, [query, entireArticleArr]);
+  }, [query, allArticles]);
+
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries(['page-articles'])
+    }
+  }, [queryClient])
 
   return (
     <MainContainer>
@@ -195,38 +204,46 @@ function EntireArticles({ entireArticleArr }) {
           <EntireLists>
             {
               (filteredArticles.length === 0) ?
-                (entireArticleArr.map((item) => {
-                  const { articleId, articleTitle, articleContent, articleImageUrls } = item;
-                  return (
-                    <EntireItem key={articleId} onClick={() => clickByArticle(articleId)}>
-                      <EntireItems>
-                        <EntireImageBox $src={JSON.parse(articleImageUrls)[0]} />
-                        <EntireTextBox>
-                          <EntireTitle>{articleTitle}</EntireTitle>
-                          <EntireContent>{plainText(articleContent)}</EntireContent>
-                        </EntireTextBox>
-                      </EntireItems>
-                    </EntireItem>
-                  )
-                }))
+                (
+                  entireArticleArr.map((item) => {
+                    const { articleId, articleTitle, articleContent, articleImageUrls } = item;
+                    return (
+                      <EntireItem key={articleId} onClick={() => clickByArticle(articleId)}>
+                        <EntireItems>
+                          <EntireImageBox $src={JSON.parse(articleImageUrls)[0]} />
+                          <EntireTextBox>
+                            <EntireTitle>{articleTitle}</EntireTitle>
+                            <EntireContent>{plainText(articleContent)}</EntireContent>
+                          </EntireTextBox>
+                        </EntireItems>
+                      </EntireItem>
+                    )
+                  })
+                )
                 :
-                (filteredArticles.map((item) => {
-                  const { articleId, articleTitle, articleContent, articleImageUrls } = item;
-                  return (
-                    <EntireItem key={articleId} onClick={() => clickByArticle(articleId)}>
-                      <EntireItems>
-                        <EntireImageBox $src={JSON.parse(articleImageUrls)[0]} />
-                        <EntireTextBox>
-                          <EntireTitle>{articleTitle}</EntireTitle>
-                          <EntireContent>{plainText(articleContent)}</EntireContent>
-                        </EntireTextBox>
-                      </EntireItems>
-                    </EntireItem>
-                  )
-                }))
+                (
+                  filteredArticles.map((item) => {
+                    const { articleId, articleTitle, articleContent, articleImageUrls } = item;
+                    return (
+                      <EntireItem key={articleId} onClick={() => clickByArticle(articleId)}>
+                        <EntireItems>
+                          <EntireImageBox $src={JSON.parse(articleImageUrls)[0]} />
+                          <EntireTextBox>
+                            <EntireTitle>{articleTitle}</EntireTitle>
+                            <EntireContent>{plainText(articleContent)}</EntireContent>
+                          </EntireTextBox>
+                        </EntireItems>
+                      </EntireItem>
+                    )
+                  })
+                )
             }
           </EntireLists>
-          <ViewMoreBox style={{ marginTop: "40px" }}><span>View More</span></ViewMoreBox>
+          <ViewMoreBox
+            $hasNextPage={hasNextPage}
+            onClick={() => fetchNextPage()} style={{ marginTop: "40px" }}>
+            <span>View More</span>
+          </ViewMoreBox>
         </EntireContainer>
       </Container>
       <SideSticky entireArticleArr={entireArticleArr} />

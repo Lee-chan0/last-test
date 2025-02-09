@@ -1,11 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { MainContainer } from "../../components/Container/ContainerStyle";
 import Footer from "../../components/Footer/Footer";
 import LogoContainer from "../../components/LogoCotainer/LogoContainer";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import Nav from "../../components/Nav/Nav";
-import { getArticles, getCategories } from "../../utils/api";
+import { getCategories, getViewMoreArticles } from "../../utils/api";
 import EntireArticles from "../../components/EntireArticles/EntireArticles";
+import { useGetAllArticles } from "../../hooks/Article/useGetAllArticles";
 
 
 
@@ -18,11 +19,18 @@ function EntireArticlePage() {
   });
   const categoryArr = categories?.categories || [];
 
-  const { data: entireArticle } = useQuery({
-    queryKey: ['articles'],
-    queryFn: getArticles
-  });
-  const entireArticleArr = entireArticle?.articles || [];
+  const { data: entireArticles, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['page-articles'],
+    queryFn: getViewMoreArticles,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.hasMore ? allPages.length : undefined;
+    }
+  })
+  const entireArticleArr = entireArticles?.pages.flatMap((page) => page.articles) || [];
+
+  const { data: getAllArticles } = useGetAllArticles();
+  const allArticles = getAllArticles?.articles || [];
 
   return (
     <>
@@ -30,7 +38,12 @@ function EntireArticlePage() {
       <MainContainer>
         <LogoContainer />
         <MenuBar categoryArr={categoryArr} />
-        <EntireArticles entireArticleArr={entireArticleArr} />
+        <EntireArticles
+          entireArticleArr={entireArticleArr}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          allArticles={allArticles}
+        />
       </MainContainer>
       <Footer />
     </>
