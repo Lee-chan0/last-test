@@ -1,6 +1,9 @@
 import styled, { css } from "styled-components";
 import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCategoryByArticles } from "../../hooks/Article/useCategoryByArticles";
 
 const Container = styled.div`
   width: 100%;
@@ -107,8 +110,11 @@ const ArticleContent = styled.span`
   margin-bottom : 8px;
 `;
 
-function CategoryByList({ categoriesId, entireArticleArr, plainText }) {
+function CategoryByList({ categoriesId, plainText }) {
   const navigate = useNavigate();
+  const { data: viewMoreArticles, hasNextPage, fetchNextPage, isFetchingNextPage } = useCategoryByArticles(categoriesId);
+  const categoryByArticles = viewMoreArticles?.pages.flatMap((item) => item.articles) || [];
+  const queryClient = useQueryClient();
 
   const handleClickArticle = (id) => {
     const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
@@ -122,15 +128,20 @@ function CategoryByList({ categoriesId, entireArticleArr, plainText }) {
 
       localStorage.setItem("articles", JSON.stringify(viewArticleArray))
     }
-
     navigate(`/news-list/article/${id}`);
   }
+
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries([`category-by-articles-${categoriesId}`])
+    }
+  }, [queryClient, categoriesId]);
 
   return (
     <Container>
       <ArticleLists>
         {
-          entireArticleArr.map((item) => {
+          categoryByArticles.map((item) => {
             const { articleId, articleImageUrls, articleContent, articleTitle, Category } = item;
             const { categoryId } = Category;
 
@@ -148,8 +159,8 @@ function CategoryByList({ categoriesId, entireArticleArr, plainText }) {
             )
           })
         }
+        <ViewMoreBox disabled={isFetchingNextPage} onClick={fetchNextPage} $hasNextPage={hasNextPage}><span>View More</span></ViewMoreBox>
       </ArticleLists>
-      <ViewMoreBox><span>View More</span></ViewMoreBox>
     </Container>
   )
 }

@@ -7,6 +7,8 @@ import { SearchInput } from "../SearchInput/SearchInputStyle";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ViewMoreBox } from '../ViewMore/ViewMoreStyle';
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetVideoArticles } from "../../hooks/Article/useGetVideoArticles";
 
 const MainContainer = styled.div`
   display : flex;
@@ -47,8 +49,8 @@ const VideosContainer = styled.div`
   height: 100%;
   display : grid;
   padding : 16px;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 150px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 200px;
   gap : 16px;
   background-color: ${({ theme }) => theme.blue.blue100};
   border-radius: 4px;
@@ -60,7 +62,7 @@ const VideosContainer = styled.div`
 
 const VideosCard = styled.div`
   width: 100%;
-  height: 150px;
+  height: 100%;
   display : flex;
   flex-direction: column;
   gap : 8px;
@@ -124,15 +126,16 @@ const VideoSearchInput = styled(SearchInput)`
 `;
 
 
-function VideoArticleList({ videoArticlesArr }) {
+function VideoArticleList({ videoArticlesArr, fetchNextPage, hasNextPage }) {
   const [searchContent, setSearchContent] = useState("");
   const [searchText] = useSearchParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: allVideos } = useGetVideoArticles();
   const [searchedArticles, setSearchedArticles] = useState([]);
   const [lastSearchText, setLastSearchText] = useState("");
   const [recentVideo, setRecentVideo] = useState(false);
   const word = searchText.get("searchword") || "";
-  console.log(recentVideo);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -164,9 +167,9 @@ function VideoArticleList({ videoArticlesArr }) {
   useEffect(() => {
     if (!word) return;
 
-    const filterArticles = videoArticlesArr.filter((article) => {
-      return article.articleTitle.toLowerCase().includes(word.toLowerCase());
-    })
+    const filterArticles = allVideos.videoArticles.filter((item) => (
+      item.articleTitle.toLowerCase().includes(word.toLowerCase())
+    ))
 
     if (filterArticles.length === 0) {
       alert(`${word}에 대한 검색결과가 없습니다.`);
@@ -178,9 +181,13 @@ function VideoArticleList({ videoArticlesArr }) {
       setLastSearchText(word);
     }
 
-  }, [videoArticlesArr, searchText, navigate, word]);
+  }, [allVideos, searchText, navigate, word]);
 
-  console.log(recentVideo);
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries(['page-video-articles'])
+    }
+  }, [queryClient]);
 
   return (
     <MainContainer>
@@ -230,9 +237,14 @@ function VideoArticleList({ videoArticlesArr }) {
               )
           }
         </VideosContainer>
-        <ViewMoreBox style={{ marginBottom: "40px" }}><span>View More</span></ViewMoreBox>
+        <ViewMoreBox
+          $hasNextPage={hasNextPage}
+          onClick={fetchNextPage}
+          style={{ marginBottom: "40px" }}>
+          <span>View More</span>
+        </ViewMoreBox>
       </Container>
-      <SideSticky entireArticleArr={videoArticlesArr} isVideo={true} recentVideo={recentVideo} />
+      <SideSticky entireArticleArr={allVideos?.videoArticles} isVideo={true} recentVideo={recentVideo} />
     </MainContainer>
   )
 }

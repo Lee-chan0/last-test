@@ -5,6 +5,8 @@ import entireIcon from '../../assets/icon-park_more-app.png';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import TopButton from '../TopButton/TopButton';
+import { toast } from "react-toastify";
 
 const MainContainer = styled.div`
   display: flex;
@@ -169,17 +171,27 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
 
   useEffect(() => {
     if (!query) return;
+    if (allArticles.length === 0) return;
 
     const filterArr = allArticles.filter((item) =>
       item.articleTitle.toLowerCase().includes(query.toLowerCase())
     );
 
     if (filterArr.length === 0) {
-      alert(`"${query}"에 대한 검색결과가 없습니다.`);
+      toast.error(`${query}에 대한 검색결과가 없습니다.`, {
+        position: 'top-center',
+        style: {
+          color: '#fff',
+          fontSize: '13px',
+          minHeight: '30px',
+          width: '100%',
+          background: 'rgba(0, 0, 0, 0.8)',
+          fontWeight: 'bold'
+        }
+      });
     }
 
     setFilteredArticles(filterArr);
-    console.log(filterArr);
 
   }, [query, allArticles]);
 
@@ -239,11 +251,12 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
                 )
             }
           </EntireLists>
-          <ViewMoreBox
+          {(filteredArticles.length === 0) && <ViewMoreBox
             $hasNextPage={hasNextPage}
             onClick={() => fetchNextPage()} style={{ marginTop: "40px" }}>
             <span>View More</span>
-          </ViewMoreBox>
+          </ViewMoreBox>}
+          <TopButton />
         </EntireContainer>
       </Container>
       <SideSticky entireArticleArr={entireArticleArr} />

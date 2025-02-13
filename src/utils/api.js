@@ -63,6 +63,16 @@ export async function getVideoArticles(limit) {
   }
 }
 
+export async function getCategoryByArticles(pageParam, id) {
+  const response = await axios.get(`${BASE_URL}/articles/category-list/${id}?pageParam=${pageParam}&limit=5`);
+  return response.data;
+}
+
+export async function getPageVideos({ pageParam }) {
+  const response = await axios.get(`${BASE_URL}/articles/page-videos?pageParam=${pageParam}&limit=9`);
+  return response.data;
+}
+
 export async function getArticles() {
   const response = await axios.get(`${BASE_URL}/articles`);
   return response.data;

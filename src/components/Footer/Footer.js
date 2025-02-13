@@ -2,6 +2,7 @@ import styled from "styled-components";
 import twitterIcon from '../../assets/simple-line-icons_social-twitter.png';
 import shareIcon from '../../assets/famicons_share-social-outline.png';
 import youtubeIcon from '../../assets/simple-line-icons_social-youtube.png';
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -62,11 +63,21 @@ function Footer() {
     <Container>
       <ListsContainer>
         <FooterCompanyDescriptionLists>
-          <FooterCompanyDescription>회사소개</FooterCompanyDescription>
-          <FooterCompanyDescription>사용자 이용약관</FooterCompanyDescription>
-          <FooterCompanyDescription>개인정보 처리방침</FooterCompanyDescription>
-          <FooterCompanyDescription>자주 묻는 질문</FooterCompanyDescription>
-          <FooterCompanyDescription>문의하기</FooterCompanyDescription>
+          <FooterCompanyDescription>
+            <Link to={'/truescope-company-introduce'} style={{ textDecoration: 'none', color: '#666666' }}>회사소개</Link>
+          </FooterCompanyDescription>
+          <FooterCompanyDescription>
+            <Link to={'/truescope-terms-of-use'} style={{ textDecoration: 'none', color: '#666666' }}>사용자 이용약관</Link>
+          </FooterCompanyDescription>
+          <FooterCompanyDescription>
+            <Link to={'/truescope-privacy-policy'} style={{ textDecoration: 'none', color: '#666666' }}>개인정보 처리방침</Link>
+          </FooterCompanyDescription>
+          <FooterCompanyDescription>
+            <Link to={'/truescope-question'} style={{ textDecoration: 'none', color: '#666666' }}>자주 묻는 질문</Link>
+          </FooterCompanyDescription>
+          <FooterCompanyDescription>
+            <Link to={'/truescope-inquiry'} style={{ textDecoration: 'none', color: '#666666' }}>문의하기</Link>
+          </FooterCompanyDescription>
         </FooterCompanyDescriptionLists>
         <FooterCompanyContents>
           <FooterCompanyContentItem>주소 | 서울특별시 중구 청계천로 10 오페라타워 10층</FooterCompanyContentItem>

@@ -18,6 +18,8 @@ const TopBtn = styled.button`
   right : 50px;
   bottom : 50px;
 
+  z-index: 5;
+  
   &:hover {
     background-color: rgba(66, 66, 66, 0.3);
   }

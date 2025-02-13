@@ -128,6 +128,7 @@ function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
     const smallest = Math.max(...findSmallestArticleId);
     setSmallestId(smallest);
   }, [entireArticleArr, categoriesId]);
+
   return (
     <MainContainer>
       <ArticleContainer>
@@ -162,7 +163,11 @@ function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
             })
           }
         </BannerContainer>
-        <CategoryByList categoriesId={categoriesId} categoryArr={categoryArr} entireArticleArr={entireArticleArr} plainText={plainText} />
+        <CategoryByList
+          categoriesId={categoriesId}
+          categoryArr={categoryArr}
+          plainText={plainText}
+        />
       </ArticleContainer>
       <SideSticky entireArticleArr={entireArticleArr} />
       <TopButton />

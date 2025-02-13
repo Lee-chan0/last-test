@@ -16,6 +16,7 @@ import VideoPage from "./pages/VideoPage/VideoPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import { ToastContainer } from "react-toastify";
 import UpdateArticlePage from "./pages/UpdateArticlePage/UpdateArticlePage";
+import IntroducePage from './pages/CompanyPage/IntroducePage/IntroducePage';
 
 export const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function Main() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="truescope-company-introduce" element={<IntroducePage />} />
               <Route path="news-list">
                 <Route path="video/video-articles" element={<VideoPage />} />
                 <Route path="category/:categoriesId" element={<NewsListPage />} />
