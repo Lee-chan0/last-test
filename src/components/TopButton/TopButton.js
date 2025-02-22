@@ -23,6 +23,11 @@ const TopBtn = styled.button`
   &:hover {
     background-color: rgba(66, 66, 66, 0.3);
   }
+
+  @media (max-width : 767px) {
+    font-size : 0.8rem;
+    padding : 4px 12px;
+  }
 `;
 
 function TopButton() {

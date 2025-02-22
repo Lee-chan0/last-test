@@ -6,6 +6,7 @@ import SideSticky from "../SideSticky/SideSticky";
 import TopButton from "../TopButton/TopButton";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../Contexts/ThemeContext";
 
 const MainContainer = styled.div`
   display: flex;
@@ -14,14 +15,23 @@ const MainContainer = styled.div`
 const ArticleContainer = styled.div`
   width: 70%;
   height: 100%;
+
+  @media (max-width : 767px) {
+    width : 100%;
+  }
 `;
 
 const CategoryBannerTitleContainer = styled.div`
   margin-bottom : 40px;
+
+  
+  @media (max-width : 767px) {
+    margin-bottom : 16px;
+  }
 `;
 
 const CategoryTitle = styled.h1`
-  color : ${({ theme }) => theme.blue.blue700};
+  color : ${({ $darkmode, theme }) => $darkmode ? `#fff` : `${theme.blue.blue700}`};
   font-size : 28px;
   display: flex;
   align-items: center;
@@ -30,6 +40,19 @@ const CategoryTitle = styled.h1`
   img {
     width: 28px;
     height: 28px;
+  }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 24px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 1rem;
+
+    img {
+      width : 20px;
+      height : 20px;
+    }
   }
 `;
 
@@ -44,6 +67,11 @@ const BannerContainer = styled.div`
   &:hover {
     cursor: pointer;
     transform: scale(1.02);
+  }
+
+  @media (max-width : 767px) {
+    height: 240px;
+    margin-bottom : 16px;
   }
 `;
 
@@ -82,20 +110,41 @@ const NewestTitles = styled.div`
     overflow: hidden;
     
     margin : 8px 16px;
+
+    @media (max-width : 767px) {
+      margin : 4px 8px;
+    }
   }
 `;
 
 const CategoryListNewestBannerTitle = styled.h2`
   font-size: 28px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 24px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 1rem;
+  }
 `;
 
 const CategoryListNewestBannerContent = styled.span`
     -webkit-line-clamp: 3;
     color : ${({ theme }) => theme.blue.blue100};
+
+    @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 14px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.7rem;
+  }
 `;
 
 function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
   const [smallestId, setSmallestId] = useState(null);
+  const { darkmode } = useTheme();
   const navigate = useNavigate();
 
   const plainText = (html) => {
@@ -138,7 +187,7 @@ function CategoriesList({ categoriesId, categoryArr, entireArticleArr }) {
             return (
               (+categoriesId === categoryId) &&
               <CategoryBannerTitleContainer key={categoryId}>
-                <CategoryTitle>
+                <CategoryTitle $darkmode={darkmode}>
                   <img src={newsArticleIcon} alt="article-icon" />
                   {categoryName}뉴스
                 </CategoryTitle>

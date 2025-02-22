@@ -29,6 +29,12 @@ const DescriptionBar = styled.div`
     font-size :24px;
     font-weight: bold;
   }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    div {
+      font-size : 20px;
+    }
+  }
 `;
 
 const SearchContainer = styled.div`
@@ -44,6 +50,10 @@ const SearchContainer = styled.div`
 
 const WroteArticle = styled.span`
   color : ${({ theme }) => theme.gray.gray600};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 14px;
+  }
 `;
 
 const SearchBar = styled(SearchInput)`
@@ -91,11 +101,22 @@ const AddButton = styled.button`
     align-items: center;
     color : #fff;
     font-weight: bold;
+
+    @media (min-width: 768px) and (max-width: 1279px) {
+      font-size : 16px;
+    }
   }
 
   img {
     width: 22px;
     height: 22px;
+
+    @media (min-width: 768px) and (max-width : 1279px) {
+      img {
+        width : 18px;
+        height: 18px;
+      }
+    }
   }
 `;
 

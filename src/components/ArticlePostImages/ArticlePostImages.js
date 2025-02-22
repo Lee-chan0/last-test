@@ -20,6 +20,10 @@ const Container = styled.div`
   position : relative;
 
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.3);
+
+  @media (max-width : 767px) {
+    height: 170px;
+  }
 `;
 
 const ImgDescription = styled.span`
@@ -35,6 +39,10 @@ const ImgDescription = styled.span`
   border-radius: 4px;
 
   box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, 0.3);
+
+  @media (max-width : 767px) {
+    font-size : 0.9rem;
+  }
 `;
 
 const ImgMainContainer = styled.div`
@@ -51,6 +59,10 @@ const ImgContainer = styled.ul`
   width: 100%;
   margin : 8px 16px;
   overflow: auto;
+
+  @media (max-width : 767px) {
+    margin : 4px 8px;
+  }
 `;
 
 const ImgBox = styled.div`
@@ -61,6 +73,10 @@ const ImgBox = styled.div`
   display: flex;
   align-items: center;
   gap : 16px;
+
+  @media (max-width : 767px) {
+    padding : 4px 8px;
+  }
 `;
 
 const Images = styled.div`
@@ -80,6 +96,9 @@ const Images = styled.div`
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 0 2px 0 black;
+  }
+
+  @media (max-width : 767px) {
   }
 `;
 
@@ -108,6 +127,11 @@ const ImageModalContainer = styled.div`
   position: relative;
 
   background-color: ${({ theme }) => theme.gray.gray0};
+
+  @media (max-width : 767px) {
+    height: 40vh;
+    padding : 24px;
+  }
 `;
 
 const ModalImageBox = styled.div`
@@ -122,6 +146,10 @@ const ModalImageBox = styled.div`
 
   display : flex;
   align-items: center;
+
+  @media (max-width : 767px) {
+    padding : 0 16px;
+  }
 `;
 
 const ModalImageHelper = styled.div`
@@ -131,6 +159,9 @@ const ModalImageHelper = styled.div`
   display : flex;
 
   overflow: hidden;
+
+  @media (max-width : 767px) {
+  }
 `;
 
 const ModalImage = styled.img`
@@ -236,7 +267,7 @@ function ArticlePostImages({ article }) {
         </ImgMainContainer>
       </Container>
 
-      {/* {모달} */}
+      {/* {모달} 밥먹고, 여기 처리하기. */}
       <ModalMainContainer $isOpen={isOpen}>
         <ImageModalContainer>
           <CloseBtn onClick={closeClickImg} />

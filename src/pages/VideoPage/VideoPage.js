@@ -6,9 +6,11 @@ import MenuBar from "../../components/MenuBar/MenuBar";
 import Nav from "../../components/Nav/Nav";
 import { getCategories, getPageVideos, getVideoArticles } from "../../utils/api";
 import VideoArticleList from "../../components/VideoArticleList/VideoArticleList";
+import { useMediaQuery } from "react-responsive";
 
 
 function VideoPage() {
+  const isMobile = useMediaQuery({ maxWidth: 767 });
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories
@@ -31,7 +33,7 @@ function VideoPage() {
       <Nav />
       <MainContainer>
         <LogoContainer />
-        <MenuBar categoryArr={categoriesArr} />
+        {!isMobile && <MenuBar categoryArr={categoriesArr} />}
         <VideoArticleList videoArticlesArr={videoArticlesArr} fetchNextPage={fetchNextPage} hasNextPage={hasNextPage} />
       </MainContainer>
       <Footer />

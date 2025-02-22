@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useCreateUser } from "../../hooks/User/useCreateUser";
 import { useLogin } from "../../hooks/User/useLogin";
 import { useNavigate } from "react-router-dom";
+import { queryClient } from "../../Main";
 
 const MainContainer = styled.div`
   width: 100%;
@@ -221,6 +222,9 @@ function LoginForm({ slideState, onClick, btnState, setBtnState, setSlideState }
         const { token } = data;
         localStorage.setItem('token', `Bearer ${token}`);
         setLoginValues(INITIAL_LOGINVALUES);
+
+        queryClient.removeQueries('islogin');
+
         navigate('/truescope-administrator/editor-page', { replace: true });
       }
     });

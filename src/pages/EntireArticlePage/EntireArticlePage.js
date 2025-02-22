@@ -7,19 +7,17 @@ import Nav from "../../components/Nav/Nav";
 import { getCategories, getViewMoreArticles } from "../../utils/api";
 import EntireArticles from "../../components/EntireArticles/EntireArticles";
 import { useGetAllArticles } from "../../hooks/Article/useGetAllArticles";
-
-
-
-
+import { useMediaQuery } from "react-responsive";
 
 function EntireArticlePage() {
+  const isMobile = useMediaQuery({ maxWidth: 767 });
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories
   });
   const categoryArr = categories?.categories || [];
 
-  const { data: entireArticles, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const { data: entireArticles, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['page-articles'],
     queryFn: getViewMoreArticles,
     initialPageParam: 0,
@@ -37,7 +35,7 @@ function EntireArticlePage() {
       <Nav />
       <MainContainer>
         <LogoContainer />
-        <MenuBar categoryArr={categoryArr} />
+        {!isMobile && <MenuBar categoryArr={categoryArr} />}
         <EntireArticles
           entireArticleArr={entireArticleArr}
           fetchNextPage={fetchNextPage}

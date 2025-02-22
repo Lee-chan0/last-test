@@ -28,12 +28,29 @@ export async function findUsers() {
 }
 
 export async function findUser() {
-  const response = await axios.get(`${BASE_URL}/user`, {
-    headers: {
-      'Authorization': `${localStorage.getItem('token')}`
-    }
-  });
-  return response.data;
+  try {
+    const response = await axios.get(`${BASE_URL}/user`, {
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (e) {
+    return { hasToken: false };
+  }
+}
+
+export async function verifyToken() {
+  try {
+    const response = await axios.get(`${BASE_URL}/verify/token`, {
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (e) {
+    return { hasToken: false };
+  }
 }
 
 // categories
@@ -43,6 +60,11 @@ export async function getCategories() {
 }
 
 // articles
+export async function getTotalArticles() {
+  const response = await axios.get(`${BASE_URL}/total/articles`);
+  return response.data;
+}
+
 export async function getViewMoreArticles({ pageParam }) {
   const response = await axios.get(`${BASE_URL}/articles/pageNation?pageParam=${pageParam}&limit=10`);
   return response.data
@@ -78,6 +100,11 @@ export async function getArticles() {
   return response.data;
 }
 
+export async function getIncludeVideoPagination({ pageParam }) {
+  const response = await axios.get(`${BASE_URL}/articles/includeVideo/pagination?page=${pageParam}&limit=10`);
+  return response.data;
+}
+
 export async function getIncludeVideoArticles() {
   const response = await axios.get(`${BASE_URL}/articles/videos`)
   return response.data;
@@ -89,32 +116,50 @@ export async function getArticle(articleId) {
 }
 
 export async function createArticle(formData) {
-  const response = await axios.post(`${BASE_URL}/article`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'Authorization': `${localStorage.getItem('token')}`
+  try {
+    const response = await axios.post(`${BASE_URL}/article`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    })
+    return response.data;
+  } catch (e) {
+    if (e.response.status === 403 || e.response.status === 401) {
+      return { hasToken: false };
     }
-  })
-  return response.data;
+  }
 }
 
 export async function updateArticle(formData, articleId) {
-  const respoonse = await axios.patch(`${BASE_URL}/article/${articleId}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'Authorization': `${localStorage.getItem('token')}`
+  try {
+    const respoonse = await axios.patch(`${BASE_URL}/article/${articleId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    });
+    return respoonse.data;
+  } catch (e) {
+    if (e.response.status === 403 || e.response.status === 401) {
+      return { hasToken: false };
     }
-  });
-  return respoonse.data;
+  }
 }
 
 export async function deleteArticle(articleId) {
-  const response = await axios.delete(`${BASE_URL}/article/${articleId}`, {
-    headers: {
-      'Authorization': `${localStorage.getItem("token")}`
+  try {
+    const response = await axios.delete(`${BASE_URL}/article/${articleId}`, {
+      headers: {
+        'Authorization': `${localStorage.getItem("token")}`
+      }
+    })
+    return response.data;
+  } catch (e) {
+    if (e.response.status === 403 || e.response.status === 401) {
+      return { hasToken: false };
     }
-  })
-  return response.data;
+  }
 }
 
 export async function getTodayArticle(limit = 5) {
@@ -128,13 +173,19 @@ export async function getTopArticles(limit = 5) {
 }
 
 export async function updateArticleStar(values) {
-  const response = await axios.patch(`${BASE_URL}/important/article`, values, {
-    headers: {
-      'Authorization': `${localStorage.getItem("token")}`
-    }
-  });
+  try {
+    const response = await axios.patch(`${BASE_URL}/important/article`, values, {
+      headers: {
+        'Authorization': `${localStorage.getItem("token")}`
+      }
+    });
 
-  return response.data;
+    return response.data;
+  } catch (e) {
+    if (e.response.status === 403 || e.response.status === 401) {
+      return { hasToken: false };
+    }
+  }
 }
 
 export async function getImportantArticles() {

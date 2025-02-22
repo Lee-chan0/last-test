@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCategoryByArticles } from "../../hooks/Article/useCategoryByArticles";
+import { useTheme } from "../../Contexts/ThemeContext";
 
 const Container = styled.div`
   width: 100%;
@@ -12,9 +13,12 @@ const Container = styled.div`
   border-radius: 4px;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
 
-  
-
   margin-bottom : 40px;
+
+  @media (max-width : 767px) {
+    padding : 8px;
+    margin-bottom : 16px;
+  }
 `;
 
 const ArticleLists = styled.ul`
@@ -30,7 +34,7 @@ const ArticleItem = styled.li`
   height: 160px;
   margin-bottom : 24px;
   border-radius: 4px;
-  background-color: ${({ theme }) => theme.gray.gray0};
+  background-color: ${({ $darkmode }) => $darkmode ? '#cccccc' : '#ffffff'};
 
   will-change: transform box-shadow background-color;
   transition: all 0.3s;
@@ -42,7 +46,17 @@ const ArticleItem = styled.li`
     cursor: pointer;
     transform : scale(1.02);
     box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.3);
-    background-color: ${({ theme }) => theme.gray.gray100};
+    background-color: ${({ $darkmode }) => $darkmode ? '#cccccc' : '#ffffff'};
+  }
+
+  @media (max-width : 767px) {
+    height: 88px;
+    margin-bottom : 8px;
+
+    &:hover {
+      transform : scale(1);
+      box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.3);
+    }
   }
 `;
 
@@ -51,11 +65,14 @@ const ArticleItems = styled.div`
   display : flex;
   justify-content: center;
   align-items: center;
-
+  gap : 16px;
   
   padding : 0 16px;
 
-  gap : 16px;
+  @media (max-width : 767px) {
+    padding : 0 8px;
+    gap : 8px;
+  }
 `;
 
 const ArticleImgBox = styled.div`
@@ -69,6 +86,10 @@ const ArticleImgBox = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+
+  @media (max-width : 767px) {
+    height: 72px;
+  }
 `;
 
 const ArticleContents = styled.div`
@@ -82,6 +103,11 @@ const ArticleContents = styled.div`
   flex-direction: column;
   justify-content: space-around;
   gap : 8px;
+
+  @media (max-width : 767px) {
+    height: 72px;
+    gap : 0;
+  }
 `;
 
 const textStyle = css`
@@ -99,6 +125,16 @@ const ArticleTitle = styled.h2`
   font-size : 22px;
   color : ${({ theme }) => theme.blue.blue700};
   margin-top : 8px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 18px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.9rem;
+    margin : 4px;
+    -webkit-line-clamp: 1;
+  }
 `;
 
 const ArticleContent = styled.span`
@@ -108,6 +144,15 @@ const ArticleContent = styled.span`
   font-size : 14px;
   color : ${({ theme }) => theme.gray.gray600};
   margin-bottom : 8px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 12px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.6rem;
+    margin : 4px;
+  }
 `;
 
 function CategoryByList({ categoriesId, plainText }) {
@@ -115,6 +160,8 @@ function CategoryByList({ categoriesId, plainText }) {
   const { data: viewMoreArticles, hasNextPage, fetchNextPage, isFetchingNextPage } = useCategoryByArticles(categoriesId);
   const categoryByArticles = viewMoreArticles?.pages.flatMap((item) => item.articles) || [];
   const queryClient = useQueryClient();
+  const { darkmode } = useTheme();
+
 
   const handleClickArticle = (id) => {
     const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
@@ -147,7 +194,7 @@ function CategoryByList({ categoriesId, plainText }) {
 
             return (
               (+categoriesId === categoryId) &&
-              <ArticleItem onClick={() => handleClickArticle(articleId)} key={articleId}>
+              <ArticleItem $darkmode={darkmode} onClick={() => handleClickArticle(articleId)} key={articleId}>
                 <ArticleItems>
                   <ArticleImgBox $src={JSON.parse(articleImageUrls)[0]} />
                   <ArticleContents>

@@ -4,8 +4,6 @@ import { getCategories } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import downIcon from '../../assets/formkit_down.png';
 import { useState } from "react";
-import { useGetImportantArticles } from "../../hooks/Article/useGetImportantArticles";
-import { useGetMyArticles } from "../../hooks/Article/useGetMyArticles";
 
 const DropDownContainer = styled.div`
   width: 100%;
@@ -21,6 +19,11 @@ const DropDownOptions = styled.button`
   padding : 0 24px;
   font-size : 18px;
   cursor: pointer;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 16px;
+    height: 40px;
+  }
 `;
 
 const DropDownOptionsLine = styled.div`
@@ -46,10 +49,22 @@ const DropDownDescriptionOption = styled.div`
 
     transform: ${({ $isActiveDown }) => $isActiveDown ? `rotate(180deg)` : `rotate(0)`};
   }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    height : 40px;
+
+    img {
+      width : 24px;
+    }
+  }
 `;
 
 const DropDownDescription = styled.span`
   font-weight: bold;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 16px;
+  }
 `;
 
 const DropDownMenus = styled.div`
@@ -71,46 +86,25 @@ const DropDownMenus = styled.div`
 
 const menusItems = ['내가 쓴 기사', '중요한 기사'];
 
-function DropDown({ articlesArr, setFilterArticles }) {
+function DropDown({ articlesArr, setFilterArticles, isUpdate, isCreate }) {
   const [isActiveDown, setIsActiveDown] = useState(false);
-  const { data: categories } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories
-  });
-  const { data: importantArticles } = useGetImportantArticles();
-  const { data: myArticles } = useGetMyArticles();
-  const navigate = useNavigate();
+  const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getCategories });
   const categoryiesArr = categories?.categories || [];
 
-  const handleClickFilter = (e) => {
+  const navigate = useNavigate();
+
+  const clickCategory = (e) => {
     const value = e.target.value;
-    if (value) {
-      const filterArticles = articlesArr.filter((item) => item.Category.categoryName === value);
-      setFilterArticles(filterArticles);
-      navigate('/truescope-administrator/editor-page', { replace: true });
-    } else {
-      setFilterArticles([]);
-    }
+    navigate(`/truescope-administrator/editor-page?category=${value}`);
   }
 
   const clickDropDown = () => {
     setIsActiveDown((prev) => !prev);
   }
 
-  const clickDropDownMenu = (e) => {
+  const clickDropDownItem = (e) => {
     const domId = e.target.id;
-    if (domId === 'importantArticles') {
-      const filterArticleArray = importantArticles?.importantArticles || [];
-      setFilterArticles(filterArticleArray);
-    } else if (domId === 'myArticles') {
-      const filterArticleArray = myArticles?.findMyArticles || [];
-      setFilterArticles(filterArticleArray);
-    } else if (domId === 'video') {
-      const filterArticleArray = articlesArr.filter((item) => item.articleType === '동영상');
-      setFilterArticles(filterArticleArray);
-    } else {
-      setFilterArticles(articlesArr);
-    }
+    navigate(`/truescope-administrator/editor-page?category=${domId}`);
   }
 
   return (
@@ -120,7 +114,7 @@ function DropDown({ articlesArr, setFilterArticles }) {
           const { categoryId, categoryName } = item;
           return (
             <DropDownOptionsLine key={categoryId}>
-              <DropDownOptions onClick={handleClickFilter} value={categoryName}>
+              <DropDownOptions value={categoryName} onClick={clickCategory}>
                 {categoryName}
               </DropDownOptions>
             </DropDownOptionsLine>
@@ -141,7 +135,7 @@ function DropDown({ articlesArr, setFilterArticles }) {
               key={idx}
               id={item === '내가 쓴 기사' ? 'myArticles' : 'importantArticles'}
               $isActiveDown={isActiveDown}
-              onClick={clickDropDownMenu}
+              onClick={clickDropDownItem}
             >
               {item}
             </DropDownMenus>
@@ -149,14 +143,15 @@ function DropDown({ articlesArr, setFilterArticles }) {
         }
         <DropDownMenus
           $isActiveDown={isActiveDown}
-          onClick={clickDropDownMenu}
+          id="entire"
+          onClick={clickDropDownItem}
         >
           전체기사
         </DropDownMenus>
         <DropDownMenus
           $isActiveDown={isActiveDown}
-          onClick={clickDropDownMenu}
           id="video"
+          onClick={clickDropDownItem}
         >
           동영상
         </DropDownMenus>

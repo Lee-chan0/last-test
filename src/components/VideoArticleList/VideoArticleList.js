@@ -9,6 +9,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ViewMoreBox } from '../ViewMore/ViewMoreStyle';
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetVideoArticles } from "../../hooks/Article/useGetVideoArticles";
+import { useTheme } from "../../Contexts/ThemeContext";
+import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
 
 const MainContainer = styled.div`
   display : flex;
@@ -31,17 +34,40 @@ const PageTitleBox = styled.div`
     color : ${({ theme }) => theme.gray.gray600};
     margin-left : 16px;
     font-weight: bold;
+
+    @media (max-width : 767px) {
+      font-size : 0.65rem;
+      margin : 0;
+    }
   }
 
   img {
     width: 32px;
     height: 32px;
+
+    @media (min-width: 768px) and (max-width: 1279px) {
+      width: 28px;
+      height: 28px;
+  }
+
+    @media (max-width : 767px) {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;
 
 const PageTitle = styled.h1`
   font-size : 28px;
-  color : ${({ theme }) => theme.blue.blue700};
+  color : ${({ $darkmode, theme }) => $darkmode ? `#fff` : `${theme.blue.blue700}`};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 24px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 1rem;
+  }
 `;
 
 const VideosContainer = styled.div`
@@ -58,6 +84,13 @@ const VideosContainer = styled.div`
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
 
   margin: 40px 0;
+
+  @media (max-width : 767px) {
+    margin : 16px 0;
+    padding : 8px;
+    grid-template-columns: 1fr;
+    gap : 8px;
+  }
 `;
 
 const VideosCard = styled.div`
@@ -79,6 +112,16 @@ const VideosCard = styled.div`
   &:hover {
     box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.5);
     transform : scale(1.02);
+  }
+
+  @media (max-width : 767px) {
+
+    border : 1px solid rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      box-shadow: none;
+      transform: scale(1);
+    }
   }
 `;
 
@@ -123,6 +166,13 @@ const VideoSearchInput = styled(SearchInput)`
   padding : 8px 12px;
   position : absolute;
   right : 0;
+
+  @media (max-width : 767px) {
+    width: 152px;
+    height: 16px;
+    background-size: 16px;
+    font-size : 0.7rem;
+  }
 `;
 
 
@@ -136,11 +186,32 @@ function VideoArticleList({ videoArticlesArr, fetchNextPage, hasNextPage }) {
   const [lastSearchText, setLastSearchText] = useState("");
   const [recentVideo, setRecentVideo] = useState(false);
   const word = searchText.get("searchword") || "";
+  const { darkmode } = useTheme();
+  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       if (searchContent.trim() === "") {
-        alert("검색어를 입력해주세요.");
+        if (!toast.isActive('hasText')) {
+          toast('검색어를 입력해주세요.', {
+            position: 'top-center',
+            toastId: 'hasText',
+            style: {
+              position: 'relative',
+              top: '12px',
+              minHeight: '24px',
+              padding: '8px 16px',
+              fontSize: '0.7rem',
+              background: `rgba(0, 0, 0, 0.8)`,
+              color: `#fff`,
+              borderRadius: `3px`,
+              width: 'fit-content',
+              whiteSpace: 'nowrap',
+              marginBottom: '8px',
+              fontWeight: 'bold'
+            }
+          });
+        }
         return;
       }
       navigate(`?searchword=${encodeURIComponent(searchContent)}`, { replace: true });
@@ -167,19 +238,41 @@ function VideoArticleList({ videoArticlesArr, fetchNextPage, hasNextPage }) {
   useEffect(() => {
     if (!word) return;
 
-    const filterArticles = allVideos.videoArticles.filter((item) => (
+    const filterArticles = allVideos?.videoArticles.filter((item) => (
       item.articleTitle.toLowerCase().includes(word.toLowerCase())
     ))
 
-    if (filterArticles.length === 0) {
-      alert(`${word}에 대한 검색결과가 없습니다.`);
-      setSearchedArticles([]);
-      setSearchContent("");
-      navigate(`/news-list/video/video-articles`, { replace: true });
-    } else {
-      setSearchedArticles(filterArticles);
-      setLastSearchText(word);
+    if (filterArticles) {
+      if (filterArticles.length === 0) {
+        if (!toast.isActive('searching')) {
+          toast(`${word}에 대한 검색결과가 없습니다.`, {
+            toastId: 'searching',
+            position: 'top-center'
+            , style: {
+              position: 'relative',
+              top: '12px',
+              minHeight: '24px',
+              padding: '8px 16px',
+              fontSize: '0.7rem',
+              background: `rgba(0, 0, 0, 0.8)`,
+              color: `#fff`,
+              borderRadius: `3px`,
+              width: 'fit-content',
+              whiteSpace: 'nowrap',
+              marginBottom: '8px',
+              fontWeight: 'bold'
+            }
+          });
+        }
+        setSearchedArticles([]);
+        setSearchContent("");
+        navigate(`/news-list/video/video-articles`, { replace: true });
+      } else {
+        setSearchedArticles(filterArticles);
+        setLastSearchText(word);
+      }
     }
+
 
   }, [allVideos, searchText, navigate, word]);
 
@@ -194,7 +287,7 @@ function VideoArticleList({ videoArticlesArr, fetchNextPage, hasNextPage }) {
       <Container>
         <PageTitleBox>
           <img src={videoIcon} alt="video-icon" />
-          <PageTitle>동영상</PageTitle>
+          <PageTitle $darkmode={darkmode}>동영상</PageTitle>
           {searchedArticles.length !== 0 &&
             <p className="searched-description">"{lastSearchText}"에 대한 검색결과</p>
           }
@@ -244,7 +337,7 @@ function VideoArticleList({ videoArticlesArr, fetchNextPage, hasNextPage }) {
           <span>View More</span>
         </ViewMoreBox>
       </Container>
-      <SideSticky entireArticleArr={allVideos?.videoArticles} isVideo={true} recentVideo={recentVideo} />
+      <SideSticky entireArticleArr={allVideos?.videoArticles} isVideo={true} recentVideo={recentVideo} isTablet={isTablet} />
     </MainContainer>
   )
 }

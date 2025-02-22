@@ -21,6 +21,35 @@ const ViewMoreBox = styled.button`
   span {
     color : ${({ theme }) => theme.gray.gray400};
   }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    height : 40px;
+
+    box-shadow : none;
+
+    border : 1px solid ${({ theme }) => theme.gray.gray400};
+
+    &:hover {
+      box-shadow : none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    height : 32px;
+
+    box-shadow : none;
+
+    border : 1px solid ${({ theme }) => theme.gray.gray400};
+    border-radius : 2px;
+
+    &:hover {
+      box-shadow : none;
+    }
+
+    span {
+      font-size : 0.6rem;
+    }
+  }
 `;
 
 export { ViewMoreBox };

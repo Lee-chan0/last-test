@@ -9,6 +9,10 @@ const Container = styled.div`
   display : flex;
   justify-content: center;
   gap : 8px;
+
+  @media (max-width : 767px) {
+    bottom : 4px;
+  }
 `;
 
 const Dots = styled.div`

@@ -9,6 +9,8 @@ import Nav from '../../components/Nav/Nav';
 import Footer from '../../components/Footer/Footer';
 import { useQuery } from '@tanstack/react-query';
 import { getCategories, getTodayArticle, getTopArticles, getVideoArticles } from '../../utils/api';
+import { useMediaQuery } from 'react-responsive';
+import MobileTopNews from '../../components/MobileTopNews/MobileTopNews';
 
 export const articleTypes = [
   {
@@ -19,7 +21,7 @@ export const articleTypes = [
   }
 ]
 
-function HomePage() {
+function HomePage({ setDarkmode, darkmode }) {
   const videoLimit = 10;
   const { data: categories } = useQuery({
     queryKey: ['categories'],
@@ -44,17 +46,23 @@ function HomePage() {
     queryFn: () => getVideoArticles(videoLimit),
   })
   const homeVideoArticleArr = findVideoArticles?.videoArticles || [];
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   return (
     <>
-      <Nav />
+      <Nav setDarkmode={setDarkmode} darkmode={darkmode} />
       <MainContainer>
         <LogoContainer />
         <MenuBar categoryArr={categoryArr} />
         <TodayNewsBanner todayArticleArr={todayArticleArr} />
-        <HomeNews articleType={'TOP 뉴스'} topNewsArticlesArr={topNewsArticlesArr} />
+        {!isMobile
+          ?
+          <HomeNews articleType={'TOP 뉴스'} topNewsArticlesArr={topNewsArticlesArr} />
+          :
+          <MobileTopNews topNewsArticlesArr={topNewsArticlesArr} />
+        }
         <BrandLists />
-        <VideoBox articleType={'동영상'} homeVideoArticleArr={homeVideoArticleArr} />
+        {!isMobile && <VideoBox articleType={'동영상'} homeVideoArticleArr={homeVideoArticleArr} />}
       </MainContainer>
       <Footer />
     </>

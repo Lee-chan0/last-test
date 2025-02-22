@@ -8,6 +8,8 @@ const GlobalStyled = createGlobalStyle`
     box-sizing: border-box;
   }
 
+
+
   html, body {
     width: 100%;
     height: 100%;
@@ -21,7 +23,7 @@ const GlobalStyled = createGlobalStyle`
     list-style: none;
 
     &::-webkit-scrollbar {
-      height: 6px;
+      height: 8px;
     }
 
     &::-webkit-scrollbar-thumb {

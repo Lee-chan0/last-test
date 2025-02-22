@@ -1,10 +1,13 @@
 import styled, { css } from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getVideoId } from "../VideoNews/VideoBox";
 import youtubeIcon from '../../assets/prime_youtube.png';
 import { Link, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import closeBtn from '../../assets/whiteClose.png';
+import { useTheme } from "../../Contexts/ThemeContext";
+import { useMediaQuery } from "react-responsive";
+import MobileTopNews from "../MobileTopNews/MobileTopNews";
 
 const borderRadius = css`
   border-top-right-radius: 4px;
@@ -19,12 +22,24 @@ export const CarouselMainContainer = styled.div`
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
   position : relative;
   margin-bottom : 40px;
+  
+  @media (max-width : 767px) {
+    display : none;
+  }
+
+  ${({ className, $isTablet }) => (className === 'video' && $isTablet) && `display : none`};
+  ${({ className, $isMobile }) => (className === 'video' && $isMobile) && `display : none`};
 `;
 
 export const CarouselTitle = styled.h1`
   color : ${({ theme }) => theme.blue.blue700};
   font-size : 20px;
   margin-left : 16px;
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    font-size : 18px;
+    margin-left : 0;
+  }
 `;
 
 const CarouselLists = styled.ul`
@@ -40,7 +55,7 @@ const CarouselLists = styled.ul`
 const CarouselItems = styled.li`
   display : flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: ${({ $darkmode }) => $darkmode ? `#CCCCCC` : `#fff`};
   border-radius: 4px;
   margin : 24px 8px;
   transition : transform 0.3s ease;
@@ -48,10 +63,15 @@ const CarouselItems = styled.li`
   will-change: box-shadow, transform;
 
   &:hover {
-    background-color: ${({ theme }) => theme.gray.gray100};
+    background-color: ${({ $darkmode }) => $darkmode ? `#CCCCCC` : `#fff`};
     cursor: pointer;
     transform : scale(1.05);
     box-shadow: 0 2px 3px 2px rgba(0, 0, 0, 0.5);
+
+    @media (min-width: 768px) and (max-width : 1023px) {
+      transform : scale(1);
+      box-shadow : 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+    }
   }
 
   &:nth-child(1) {
@@ -72,6 +92,16 @@ const CarouselItems = styled.li`
     -webkit-box-orient : vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+      &:nth-child(1) {
+      margin : 24px 8px 24px 1px;
+    }
+
+      &:last-child {
+      margin : 24px 1px 24px 8px;
+    }
   }
 `;
 
@@ -136,6 +166,10 @@ const CarouselVideoTitleBox = styled.div`
 
     overflow: hidden;
     text-overflow: ellipsis;
+
+    @media (min-width: 768px) and (max-width : 1279px) {
+      font-size : 14px;
+    } 
   }
 
   img {
@@ -206,17 +240,21 @@ const CloseYoutubeBtn = styled.div`
   }
 `;
 
-function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleArr }) {
+function HomeNews({ isVideo, topNewsArticlesArr, homeVideoArticleArr }) {
   const scrollRef = useRef(null);
   const [mousePause, setMousePause] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const timeOutRef = useRef(null);
-
+  const { darkmode } = useTheme();
+  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   const navigate = useNavigate();
 
   const videoMouseEnter = (url) => {
+    if (isTablet) return;
+
     setVideoUrl(url);
 
     if (timeOutRef.current) {
@@ -233,7 +271,6 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current);
     }
-
     setIsFocus(false);
   }
 
@@ -259,7 +296,8 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
     return doc.body.textContent || "";
   }
 
-  const moveToScroll = (direction, autoAmount) => {
+  const moveToScroll = useCallback((direction, autoAmount) => {
+    if (isTablet || isMobile) return;
     if (!direction) return;
     const amount = autoAmount;
 
@@ -283,7 +321,7 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
         container?.scrollBy({ left: -amount, behavior: "smooth" });
       };
     }
-  }
+  }, [isTablet, isMobile])
 
   useEffect(() => {
     const body = document.querySelector("body");
@@ -308,6 +346,7 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
   }, []);
 
   useEffect(() => {
+    if (isTablet || isMobile) return;
     if (mousePause) return;
 
     let animate;
@@ -330,10 +369,12 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
     return () => {
       cancelAnimationFrame(animate);
     }
-  }, [mousePause]);
+  }, [mousePause, isTablet, moveToScroll, isMobile]);
+
+
 
   return (
-    <CarouselMainContainer>
+    <CarouselMainContainer className={isVideo ? 'video' : 'top'} $isTablet={isTablet} $isMobile={isMobile}>
       <YoutubeContainer $isFocus={isFocus}>
         <YoutubePreviewContainer>
           <PreviewBox>
@@ -360,18 +401,18 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
             to={'/news-list/video/video-articles'}
             style={{ textDecoration: "none" }}
           >
-            <CarouselTitle>{'동영상'}</CarouselTitle>
+            <CarouselTitle style={isTablet ? { display: 'none' } : {}}>{'동영상 미리보기'}</CarouselTitle>
           </Link>
           :
           <CarouselTitle>{'TOP 뉴스'}</CarouselTitle>
       }
       <AutoArrowControlBox onMouseEnter={() => setMousePause(true)} onMouseLeave={() => setMousePause(false)}>
-        <CarouselLists ref={scrollRef}>
+        <CarouselLists ref={scrollRef} >
           {(!isVideo) ?
             topNewsArticlesArr?.map((item) => {
               const { articleId, articleTitle, articleContent, articleImageUrls } = item;
               return (
-                <CarouselItems key={articleId} onClick={() => handleClickArticle(articleId)}>
+                <CarouselItems key={articleId} $darkmode={darkmode} onClick={() => handleClickArticle(articleId)}>
                   <CarouselImageBox $imgSrc={JSON.parse(articleImageUrls)[0]} />
                   <CarouselTitle>{articleTitle}</CarouselTitle>
                   <CarouselContent>{plainText(articleContent)}</CarouselContent>
@@ -382,6 +423,7 @@ function HomeNews({ articleType, isVideo, topNewsArticlesArr, homeVideoArticleAr
             homeVideoArticleArr.map((videoItem) => {
               const { articleId, articleContent, articleTitle } = videoItem;
               return (
+                (!isTablet) &&
                 <CarouselVideoItems
                   key={articleId}
                   onMouseEnter={() => videoMouseEnter(articleContent)}

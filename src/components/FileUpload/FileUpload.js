@@ -24,6 +24,11 @@ const FileLibrayStyleBox = styled.div`
   grid-auto-rows: 140px;
 
   border-radius: 2px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: 120px;
+  }
 `;
 
 const NoEditorImageBox = styled.div`

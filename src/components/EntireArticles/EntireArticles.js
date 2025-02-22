@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import TopButton from '../TopButton/TopButton';
 import { toast } from "react-toastify";
+import { useTheme } from "../../Contexts/ThemeContext";
+import { useMediaQuery } from "react-responsive";
 
 const MainContainer = styled.div`
   display: flex;
@@ -25,20 +27,33 @@ const EntireContainer = styled.div`
   height: 100%;
 
   padding : 40px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    padding : 24px;
+  }
+
+  @media (max-width : 767px) {
+    padding : 8px;
+  }
 `;
 
 const EntireLists = styled.ul`
   width: 100%;
+  height: 100%;
   border-radius: 4px;
   display : flex;
   flex-direction: column;
   gap : 16px;
+
+  @media (max-width : 767px) {
+    gap : 8px;
+  }
 `;
 
 const EntireItem = styled.li`
   width: 100%;
   height: 200px;
-  background-color: #fff;
+  background-color: ${({ $darkmode }) => $darkmode ? '#cccccc' : '#fff'};
   border-radius: 4px;
   cursor: pointer;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
@@ -55,6 +70,11 @@ const EntireItem = styled.li`
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.5);
+  }
+
+  @media (max-width : 767px) {
+    height: 96px;
+    padding : 8px 4px;
   }
 `;
 
@@ -75,6 +95,10 @@ const EntireImageBox = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+
+  @media (max-width : 767px) {
+    height: 88px;
+  }
 `;
 
 const EntireTextBox = styled.div`
@@ -90,6 +114,11 @@ const EntireTextBox = styled.div`
   display : flex;
   flex-direction: column;
   justify-content: space-around;
+
+  @media (max-width : 767px) {
+    height: 88px;
+    margin-left: 8px;
+  }
 `;
 
 const textStyle = css`
@@ -108,6 +137,16 @@ const EntireTitle = styled.h1`
   color : ${({ theme }) => theme.blue.blue700};
   font-size : 24px;
   margin-top : 8px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 20px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.9rem;
+    -webkit-line-clamp: 2;
+    margin : 4px;
+  }
 `;
 
 const EntireContent = styled.p`
@@ -116,12 +155,22 @@ const EntireContent = styled.p`
   color : ${({ theme }) => theme.gray.gray600};
   font-size : 14px;
   margin-bottom : 8px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 12px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.65rem;
+    -webkit-line-clamp: 3;
+    margin : 4px;
+  }
 `;
 
 const EntirePageTitle = styled.h1`
   width: 100%;
   font-size : 28px;
-  color : ${({ theme }) => theme.blue.blue700};
+  color : ${({ $darkmode, theme }) => $darkmode ? `#fff` : `${theme.blue.blue700}`};
 
   display : flex;
   align-items: center;
@@ -140,14 +189,43 @@ const EntirePageTitle = styled.h1`
     color : ${({ theme }) => theme.gray.gray600};
     margin-left : 16px;
   }
+
+  @media (min-width: 768px) and (max-width : 1279px) {
+    font-size : 24px;
+
+    img {
+      width : 24px;
+      height : 24px;
+    }
+
+    p {
+      font-size : 14px;
+    }
+  }
+
+  @media (max-width : 767px) {
+    font-size : 1rem;
+    margin-bottom : 16px;
+
+    img {
+      width : 18px;
+      height : 18px;
+    }
+
+    p {
+      font-size : 0.65rem;
+    }
+  }
 `;
 
 function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArticles }) {
   const navigate = useNavigate();
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("query") || "";
   const queryClient = useQueryClient();
+  const { darkmode } = useTheme();
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const query = searchParams.get("query") || "";
 
   const plainText = (html) => {
     if (!html) return;
@@ -178,22 +256,35 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
     );
 
     if (filterArr.length === 0) {
-      toast.error(`${query}에 대한 검색결과가 없습니다.`, {
-        position: 'top-center',
-        style: {
-          color: '#fff',
-          fontSize: '13px',
-          minHeight: '30px',
-          width: '100%',
-          background: 'rgba(0, 0, 0, 0.8)',
-          fontWeight: 'bold'
-        }
-      });
+      if (!toast.isActive('searched')) {
+        toast.error(`${query}에 대한 검색결과가 없습니다.`, {
+          position: 'top-center',
+          toastId: 'searched',
+          style: !isMobile ? {
+            color: '#fff',
+            fontSize: '13px',
+            minHeight: '30px',
+            width: '100%',
+            background: 'rgba(0, 0, 0, 0.8)',
+            fontWeight: 'bold'
+          } : {
+            fontWeight: 'bold',
+            fontSize: '0.7rem',
+            color: '#fff',
+            background: 'rgba(0, 0, 0, 0.7)',
+            minHeight: '20px',
+            width: 'fit-content',
+            marginBottom: '8px',
+            borderRadius: '2px',
+            marginTop: '8px'
+          }
+        });
+      }
     }
 
     setFilteredArticles(filterArr);
 
-  }, [query, allArticles]);
+  }, [query, allArticles, isMobile]);
 
   useEffect(() => {
     return () => {
@@ -204,7 +295,7 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
   return (
     <MainContainer>
       <Container>
-        <EntirePageTitle>
+        <EntirePageTitle $darkmode={darkmode}>
           <img src={entireIcon} alt="articles" />
           전체기사
           {
@@ -220,7 +311,7 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
                   entireArticleArr.map((item) => {
                     const { articleId, articleTitle, articleContent, articleImageUrls } = item;
                     return (
-                      <EntireItem key={articleId} onClick={() => clickByArticle(articleId)}>
+                      <EntireItem $darkmode={darkmode} key={articleId} onClick={() => clickByArticle(articleId)}>
                         <EntireItems>
                           <EntireImageBox $src={JSON.parse(articleImageUrls)[0]} />
                           <EntireTextBox>
@@ -253,7 +344,8 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
           </EntireLists>
           {(filteredArticles.length === 0) && <ViewMoreBox
             $hasNextPage={hasNextPage}
-            onClick={() => fetchNextPage()} style={{ marginTop: "40px" }}>
+            onClick={() => fetchNextPage()}
+            style={isMobile ? { marginTop: "16px" } : { marginTop: "40px" }}>
             <span>View More</span>
           </ViewMoreBox>}
           <TopButton />

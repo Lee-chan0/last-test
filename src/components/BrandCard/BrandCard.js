@@ -4,7 +4,7 @@ import { brandLogos } from "../../mock";
 const boxSizes = css`
   width: 100%;
   height: 100%;
-  border-radius: 8px;
+  border-radius: 5px;
 `;
 
 const boxShadow = css`
@@ -12,13 +12,22 @@ const boxShadow = css`
 `;
 
 const CardMainContainer = styled.div`
-  ${boxSizes};
+  width: 160px;
+  height: 88px;
   perspective: 400px;
 
   &:hover > * {
     transform : rotateY(180deg);
     cursor: pointer;
   }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    width: 120px;
+
+  &:hover > * {
+    transform : rotateY(0);
+  }
+}
 `;
 
 const CardMainPositionBox = styled.div`

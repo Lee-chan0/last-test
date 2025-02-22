@@ -3,6 +3,12 @@ import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
 import { useNavigate } from "react-router-dom";
 import ImportantStar from "../ImportantStar/ImportantStar";
 import eyeIcon from '../../assets/eye-line.png';
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetImportantArticles } from "../../hooks/Article/useGetImportantArticles";
+import { useGetMyArticles } from "../../hooks/Article/useGetMyArticles";
+import { useGetVideoArticles } from "../../hooks/Article/useGetVideoArticles";
+import videoIcon from '../../assets/ri_video-line.png';
 
 const ArticleContentMainContainer = styled.div`
   width: 100%;
@@ -15,6 +21,7 @@ const ArticleLists = styled.ul`
   display : grid;
   grid-template-columns : 40px 10% 1fr 10% 10% 10% 5%;
   background-color: ${({ theme }) => theme.gray.gray0};
+  overflow: hidden;
 
   &:hover {
     background-color: ${({ $description }) => $description ? `#fff` : `#f0f3fa`};
@@ -28,16 +35,25 @@ const ArticleItem = styled.div`
   justify-content: center;
   font-size : 14px;
 
-  &.article-number {
-
-  }
-
   &.category {
     color : ${({ theme }) => theme.gray.gray600};
   }
 
   &.article-title {
     font-weight: bold;
+
+    display : -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient : vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    height: 20px;
+
+    span {
+      height: 100%;
+    }
+    
 
     a {
       text-decoration: none;
@@ -57,15 +73,39 @@ const ArticleItem = styled.div`
     width: 16px;
     height: 16px;
   }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    &.category {
+      font-size : 13px;
+  }
+
+  &.article-title {
+    span {
+      font-size : 13px;
+    }
+  }
+
+  &.user-name-position {
+    font-size : 13px;
+  }
+
+  &.date {
+    font-size : 11px;
+  }
+  }
 `;
 
 function changeCreatedAt(createdAt) {
   return new Date(createdAt).toISOString().split("T")[0];
 }
 
-function ArticleContents({ articlesArr, filterArticles }) {
+function ArticleContents({ articlesArr, filterArticles, hasNextPage,
+  fetchNextPage, query, setFilterArticles, allArticles }) {
   const navigate = useNavigate();
-
+  const { data: importantArticles } = useGetImportantArticles();
+  const { data: myArticles } = useGetMyArticles();
+  const { data: videoArticles } = useGetVideoArticles();
+  const queryClient = useQueryClient();
   const clickArticleTitle = (id, type) => {
     if (type === '동영상') {
       navigate(`/truescope-administrator/video-editor?query=${encodeURIComponent(type)}&update=true&articleId=${id}`)
@@ -74,9 +114,36 @@ function ArticleContents({ articlesArr, filterArticles }) {
     }
   }
 
-  const clickConfirm = (id) => {
-    navigate(`/news-list/article/${id}`);
+  const clickConfirm = (id, articleType) => {
+    articleType !== '동영상'
+      ?
+      window.open(`/news-list/article/${id}`, '_blank')
+      :
+      window.open(`/news-list/video/video-articles`, '_blank');
   }
+
+  useEffect(() => {
+    queryClient.removeQueries(['include-videos']);
+  }, [queryClient]);
+
+  useEffect(() => {
+    if (!query) return;
+
+    const filterQuery = {
+      'myArticles': myArticles?.findMyArticles || [],
+      'importantArticles': importantArticles?.importantArticles || [],
+      'video': videoArticles?.videoArticles || [],
+      'entire': allArticles,
+    };
+
+    if (['정치', '국제', '사회'].includes(query)) {
+      const queryByArticles = allArticles?.filter(({ Category }) => Category.categoryName === query);
+      setFilterArticles(queryByArticles);
+    } else {
+      setFilterArticles(filterQuery[query]);
+    }
+
+  }, [query, allArticles, importantArticles, myArticles, setFilterArticles, videoArticles]);
 
   return (
     <ArticleContentMainContainer>
@@ -97,7 +164,7 @@ function ArticleContents({ articlesArr, filterArticles }) {
       </ArticleLists>
       {
         (filterArticles.length === 0) ?
-          articlesArr.map((item) => {
+          articlesArr?.map((item) => {
             const { articleId, articleTitle, createdAt,
               User, Category, isImportant, articleType } = item;
             const { userNamePosition } = User;
@@ -117,10 +184,15 @@ function ArticleContents({ articlesArr, filterArticles }) {
                 <ArticleItem className="user-name-position">{userNamePosition}</ArticleItem>
                 <ArticleItem className="date">{changeCreatedAt(createdAt)}</ArticleItem>
                 <ArticleItem
-                  onClick={() => clickConfirm(articleId)}
+                  onClick={() => clickConfirm(articleId, articleType)}
                   style={{ cursor: 'pointer', color: 'blue' }}
                 >
-                  <img src={eyeIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                  {
+                    articleType === '동영상' ?
+                      <img src={videoIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                      :
+                      <img src={eyeIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                  }
                 </ArticleItem>
               </ArticleLists>
             )
@@ -146,16 +218,29 @@ function ArticleContents({ articlesArr, filterArticles }) {
                 <ArticleItem className="user-name-position">{userNamePosition}</ArticleItem>
                 <ArticleItem className="date">{changeCreatedAt(createdAt)}</ArticleItem>
                 <ArticleItem
-                  onClick={() => clickConfirm(articleId)}
+                  onClick={() => clickConfirm(articleId, articleType)}
                   style={{ cursor: 'pointer', color: 'blue' }}
                 >
-                  <img src={eyeIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                  {
+                    articleType === '동영상' ?
+                      <img src={videoIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                      :
+                      <img src={eyeIcon} alt="view-article" style={{ width: "20px", height: "20px" }} />
+                  }
                 </ArticleItem>
               </ArticleLists>
             )
           })
       }
-      <ViewMoreBox style={{ marginTop: "8px" }}><span>View More</span></ViewMoreBox>
+      {
+        (filterArticles.length === 0) &&
+        <ViewMoreBox
+          $hasNextPage={hasNextPage}
+          style={{ marginTop: "8px" }}
+          onClick={fetchNextPage}>
+          <span>View More</span>
+        </ViewMoreBox>
+      }
     </ArticleContentMainContainer>
   )
 }

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-function SideNav({ articlesArr, setFilterArticles }) {
+function SideNav({ articlesArr, setFilterArticles, isUpdate, isCreate }) {
   const navigate = useNavigate();
 
   const clickLogo = () => {
@@ -18,7 +18,7 @@ function SideNav({ articlesArr, setFilterArticles }) {
     <NavigationSideBarContainer>
       <SideNavMainContainer>
         <img src={logoImage} alt="logo" width={'100%'} style={{ cursor: "pointer" }} onClick={clickLogo} />
-        <DropDown articlesArr={articlesArr} setFilterArticles={setFilterArticles} />
+        <DropDown articlesArr={articlesArr} setFilterArticles={setFilterArticles} isUpdate={isUpdate} isCreate={isCreate} />
       </SideNavMainContainer>
       <AddButton as='a' href='create-article'>
         <img src={pencilImage} alt="pencil" />

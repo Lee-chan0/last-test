@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import lineIcon from '../../assets/lin.png';
 import copyIcon from '../../assets/mingcute_copy-line.png';
-import shareIcon from '../../assets/material-symbols_share-outline.png';
 import { useEffect, useState } from "react";
 import React from "react";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   display : flex;
@@ -20,22 +20,53 @@ const DescripContainer = styled.div`
 const DescripActor = styled.span`
   font-weight: bold;
   color : ${({ theme }) => theme.blue.blue700};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 14px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.8rem;
+  }
 `;
 
 const DescripCategory = styled.span`
   color : ${({ theme }) => theme.gray.gray600};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 14px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.8rem;
+  }
 `;
 
 const DescripImgBox = styled.div`
-
   img {
     width: 24px;
     height: 24px;
     margin-right: 8px;
     cursor: pointer;
 
+    @media (max-width : 767px) {
+        width: 18px;
+        height: 18px;
+        margin-right : 4px;
+
+    }
+
     &:hover {
       opacity: 0.5;
+    }
+
+
+  }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    img {
+      width : 20px;
+      height: 20px;
     }
   }
 `;
@@ -48,6 +79,14 @@ const LineIc = styled.img`
 const ArticleDate = styled.span`
   font-size : 14px;
   color : ${({ theme }) => theme.gray.gray600};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 13px;
+  }
+
+  @media (max-width : 767px) {
+    font-size : 0.7rem;
+  }
 `;
 
 function ArticleActorDescription({ article }) {
@@ -60,11 +99,13 @@ function ArticleActorDescription({ article }) {
 
   const handleHtmlCopy = async (articleContent) => {
     try {
-      const blob = new Blob([articleContent], { type: "text/html" });
-      const clipboardItem = new ClipboardItem({ "text/html": blob });
-      await navigator.clipboard.write([clipboardItem]);
-
-      alert("기사 내용과 이미지가 복사되었습니다!");
+      if (!articleContent) return;
+      const doc = new DOMParser().parseFromString(articleContent, 'text/html');
+      const content = doc.body.textContent || "";
+      await navigator.clipboard.writeText(content);
+      if (!toast.isActive('clip-board')) {
+        toast.info('기사내용이 복사되었습니다.', { position: 'top-center', toastId: 'clip-board' });
+      }
     } catch (e) {
       console.error("복사 실패:", e);
     }
@@ -92,7 +133,6 @@ function ArticleActorDescription({ article }) {
                 <LineIc src={lineIcon} alt="line-icon" />
                 <DescripImgBox>
                   <img src={copyIcon} alt="copy" onClick={() => handleHtmlCopy(articleContent)} />
-                  <img src={shareIcon} alt="share-icon" />
                 </DescripImgBox>
               </React.Fragment>
             )

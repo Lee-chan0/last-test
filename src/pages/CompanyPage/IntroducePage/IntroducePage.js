@@ -9,9 +9,13 @@ const IntroduceMainContainer = styled.div`
   height: 300vh;
 `;
 
+const MainContainer = styled.div`
+  overflow-x: hidden;
+`;
+
 function IntroducePage() {
   return (
-    <>
+    <MainContainer>
       <LogoContainer isIntroducePage={true} />
       <IntroduceMainContainer>
         <IntroduceCompany />
@@ -19,7 +23,7 @@ function IntroducePage() {
         <TermsofUsePage />
       </IntroduceMainContainer>
       <Footer />
-    </>
+    </MainContainer>
   )
 }
 

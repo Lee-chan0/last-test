@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import GlobalStyled from "./components/GlobalStyle/GlobalStyle";
 import { ThemeProvider } from "styled-components";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useTheme } from "./Contexts/ThemeContext";
 import HomePage from "./pages/HomePage/HomePage";
 import EditorPage from "./pages/EditorPage/EditorPage";
 import CreateArticlePage from "./pages/CreateArticlePage/CreateArticle";
@@ -17,28 +18,55 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import { ToastContainer } from "react-toastify";
 import UpdateArticlePage from "./pages/UpdateArticlePage/UpdateArticlePage";
 import IntroducePage from './pages/CompanyPage/IntroducePage/IntroducePage';
+import { useEffect } from "react";
+import AdminRoute from "./pages/AdminRoute/AdminRoute";
 
 export const queryClient = new QueryClient();
 
+const lightTheme = {
+  blue: {
+    blue100: '#F0F3FA',
+    blue500: '#3376FD',
+    blue700: '#0D50D7'
+  },
+  gray: {
+    gray0: '#FFFFFF',
+    gray100: '#FAFAFA',
+    gray400: '#CCCCCC',
+    gray600: '#666666',
+    gray900: '#1A1A1A'
+  },
+}
+
+const darkTheme = {
+  blue: {
+    blue100: '#A6A6A6',
+    blue500: '#3376FD',
+    blue700: '#000000'
+  },
+  gray: {
+    gray0: '#FFFFFF',
+    gray100: '#FAFAFA',
+    gray400: '#CCCCCC',
+    gray600: '#666666',
+    gray900: '#1A1A1A'
+  },
+}
+
 function Main() {
-  const StandardByColor = {
-    blue: {
-      blue100: '#F0F3FA',
-      blue500: '#3376FD',
-      blue700: '#0D50D7'
-    },
-    gray: {
-      gray0: '#FFFFFF',
-      gray100: '#FAFAFA',
-      gray400: '#CCCCCC',
-      gray600: '#666666',
-      gray900: '#1A1A1A'
+  const { darkmode } = useTheme();
+
+  useEffect(() => {
+    if (darkmode) {
+      document.body.style.backgroundColor = `#1a1a1a`;
+    } else {
+      document.body.style.backgroundColor = `#ffffff`;
     }
-  }
+  }, [darkmode]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={StandardByColor}>
+      <ThemeProvider theme={darkmode ? darkTheme : lightTheme} >
         <App>
           <ToastContainer
             closeButton={false}
@@ -59,10 +87,10 @@ function Main() {
               </Route>
               <Route path="truescope-administrator">
                 <Route path="cms/administrator/login" element={<LoginPage />} />
-                <Route path="editor-page" element={<EditorPage />} />
-                <Route path="video-editor" element={<VideoEditorPage />} />
-                <Route path="create-article" element={<CreateArticlePage />} />
-                <Route path="update-article" element={<UpdateArticlePage />} />
+                <Route path="editor-page" element={<AdminRoute><EditorPage /></AdminRoute>} />
+                <Route path="video-editor" element={<AdminRoute><VideoEditorPage /></AdminRoute>} />
+                <Route path="create-article" element={<AdminRoute><CreateArticlePage /></AdminRoute>} />
+                <Route path="update-article" element={<AdminRoute><UpdateArticlePage /></AdminRoute>} />
               </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

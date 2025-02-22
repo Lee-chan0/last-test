@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getVideoId } from "../VideoNews/VideoBox";
 import noImg from '../../assets/thumnailEx.jpg';
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../Contexts/ThemeContext";
 
 const boxShadow = css`
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
@@ -21,6 +22,16 @@ const Container = styled.div`
 
   position : sticky;
   top : 7px;
+
+  ${({ $isTablet, $isVideo }) => ($isVideo && $isTablet) && `display : none`};
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    padding : 16px 24px 24px 24px;
+  }
+
+  @media (max-width : 767px) {
+    display : none;
+  }
 `;
 
 const SideTitle = styled.h1`
@@ -35,6 +46,16 @@ const SideTitle = styled.h1`
     width: 28px;
     height: 28px;
   }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 20px;
+    margin-bottom : 16px;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
 `;
 
 const SideLists = styled.ul`
@@ -48,7 +69,7 @@ const SideItem = styled.li`
   ${boxShadow};
   border-radius: 4px;
 
-  background-color: ${({ theme }) => theme.gray.gray0};
+  background-color: ${({ $darkmode }) => $darkmode ? '#cccccc' : '#fff'};
 
   display : flex;
   justify-content: space-between;
@@ -57,7 +78,6 @@ const SideItem = styled.li`
   will-change: transform, box-shadow;
 
   &:hover {
-    background-color: ${({ theme }) => theme.gray.gray100};
     cursor: pointer;
     transform : scale(1.02);
     box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.5);
@@ -72,7 +92,7 @@ const SideImgBox = styled.div`
   background-repeat: no-repeat;
   background-size: cover;
 
-  margin : 8px;
+  margin : 8px 0 8px 8px;
 `;
 
 const SideContentsBox = styled.div`
@@ -101,12 +121,21 @@ const SideItemTitle = styled.h2`
   width: 90%;
   color : ${({ theme }) => theme.blue.blue700};
   font-size : 16px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 14px;
+    -webkit-line-clamp: 2;
+  }
 `;
 
 const SideItemContent = styled.span`
   width: 90%;
   -webkit-line-clamp: 3;
   font-size : 13px;
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    font-size : 11px;
+  }
 `;
 
 const SideVideoItem = styled.li`
@@ -188,11 +217,12 @@ const SideVideoTitle = styled.h2`
   color : ${({ theme }) => theme.blue.blue700};
 `;
 
-function SideSticky({ entireArticleArr, isVideo, recentVideo }) {
+function SideSticky({ entireArticleArr, isVideo, recentVideo, isTablet }) {
   const [viewArticles, setViewArticles] = useState([]);
   const [isHover, setIsHover] = useState(false);
   const [videoIndex, setVideoIndex] = useState(null);
   const navigate = useNavigate();
+  const { darkmode } = useTheme();
 
   const handleClickArticle = (id, url) => {
     if (id) return navigate(`/news-list/article/${id}`);
@@ -245,7 +275,7 @@ function SideSticky({ entireArticleArr, isVideo, recentVideo }) {
   }, [entireArticleArr, isVideo, recentVideo]);
 
   return (
-    <Container>
+    <Container $isVideo={isVideo} $isTablet={isTablet}>
       <SideLists>
         <SideTitle>
           <img src={eyeIcon} alt="viewIcon" />
@@ -257,7 +287,7 @@ function SideSticky({ entireArticleArr, isVideo, recentVideo }) {
             return (
               (!isVideo) ?
                 (
-                  <SideItem key={articleId} onClick={() => handleClickArticle(articleId)}>
+                  <SideItem key={articleId} onClick={() => handleClickArticle(articleId)} $darkmode={darkmode}>
                     <SideImgBox $src={JSON.parse(articleImageUrls)[0]} />
                     <SideContentsBox>
                       <SideItemTitle>{articleTitle}</SideItemTitle>

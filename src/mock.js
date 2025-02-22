@@ -49,5 +49,4 @@ const brandLogos = [
   },
 ]
 
-
 export { brandLogos };

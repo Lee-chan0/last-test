@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { SearchInput } from "../SearchInput/SearchInputStyle";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 const MenuBarSearchInput = styled(SearchInput)`
   width: 300px;
@@ -10,6 +11,10 @@ const MenuBarSearchInput = styled(SearchInput)`
   margin : 4px 4px;
   border : 2px solid rgba(81, 135, 244, 0.5);
   margin-right : 24px;
+
+  @media (max-width : 767px) {
+    display : none;
+  }
 `;
 
 const MenuBarContainer = styled.div`
@@ -20,7 +25,9 @@ const MenuBarContainer = styled.div`
   gap : 16px;
   margin-bottom: 40px;
 
-
+  @media (max-width : 767px) {
+    display : none;
+  }
 `;
 
 const MenuBarLists = styled.ul`
@@ -28,8 +35,9 @@ const MenuBarLists = styled.ul`
   align-items: center;
   justify-content: center;
   width: 70%;
+
   & > * {
-    flex : 0 0 20%;
+    ${({ $isMobile }) => !$isMobile && `flex : 0 0 20%`};
   }
 `;
 
@@ -47,6 +55,10 @@ const MenuBarItem = styled.li`
   cursor: pointer;
 
   a {
+    @media (min-width: 768px) and (max-width : 1279px) {
+      font-size : 14px;
+    }
+
     text-decoration: none;
     color : ${({ theme }) => theme.blue.blue700};
     font-weight: bold;
@@ -100,6 +112,7 @@ const MenuBarItem = styled.li`
 function MenuBar({ categoryArr }) {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   const handleChange = (e) => {
     setQuery(e.target.value);
@@ -110,13 +123,13 @@ function MenuBar({ categoryArr }) {
       alert("검색어를 입력해주세요.");
       return;
     }
-    setQuery("");
     navigate(`/news-list/articles/entireArticle?query=${encodeURIComponent(query)}`);
+    setQuery("");
   }
 
   return (
     <MenuBarContainer>
-      <MenuBarLists>
+      <MenuBarLists $isMobile={isMobile}>
         {
           categoryArr?.map((item) => {
             const { categoryId, categoryName } = item;

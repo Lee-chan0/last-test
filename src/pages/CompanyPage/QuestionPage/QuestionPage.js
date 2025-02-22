@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import bgimg from '../../../assets/masaaki-komori-iczsntduUyI-unsplash.jpg';
 import QuestionText from './QuestionText';
 
 const MainContainer = styled.div`
   height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
 
   position: relative;
 
@@ -21,7 +21,7 @@ const ScrollCover = styled.div`
   background-color: transparent;
   margin-top : 40px;
   transform: rotate(-2deg);
-  overflow: hidden;
+  overflow-x: hidden;
 
   display : flex;
   align-items: center;
@@ -128,6 +128,7 @@ function QuestionPage() {
   };
 
   const moveToText = (count, element, direction) => {
+    if (!element) return;
 
     if (count >= element.scrollWidth / 2) {
       element.style.transform = `translateX(0)`;
@@ -142,7 +143,7 @@ function QuestionPage() {
   }
 
 
-  const addCount = () => {
+  const addCount = useCallback(() => {
     countRef.current++;
     countRef2.current++;
 
@@ -150,7 +151,7 @@ function QuestionPage() {
     moveToText(countRef2.current, pTag2.current, 1);
 
     animationId.current = requestAnimationFrame(addCount);
-  }
+  }, []);
 
   const scroll = () => {
     countRef.current += 15;
@@ -170,7 +171,7 @@ function QuestionPage() {
     return () => {
       cancelAnimationFrame(animationId.current);
     }
-  }, []);
+  }, [addCount]);
 
   useEffect(() => {
     window.addEventListener("scroll", scroll);

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import cherryBack from '../../../assets/mi-min-pkpqoBp11Jc-unsplash.jpg';
 import styled from 'styled-components';
+import { useMediaQuery } from 'react-responsive';
 
 const MainContainer = styled.div`
   height: 100vh;
@@ -91,12 +92,14 @@ const CardReadMode = styled.button`
 
 function IntroduceCompany() {
   const [isActiveBtn, setIsActiveBtn] = useState(false);
+  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
 
   const cardRef = useRef(null);
   const cardLightRef = useRef(null);
 
   const mouseMove = (e) => {
     if (isActiveBtn) return;
+    if (isTablet) return;
     const card = cardRef.current;
     const rect = card.getBoundingClientRect();
     const cardWidth = rect.width;
@@ -120,6 +123,7 @@ function IntroduceCompany() {
 
   const mouseLightMove = (e) => {
     if (isActiveBtn) return;
+    if (isTablet) return;
     const light = cardLightRef.current;
     const lightRect = light.getBoundingClientRect();
 
@@ -169,7 +173,7 @@ function IntroduceCompany() {
           onMouseMove={mouseMove}
           $isActiveBtn={isActiveBtn}
         >
-          <CardLight ref={cardLightRef} onMouseMove={mouseLightMove} />
+          {!isTablet && <CardLight ref={cardLightRef} onMouseMove={mouseLightMove} />}
           <CardDescriptionContainer>
             <CardTitle>Company Introduce</CardTitle>
             <CardDescription>
@@ -188,7 +192,13 @@ function IntroduceCompany() {
             </CardDescription>
           </CardDescriptionContainer>
         </Card>
-        <CardReadMode onClick={clickActiveBtn}>{!isActiveBtn ? '읽기 모드' : '카드 모드'}</CardReadMode>
+        <CardReadMode
+          onClick={clickActiveBtn}
+          disabled={isTablet}
+          style={isTablet ? { opacity: '0.3' } : { opacity: '1' }}
+        >
+          {!isActiveBtn ? '읽기 모드' : '카드 모드'}
+        </CardReadMode>
       </CardContainer>
     </MainContainer>
   )
