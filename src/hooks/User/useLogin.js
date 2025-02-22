@@ -20,6 +20,19 @@ export const useLogin = () => {
           margin: "0"
         }
       });
+    },
+    onError: () => {
+      toast.error(`아이디 및 비밀번호를 확인해주세요.`, {
+        style: {
+          minHeight: "32px",
+          width: "100%",
+          borderRadius: "2px",
+          fontSize: "13px",
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
+          color: "#fff",
+          margin: "0"
+        }
+      })
     }
   });
 
