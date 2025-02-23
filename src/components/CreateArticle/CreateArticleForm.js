@@ -9,7 +9,45 @@ import { useCreateArticle } from "../../hooks/Article/useCreateArticle";
 import { useFindArticle } from "../../hooks/Article/useFindArticle";
 import { useUpdateArticle } from "../../hooks/Article/useUpdateArticle";
 import { useDeleteArticle } from "../../hooks/Article/useDeleteArticle";
+import { toast } from "react-toastify";
 
+const InputContetImageContainer = styled.div`
+  display : flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const Description = styled.span`
+  font-size : 0.8rem;
+  color: ${({ theme }) => theme.gray.gray600};
+`;
+
+const InputFile = styled.label`
+  width: 200px;
+  height: 32px;
+  background-color: ${({ theme }) => theme.blue.blue500};
+  border-radius: 4px;
+  color : ${({ theme }) => theme.gray.gray0};
+  font-size : 0.9rem;
+  font-weight: bold;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+  display : flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: ${({ theme }) => theme.blue.blue700};
+    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.4) inset;
+  }
+`;
+
+
+const InputContentImageInput = styled.input`
+  display : none;
+`;
 
 const CreateForm = styled.form`
   display : flex;
@@ -104,6 +142,7 @@ const INITIAL_ARTICLE_CONTENT = {
 function CreateArticleForm({ isUpdate }) {
   const [articleValues, setArticleValues] = useState(INITIAL_ARTICLE_CONTENT);
   const [fileList, setFileList] = useState([]);
+  const [insideFileList, setInsideFileList] = useState([]);
   const [articleIdState, setArticleIdState] = useState(null);
   const [prevFileLength, setPrevFileLength] = useState(null);
 
@@ -150,6 +189,11 @@ function CreateArticleForm({ isUpdate }) {
       e.preventDefault();
       const formData = new FormData();
 
+      if (fileList.length === 0) {
+        toast.error('추가 이미지는 필수 항목입니다.');
+        return;
+      }
+
       fileList.forEach((item) => {
         if (item.file) {
           formData.append("files", item.file);
@@ -169,6 +213,11 @@ function CreateArticleForm({ isUpdate }) {
     } else if (isUpdate) {
       e.preventDefault();
       const formData = new FormData();
+
+      if (fileList.length === 0) {
+        toast.error('추가 이미지는 필수 항목입니다.');
+        return;
+      }
 
       fileList.forEach((item, idx) => {
         if (item.isNew) {
@@ -314,6 +363,13 @@ function CreateArticleForm({ isUpdate }) {
           })
         }
         <Board articleValues={articleValues} setArticleValues={setArticleValues} isUpdate={isUpdate} />
+        <InputContetImageContainer>
+          <Description>'추가 이미지'의 첫번째 사진은 기사의 메인배너 이미지로 들어갑니다.</Description>
+          <InputFile>
+            <InputContentImageInput type="file" />
+            <span>본문에 이미지 삽입</span>
+          </InputFile>
+        </InputContetImageContainer>
         <FileUpload
           fileList={fileList} setFileList={setFileList}
           isUpdate={isUpdate}

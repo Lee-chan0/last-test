@@ -20,14 +20,15 @@ const FileLibrayStyleBox = styled.div`
   padding : 8px;
   gap : 8px;
   display : grid;
+  align-content: center;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 140px;
+  grid-auto-rows: 150px;
 
   border-radius: 2px;
 
   @media (min-width: 768px) and (max-width: 1279px) {
     grid-template-columns: repeat(5, 1fr);
-    grid-auto-rows: 120px;
+    grid-auto-rows: 140px;
   }
 `;
 
@@ -37,14 +38,7 @@ const NoEditorImageBox = styled.div`
   align-items: center;
 `;
 
-const NoEditorLabel = styled.label`
-  width: 100%;
-  height: 100%;
-  display : flex;
-  flex-direction: column;
-  cursor: pointer;
-
-  span {
+const NoEditorInfo = styled.span`
     height: 20%;
     display: block;
     white-space: nowrap;
@@ -56,13 +50,23 @@ const NoEditorLabel = styled.label`
     font-weight: bold;
     color : ${({ theme }) => theme.gray.gray0};
     transition: background-color 0.3s;
+    display : flex;
+    align-items: center;
+    justify-content: center;
 
     margin-top : 4px;
 
     &:hover {
-      background-color: ${({ theme }) => theme.blue.blue700};
+      background-color: ${({ $isDelete, theme }) => $isDelete ? 'red' : theme.blue.blue700};
     }
-  }
+`;
+
+const NoEditorLabel = styled.label`
+  width: 100%;
+  height: 100%;
+  display : flex;
+  flex-direction: column;
+  cursor: pointer;
 `;
 
 const NoEditorImageContainer = styled.div`
@@ -110,6 +114,8 @@ function FileUpload({ fileList, setFileList,
 
   const uploadFile = (e, index) => {
     const file = e.target.files[0];
+    if (!file) return;
+
     const preview = URL.createObjectURL(file);
 
     if (index === undefined) {
@@ -122,6 +128,13 @@ function FileUpload({ fileList, setFileList,
         return updateArr;
       })
     }
+
+    e.target.vlaue = "";
+  }
+
+  const handleDelete = (e, index) => {
+    const deleteFile = fileList.filter((_, i) => i !== index);
+    setFileList(deleteFile);
   }
 
   useEffect(() => {
@@ -169,7 +182,8 @@ function FileUpload({ fileList, setFileList,
                   <NoEditorImageContainer>
                     <NoEditorImage $src={preview} $noImg={addImageIcon} />
                   </NoEditorImageContainer>
-                  <span>파일 선택</span>
+                  <NoEditorInfo>파일 선택</NoEditorInfo>
+                  <NoEditorInfo $isDelete={true} onClick={(e) => handleDelete(e, index)}>삭제</NoEditorInfo>
                 </NoEditorLabel>
               </NoEditorImageBox>
             )
@@ -181,7 +195,7 @@ function FileUpload({ fileList, setFileList,
             <NoEditorImageContainer>
               <NoEditorImage $noImg={addImageIcon} />
             </NoEditorImageContainer>
-            <span>파일 선택</span>
+            <NoEditorInfo>파일 선택</NoEditorInfo>
           </NoEditorLabel>
         </NoEditorImageBox>
       </FileLibrayStyleBox>

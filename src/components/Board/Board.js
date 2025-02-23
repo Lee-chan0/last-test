@@ -23,7 +23,6 @@ function Board({ articleValues, setArticleValues, isUpdate }) {
 
 export default Board;
 
-
 const modules = {
   toolbar: [
     [{ 'header': [1, 2, 3, false] }],
