@@ -112,6 +112,9 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
     mutationFn: (articleContents) => createArticle(articleContents),
     onSuccess: () => {
       setArticleContents(INITIAL_ARTICLE_CONTENT);
+    },
+    onError: (e) => {
+      alert(e.response.data.message);
     }
   })
   const updateArticleMutation = useUpdateArticle(articleId);
