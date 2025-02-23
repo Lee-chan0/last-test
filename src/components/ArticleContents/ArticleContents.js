@@ -163,8 +163,8 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
         <ArticleItem><strong>확인</strong></ArticleItem>
       </ArticleLists>
       {
-        (!filterArticles) ?
-          articlesArr?.map((item) => {
+        (filterArticles.length === 0) ?
+          [].map((item) => {
             const { articleId, articleTitle, createdAt,
               User, Category, isImportant, articleType } = item;
             const { userNamePosition } = User;
