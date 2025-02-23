@@ -29,7 +29,7 @@ export const useUpdateArticle = (articleId) => {
       });
     },
     onError: (e) => {
-      console.error(e);
+      alert(e.response.data.message);
     }
   })
   return updateArticleMutation;

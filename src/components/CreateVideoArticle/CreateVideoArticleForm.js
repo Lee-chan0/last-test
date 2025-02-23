@@ -144,8 +144,6 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
     e.preventDefault();
     const formData = new FormData();
 
-
-
     if (!update) {
       Object.keys(articleContents).forEach((key) => {
         formData.append(key, articleContents[key]);
