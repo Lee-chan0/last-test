@@ -112,7 +112,7 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
     mutationFn: (articleContents) => createArticle(articleContents),
     onSuccess: () => {
       setArticleContents(INITIAL_ARTICLE_CONTENT);
-      alert("동영상등록이 완료되었습니다.");
+      alert("동영상 등록이 완료되었습니다.");
       window.close();
     },
     onError: (e) => {

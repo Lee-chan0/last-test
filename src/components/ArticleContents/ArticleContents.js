@@ -10,7 +10,6 @@ import { useGetMyArticles } from "../../hooks/Article/useGetMyArticles";
 import { useGetVideoArticles } from "../../hooks/Article/useGetVideoArticles";
 import videoIcon from '../../assets/ri_video-line.png';
 import { toast } from "react-toastify";
-import { filter } from "lodash";
 
 const ArticleContentMainContainer = styled.div`
   width: 100%;

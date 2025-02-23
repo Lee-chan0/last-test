@@ -7,6 +7,7 @@ import QuestionPage from '../QuestionPage/QuestionPage';
 
 const IntroduceMainContainer = styled.div`
   height: 300vh;
+  overflow: hidden;
 `;
 
 const MainContainer = styled.div`
