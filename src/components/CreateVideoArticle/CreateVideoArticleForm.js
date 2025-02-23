@@ -94,7 +94,7 @@ const titleArr = ['제목'];
 
 const INITIAL_ARTICLE_CONTENT = {
   articleTitle: "",
-  articleSubTitle: "",
+  articleSubTitle: "temp",
   articleContent: "",
   articleType: "",
   userNamePosition: "",
