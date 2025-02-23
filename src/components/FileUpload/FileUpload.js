@@ -116,8 +116,11 @@ function FileUpload({ fileList, setFileList,
     const file = e.target.files[0];
     if (!file) return;
 
-    console.log(file.name);
-    console.log(file.type);
+    const [isImage, type] = file.type.split('/');
+    if (isImage !== 'image' || !['jpeg', 'jpg', 'png', 'gif'].includes(type)) {
+      alert('jpeg, jpg, png, gif 파일 형식만 가능합니다.');
+      return;
+    }
 
     const preview = URL.createObjectURL(file);
 
