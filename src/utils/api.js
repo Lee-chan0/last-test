@@ -140,9 +140,7 @@ export async function updateArticle(formData, articleId) {
     });
     return respoonse.data;
   } catch (e) {
-    if (e.response.status === 403 || e.response.status === 401) {
-      return { hasToken: false };
-    }
+    throw e;
   }
 }
 
@@ -155,9 +153,7 @@ export async function deleteArticle(articleId) {
     })
     return response.data;
   } catch (e) {
-    if (e.response.status === 403 || e.response.status === 401) {
-      return { hasToken: false };
-    }
+    throw e;
   }
 }
 
@@ -181,9 +177,7 @@ export async function updateArticleStar(values) {
 
     return response.data;
   } catch (e) {
-    if (e.response.status === 403 || e.response.status === 401) {
-      return { hasToken: false };
-    }
+    throw e;
   }
 }
 
