@@ -138,9 +138,15 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
   const submutVideoForm = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    console.log(articleContents);
+
+
+
     if (!update) {
       Object.keys(articleContents).forEach((key) => {
+        if (!articleContents[key]) {
+          alert('Article entry, article title, and article content are required fields.');
+          return;
+        }
         formData.append(key, articleContents[key]);
       });
       videoMutation.mutate(articleContents, {
