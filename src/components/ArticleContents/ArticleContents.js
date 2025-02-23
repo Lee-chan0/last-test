@@ -164,7 +164,7 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
       </ArticleLists>
       {
         (filterArticles.length === 0) ?
-          [].map((item) => {
+          articlesArr?.map((item) => {
             const { articleId, articleTitle, createdAt,
               User, Category, isImportant, articleType } = item;
             const { userNamePosition } = User;
