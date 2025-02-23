@@ -10,6 +10,7 @@ import { useGetMyArticles } from "../../hooks/Article/useGetMyArticles";
 import { useGetVideoArticles } from "../../hooks/Article/useGetVideoArticles";
 import videoIcon from '../../assets/ri_video-line.png';
 import { toast } from "react-toastify";
+import { filter } from "lodash";
 
 const ArticleContentMainContainer = styled.div`
   width: 100%;
@@ -141,7 +142,7 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
       const queryByArticles = allArticles?.filter(({ Category }) => Category.categoryName === query);
       setFilterArticles(queryByArticles);
     } else {
-      if (filterArticles[query].length === 0) {
+      if (filterQuery[query].length === 0) {
         toast.error('해당하는 기사가 없습니다.');
       }
       setFilterArticles(filterQuery[query]);
