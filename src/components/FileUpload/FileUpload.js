@@ -116,6 +116,9 @@ function FileUpload({ fileList, setFileList,
     const file = e.target.files[0];
     if (!file) return;
 
+    console.log(file.name);
+    console.log(file.type);
+
     const preview = URL.createObjectURL(file);
 
     if (index === undefined) {
