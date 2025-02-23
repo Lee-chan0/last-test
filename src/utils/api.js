@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 
-const BASE_URL = 'http://localhost:3001/api';
-// const BASE_URL = 'https://astrab.shop/api';
+// const BASE_URL = 'http://localhost:3001/api';
+const BASE_URL = 'https://astrab.shop/api';
 
 // users
 export async function signupFunc(userInfo) {
