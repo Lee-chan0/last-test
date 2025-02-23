@@ -161,6 +161,8 @@ const LoginBtn = styled.button`
 
 const LoginLink = styled.span`
   font-size : 13px;
+  cursor: pointer;
+  color : ${({ theme }) => theme.blue.blue700};
 
   &:hover {
     color : blue;
