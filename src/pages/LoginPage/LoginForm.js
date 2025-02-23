@@ -159,8 +159,7 @@ const LoginBtn = styled.button`
   }
 `;
 
-const LoginLink = styled.a`
-  text-decoration: none;
+const LoginLink = styled.span`
   font-size : 13px;
 
   &:hover {
@@ -325,7 +324,7 @@ function LoginForm({ slideState, onClick, btnState, setBtnState, setSlideState }
               )
             })
           }
-          <LoginLink href="/" >비밀번호를 잊으셨나요?</LoginLink>
+          <LoginLink onClick={() => (alert('네'))} >비밀번호를 잊으셨나요?</LoginLink>
           <LoginBtn type='submit'>Sign In</LoginBtn>
         </LoginFormStyle>
       </LoginFormBox>
