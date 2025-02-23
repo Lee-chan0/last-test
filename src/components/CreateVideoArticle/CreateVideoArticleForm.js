@@ -124,6 +124,8 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
   const onChangeValues = (e) => {
     const domName = e.target.name;
     const domValue = e.target.value;
+    console.log(domName);
+    console.log(domValue);
 
     if (userArr.userNamePosition) {
       setArticleContents((prev) => ({
@@ -189,7 +191,7 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
                     <VideoRadioInput type="radio" name="categoryName"
                       value={`${categoryName}`}
                       onChange={onChangeValues}
-                      checked={(update && articleContents.categoryName === `${categoryName}`)}
+                      checked={(articleContents.categoryName === `${categoryName}`)}
                     />
                     <VideoRadioTItle>{categoryName}</VideoRadioTItle>
                   </RadioTitleContainer>

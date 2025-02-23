@@ -116,7 +116,6 @@ const INITIAL_ARTICLE_CONTENT = {
 function CreateArticleForm({ isUpdate }) {
   const [articleValues, setArticleValues] = useState(INITIAL_ARTICLE_CONTENT);
   const [fileList, setFileList] = useState([]);
-  const [insideFileList, setInsideFileList] = useState([]);
   const [articleIdState, setArticleIdState] = useState(null);
   const [prevFileLength, setPrevFileLength] = useState(null);
 
