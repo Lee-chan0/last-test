@@ -128,6 +128,8 @@ export async function createArticle(formData) {
   } catch (e) {
     if (e.response.status === 403 || e.response.status === 401) {
       return { hasToken: false };
+    } else {
+      return;
     }
   }
 }

@@ -14,39 +14,13 @@ import { toast } from "react-toastify";
 const InputContetImageContainer = styled.div`
   display : flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: left;
   width: 100%;
 `;
 
 const Description = styled.span`
   font-size : 0.8rem;
   color: ${({ theme }) => theme.gray.gray600};
-`;
-
-const InputFile = styled.label`
-  width: 200px;
-  height: 32px;
-  background-color: ${({ theme }) => theme.blue.blue500};
-  border-radius: 4px;
-  color : ${({ theme }) => theme.gray.gray0};
-  font-size : 0.9rem;
-  font-weight: bold;
-  transition: background-color 0.3s, box-shadow 0.3s;
-  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
-  display : flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: ${({ theme }) => theme.blue.blue700};
-    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.4) inset;
-  }
-`;
-
-
-const InputContentImageInput = styled.input`
-  display : none;
 `;
 
 const CreateForm = styled.form`
@@ -240,7 +214,6 @@ function CreateArticleForm({ isUpdate }) {
           navigate('/truescope-administrator/editor-page', { replace: true });
         },
         onError: (e) => {
-          console.log(e);
         }
       })
     }
@@ -365,10 +338,6 @@ function CreateArticleForm({ isUpdate }) {
         <Board articleValues={articleValues} setArticleValues={setArticleValues} isUpdate={isUpdate} />
         <InputContetImageContainer>
           <Description>'추가 이미지'의 첫번째 사진은 기사의 메인배너 이미지로 들어갑니다.</Description>
-          <InputFile>
-            <InputContentImageInput type="file" />
-            <span>본문에 이미지 삽입</span>
-          </InputFile>
         </InputContetImageContainer>
         <FileUpload
           fileList={fileList} setFileList={setFileList}

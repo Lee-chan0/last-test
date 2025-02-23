@@ -24,7 +24,6 @@ export const useCreateArticle = () => {
       })
     },
     onError: (error) => {
-      console.error(error);
       toast(`${error.response?.data.message}`);
     }
   })
