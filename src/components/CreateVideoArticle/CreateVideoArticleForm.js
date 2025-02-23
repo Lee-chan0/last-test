@@ -112,6 +112,8 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
     mutationFn: (articleContents) => createArticle(articleContents),
     onSuccess: () => {
       setArticleContents(INITIAL_ARTICLE_CONTENT);
+      alert("동영상등록이 완료되었습니다.");
+      window.close();
     },
     onError: (e) => {
       alert(e.response.data.message);
@@ -152,12 +154,7 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
         }
         formData.append(key, articleContents[key]);
       });
-      videoMutation.mutate(articleContents, {
-        onSuccess: () => {
-          alert("동영상등록이 완료되었습니다.");
-          window.close();
-        }
-      });
+      videoMutation.mutate(articleContents);
     } else if (update) {
       Object.keys(articleContents).forEach((key) => {
         formData.append(key, articleContents[key]);
