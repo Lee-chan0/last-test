@@ -124,8 +124,6 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
   const onChangeValues = (e) => {
     const domName = e.target.name;
     const domValue = e.target.value;
-    console.log(domName);
-    console.log(domValue);
 
     if (userArr.userNamePosition) {
       setArticleContents((prev) => ({
@@ -140,7 +138,7 @@ function CreateVideoArticleForm({ categoriesArr, userArr }) {
   const submutVideoForm = (e) => {
     e.preventDefault();
     const formData = new FormData();
-
+    console.log(articleContents);
     if (!update) {
       Object.keys(articleContents).forEach((key) => {
         formData.append(key, articleContents[key]);
