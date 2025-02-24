@@ -100,7 +100,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
 
   const handleEnd = () => {
     const width = widthRef.current.getBoundingClientRect().width;
-    const MAX_INDEX = todayMobileArr.length - 2;
+    const MAX_INDEX = todayMobileArr.length - 1;
     const new_deltaX = deltaX;
 
     if (Math.abs(new_deltaX) > width / 5) {
