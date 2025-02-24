@@ -218,7 +218,7 @@ const EntirePageTitle = styled.h1`
   }
 `;
 
-function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArticles }) {
+function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArticles, getManyArticleArray }) {
   const navigate = useNavigate();
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [searchParams] = useSearchParams();
@@ -351,7 +351,7 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
           <TopButton />
         </EntireContainer>
       </Container>
-      <SideSticky entireArticleArr={entireArticleArr} />
+      <SideSticky entireArticleArr={getManyArticleArray} />
     </MainContainer>
   )
 }

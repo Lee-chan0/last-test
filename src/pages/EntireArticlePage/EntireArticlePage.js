@@ -16,7 +16,8 @@ function EntireArticlePage() {
     queryFn: getCategories
   });
   const categoryArr = categories?.categories || [];
-
+  const { data: getManyArticles } = useGetAllArticles();
+  const getManyArticleArray = getManyArticles?.articles || [];
   const { data: entireArticles, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['page-articles'],
     queryFn: getViewMoreArticles,
@@ -41,6 +42,7 @@ function EntireArticlePage() {
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           allArticles={allArticles}
+          getManyArticleArray={getManyArticleArray}
         />
       </MainContainer>
       <Footer />
