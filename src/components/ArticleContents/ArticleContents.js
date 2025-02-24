@@ -3,12 +3,12 @@ import { ViewMoreBox } from "../ViewMore/ViewMoreStyle";
 import { useNavigate } from "react-router-dom";
 import ImportantStar from "../ImportantStar/ImportantStar";
 import eyeIcon from '../../assets/eye-line.png';
+import videoIcon from '../../assets/ri_video-line.png';
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetImportantArticles } from "../../hooks/Article/useGetImportantArticles";
 import { useGetMyArticles } from "../../hooks/Article/useGetMyArticles";
 import { useGetVideoArticles } from "../../hooks/Article/useGetVideoArticles";
-import videoIcon from '../../assets/ri_video-line.png';
 import { toast } from "react-toastify";
 
 const ArticleContentMainContainer = styled.div`
@@ -45,16 +45,14 @@ const ArticleItem = styled.div`
 
     display : -webkit-box;
     -webkit-line-clamp: 1;
-    -webkit-box-orient : vertical;
+    -webkit-box-orient: vertical;
     text-overflow: ellipsis;
     overflow: hidden;
-
     height: 20px;
 
     span {
       height: 100%;
     }
-    
 
     a {
       text-decoration: none;
@@ -77,22 +75,19 @@ const ArticleItem = styled.div`
 
   @media (min-width: 768px) and (max-width: 1279px) {
     &.category {
-      font-size : 13px;
-  }
-
-  &.article-title {
-    span {
-      font-size : 13px;
+      font-size: 13px;
     }
-  }
-
-  &.user-name-position {
-    font-size : 13px;
-  }
-
-  &.date {
-    font-size : 11px;
-  }
+    &.article-title {
+      span {
+        font-size: 13px;
+      }
+    }
+    &.user-name-position {
+      font-size: 13px;
+    }
+    &.date {
+      font-size: 11px;
+    }
   }
 `;
 
@@ -103,25 +98,25 @@ function changeCreatedAt(createdAt) {
 function ArticleContents({ articlesArr, filterArticles, hasNextPage,
   fetchNextPage, query, setFilterArticles, allArticles }) {
   const navigate = useNavigate();
-  const { data: importantArticles } = useGetImportantArticles();
-  const { data: myArticles } = useGetMyArticles();
-  const { data: videoArticles } = useGetVideoArticles();
   const queryClient = useQueryClient();
+
+  const { data: importantArticles, isLoading: importantLoading } = useGetImportantArticles();
+  const { data: myArticles, isLoading: myArticlesLoading } = useGetMyArticles();
+  const { data: videoArticles, isLoading: videoLoading } = useGetVideoArticles();
+
   const clickArticleTitle = (id, type) => {
     if (type === '동영상') {
       navigate(`/truescope-administrator/video-editor?query=${encodeURIComponent(type)}&update=true&articleId=${id}`)
     } else {
       navigate(`/truescope-administrator/update-article?article=${id}`);
     }
-  }
+  };
 
   const clickConfirm = (id, articleType) => {
     articleType !== '동영상'
-      ?
-      window.open(`/news-list/article/${id}`, '_blank')
-      :
-      window.open(`/news-list/video/video-articles`, '_blank');
-  }
+      ? window.open(`/news-list/article/${id}`, '_blank')
+      : window.open(`/news-list/video/video-articles`, '_blank');
+  };
 
   useEffect(() => {
     queryClient.removeQueries(['include-videos']);
@@ -130,24 +125,61 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
   useEffect(() => {
     if (!query) return;
 
+    // 데이터가 아직 로딩 중인 경우엔 아무 동작도 하지 않음
+    if (['myArticles', 'importantArticles', 'video'].includes(query)) {
+      if (
+        (query === 'myArticles' && myArticlesLoading) ||
+        (query === 'importantArticles' && importantLoading) ||
+        (query === 'video' && videoLoading)
+      ) {
+        return;
+      }
+    }
+    if (['정치', '국제', '사회'].includes(query)) {
+      if (!allArticles || allArticles.length === 0) return;
+    }
+
     const filterQuery = {
       'myArticles': myArticles?.findMyArticles || [],
       'importantArticles': importantArticles?.importantArticles || [],
       'video': videoArticles?.videoArticles || [],
-      'entire': allArticles,
+      'entire': allArticles || [],
     };
 
     if (['정치', '국제', '사회'].includes(query)) {
-      const queryByArticles = allArticles?.filter(({ Category }) => Category.categoryName === query);
+      const queryByArticles = allArticles.filter(({ Category }) => Category.categoryName === query);
       setFilterArticles(queryByArticles);
     } else {
-      if (filterQuery[query].length === 0) {
-        toast.error('해당하는 기사가 없습니다.');
+      const selectedArticles = filterQuery[query];
+      if (selectedArticles.length === 0) {
+        if (!toast.isActive('no-result')) {
+          toast.error('해당하는 기사가 없습니다.', {
+            toastId: 'no-result',
+            style: {
+              minHeight: "32px",
+              color: "#fff",
+              width: "100%",
+              borderRadius: "2px",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              fontSize: "13px",
+              margin: "0",
+            }
+          });
+        }
       }
-      setFilterArticles(filterQuery[query]);
+      setFilterArticles(selectedArticles);
     }
-
-  }, [query, allArticles, importantArticles, myArticles, setFilterArticles, videoArticles]);
+  }, [
+    query,
+    allArticles,
+    importantArticles,
+    myArticles,
+    videoArticles,
+    importantLoading,
+    myArticlesLoading,
+    videoLoading,
+    setFilterArticles
+  ]);
 
   return (
     <ArticleContentMainContainer>
@@ -169,8 +201,7 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
       {
         (filterArticles.length === 0) ?
           articlesArr?.map((item) => {
-            const { articleId, articleTitle, createdAt,
-              User, Category, isImportant, articleType } = item;
+            const { articleId, articleTitle, createdAt, User, Category, isImportant, articleType } = item;
             const { userNamePosition } = User;
             const { categoryName } = Category;
             return (
@@ -203,8 +234,7 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
           })
           :
           filterArticles.map((item) => {
-            const { articleId, articleTitle, createdAt,
-              articleType, isImportant, User, Category } = item;
+            const { articleId, articleTitle, createdAt, articleType, isImportant, User, Category } = item;
             const { userNamePosition } = User;
             const { categoryName } = Category;
             return (
@@ -246,7 +276,7 @@ function ArticleContents({ articlesArr, filterArticles, hasNextPage,
         </ViewMoreBox>
       }
     </ArticleContentMainContainer>
-  )
+  );
 }
 
 export default ArticleContents;
