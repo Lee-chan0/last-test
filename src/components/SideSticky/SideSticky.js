@@ -224,6 +224,8 @@ function SideSticky({ entireArticleArr, isVideo, recentVideo, isTablet }) {
   const navigate = useNavigate();
   const { darkmode } = useTheme();
 
+  console.log(entireArticleArr);
+
   const handleClickArticle = (id, url) => {
     if (id) return navigate(`/news-list/article/${id}`);
 
