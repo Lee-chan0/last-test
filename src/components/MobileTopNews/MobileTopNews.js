@@ -113,7 +113,7 @@ function MobileTopNews({ topNewsArticlesArr }) {
       ?
       navigate(`news-list/article/${id}`)
       :
-      window.location.href(`${content}`);
+      window.open(content, '_self');
   }
 
   return (
