@@ -1,16 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-
-
-
 const NewestContext = createContext();
-
 
 export function NewestContextProvider({ children }) {
   const [newestArticle, setNewestArticle] = useState(() => {
     return JSON.parse(localStorage.getItem('articles'));
   });
-
 
   return (
     <NewestContext.Provider value={{ newestArticle, setNewestArticle }}>
@@ -18,7 +13,6 @@ export function NewestContextProvider({ children }) {
     </NewestContext.Provider>
   )
 }
-
 
 export function useNewestArticles() {
   return useContext(NewestContext);

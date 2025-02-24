@@ -241,7 +241,6 @@ function EntireArticles({ entireArticleArr, fetchNextPage, hasNextPage, allArtic
       if (viewArticleArr.length > 5) {
         viewArticleArr.pop();
       }
-
       localStorage.setItem("articles", JSON.stringify(viewArticleArr));
     }
     navigate(`/news-list/article/${id}`);

@@ -76,7 +76,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
   const deltaXRef = useRef(0);
 
   const resizeEvent = () => {
-    setActiveIndex(1);
+    window.location.reload();
     setAmountX(widthRef.current.getBoundingClientRect().width);
   }
 
@@ -102,7 +102,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
     const MAX_INDEX = todayMobileArr.length - 1;
     const new_deltaX = deltaX;
 
-    if (Math.abs(new_deltaX) > width / 3) {
+    if (Math.abs(new_deltaX) > width / 4) {
       if (new_deltaX > 0) {
         setActiveIndex((prev) => (prev < MAX_INDEX ? prev + 1 : prev));
         setAmountX((prev) => (prev < (width * MAX_INDEX)) ? prev + width : prev);
