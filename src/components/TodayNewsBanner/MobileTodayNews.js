@@ -94,7 +94,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
     const moveY = startYRef.current - e.touches[0].clinetY;
     deltaXRef.current = moveX;
 
-    if (Math.abs(moveY) > Math.abs(moveX)) return;
+    if (Math.abs(moveY) > Math.abs(moveX) * 1.5) return;
 
     requestAnimationFrame(() => {
       setDeltaX(moveX);
@@ -106,7 +106,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
     const MAX_INDEX = todayMobileArr.length - 1;
     const new_deltaX = deltaX;
 
-    if (Math.abs(new_deltaX) > width / 4) {
+    if (Math.abs(new_deltaX) > width / 5) {
       if (new_deltaX > 0) {
         setActiveIndex((prev) => (prev < MAX_INDEX ? prev + 1 : prev));
         setAmountX((prev) => (prev < (width * MAX_INDEX)) ? prev + width : prev);
@@ -180,7 +180,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
         ref={widthRef}
         style={{
           transform: !isMove ? `translateX(${-activeIndex * 100}%)` : `translateX(-${amountX + deltaX}px)`,
-          transition: (!isMove && transitionRef.current) ? 'none' : 'transform 0.1s ease-out'
+          transition: 'none'
         }}
       >
         {
