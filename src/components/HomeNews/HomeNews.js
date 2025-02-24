@@ -40,6 +40,23 @@ export const CarouselTitle = styled.h1`
     font-size : 18px;
     margin-left : 0;
   }
+
+  position : relative;
+`;
+
+const TitlteDescription = styled.span`
+  position : absolute;
+  bottom : 32px;
+  background-color: ${({ theme }) => theme.blue.blue500};
+  padding : 4px 8px;
+  color : #fff;
+  border-radius: 4px;
+  font-size : 0.8rem;
+  will-change: transform, opacity;
+  transition: transform 0.3s, opacity 0.3s;
+  transform: ${({ $isMouseOver }) => $isMouseOver ? `translateX(0)` : `translateX(-16px)`};
+  opacity: ${({ $isMouseOver }) => $isMouseOver ? '1' : '0'};
+  pointer-events: none;
 `;
 
 const CarouselLists = styled.ul`
@@ -247,6 +264,7 @@ function HomeNews({ isVideo, topNewsArticlesArr, homeVideoArticleArr }) {
   const [isFocus, setIsFocus] = useState(false);
   const timeOutRef = useRef(null);
   const { darkmode } = useTheme();
+  const [isMouseOver, setIsMouseOver] = useState(false);
   const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
@@ -401,7 +419,13 @@ function HomeNews({ isVideo, topNewsArticlesArr, homeVideoArticleArr }) {
             to={'/news-list/video/video-articles'}
             style={{ textDecoration: "none" }}
           >
-            <CarouselTitle style={isTablet ? { display: 'none' } : {}}>{'동영상 미리보기'}</CarouselTitle>
+            <CarouselTitle
+              onMouseEnter={() => setIsMouseOver(true)}
+              onMouseLeave={() => setIsMouseOver(false)}
+              style={isTablet ? { display: 'none' } : {}}>
+              <TitlteDescription $isMouseOver={isMouseOver}>카드에 마우스를 올려놓아보세요!</TitlteDescription>
+              {'동영상 미리보기'}
+            </CarouselTitle>
           </Link>
           :
           <CarouselTitle>{'TOP 뉴스'}</CarouselTitle>
