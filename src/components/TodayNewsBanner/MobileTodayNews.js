@@ -73,10 +73,10 @@ const MobileTodayNews = ({ todayArticleArr }) => {
   const transitionRef = useRef(false);
   const widthRef = useRef(0);
   const startXRef = useRef(0);
+  const startYRef = useRef(0);
   const deltaXRef = useRef(0);
 
   const resizeEvent = () => {
-    window.location.reload();
     setAmountX(widthRef.current.getBoundingClientRect().width);
   }
 
@@ -86,11 +86,15 @@ const MobileTodayNews = ({ todayArticleArr }) => {
     transitionRef.current = false;
 
     startXRef.current = e.touches[0].clientX;
+    startYRef.current = e.touches[0].clientY;
   }
 
   const handleMove = (e) => {
     const moveX = startXRef.current - e.touches[0].clientX;
+    const moveY = startYRef.current - e.touches[0].clinetY;
     deltaXRef.current = moveX;
+
+    if (Math.abs(moveY) > Math.abs(moveX)) return;
 
     requestAnimationFrame(() => {
       setDeltaX(moveX);
