@@ -76,10 +76,6 @@ const MobileTodayNews = ({ todayArticleArr }) => {
   const startYRef = useRef(0);
   const deltaXRef = useRef(0);
 
-  const resizeEvent = () => {
-    setAmountX(widthRef.current.getBoundingClientRect().width);
-  }
-
   const handleStart = (e) => {
     setIsMove(true);
     setDeltaX(0);
@@ -104,7 +100,7 @@ const MobileTodayNews = ({ todayArticleArr }) => {
 
   const handleEnd = () => {
     const width = widthRef.current.getBoundingClientRect().width;
-    const MAX_INDEX = todayMobileArr.length - 1;
+    const MAX_INDEX = todayMobileArr.length - 2;
     const new_deltaX = deltaX;
 
     if (Math.abs(new_deltaX) > width / 5) {
@@ -159,14 +155,6 @@ const MobileTodayNews = ({ todayArticleArr }) => {
       }, 50);
     }
   }, [activeIndex, todayMobileArr]);
-
-  useEffect(() => {
-    window.addEventListener('resize', resizeEvent);
-
-    return () => {
-      window.removeEventListener('resize', resizeEvent);
-    }
-  }, []);
 
   return (
     <SliderContainer>
