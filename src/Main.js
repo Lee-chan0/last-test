@@ -20,6 +20,7 @@ import UpdateArticlePage from "./pages/UpdateArticlePage/UpdateArticlePage";
 import IntroducePage from './pages/CompanyPage/IntroducePage/IntroducePage';
 import { useEffect } from "react";
 import AdminRoute from "./pages/AdminRoute/AdminRoute";
+import { NewestContextProvider } from "./Contexts/NewestArticleContext";
 
 export const queryClient = new QueryClient();
 
@@ -67,35 +68,37 @@ function Main() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={darkmode ? darkTheme : lightTheme} >
-        <App>
-          <ToastContainer
-            closeButton={false}
-            autoClose={3000}
-            hideProgressBar={true}
-            pauseOnHover={false}
-          />
-          <GlobalStyled />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="truescope-company-introduce" element={<IntroducePage />} />
-              <Route path="news-list">
-                <Route path="video/video-articles" element={<VideoPage />} />
-                <Route path="category/:categoriesId" element={<NewsListPage />} />
-                <Route path="article/:articleId" element={<ArticlePage />} />
-                <Route path="articles/entireArticle" element={<EntireArticlePage />} />
-              </Route>
-              <Route path="truescope-administrator">
-                <Route path="cms/administrator/login" element={<LoginPage />} />
-                <Route path="editor-page" element={<AdminRoute><EditorPage /></AdminRoute>} />
-                <Route path="video-editor" element={<AdminRoute><VideoEditorPage /></AdminRoute>} />
-                <Route path="create-article" element={<AdminRoute><CreateArticlePage /></AdminRoute>} />
-                <Route path="update-article" element={<AdminRoute><UpdateArticlePage /></AdminRoute>} />
-              </Route>
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </BrowserRouter>
-        </App>
+        <NewestContextProvider>
+          <App>
+            <ToastContainer
+              closeButton={false}
+              autoClose={3000}
+              hideProgressBar={true}
+              pauseOnHover={false}
+            />
+            <GlobalStyled />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="truescope-company-introduce" element={<IntroducePage />} />
+                <Route path="news-list">
+                  <Route path="video/video-articles" element={<VideoPage />} />
+                  <Route path="category/:categoriesId" element={<NewsListPage />} />
+                  <Route path="article/:articleId" element={<ArticlePage />} />
+                  <Route path="articles/entireArticle" element={<EntireArticlePage />} />
+                </Route>
+                <Route path="truescope-administrator">
+                  <Route path="cms/administrator/login" element={<LoginPage />} />
+                  <Route path="editor-page" element={<AdminRoute><EditorPage /></AdminRoute>} />
+                  <Route path="video-editor" element={<AdminRoute><VideoEditorPage /></AdminRoute>} />
+                  <Route path="create-article" element={<AdminRoute><CreateArticlePage /></AdminRoute>} />
+                  <Route path="update-article" element={<AdminRoute><UpdateArticlePage /></AdminRoute>} />
+                </Route>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </BrowserRouter>
+          </App>
+        </NewestContextProvider>
       </ThemeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>

@@ -5,6 +5,7 @@ import { getVideoId } from "../VideoNews/VideoBox";
 import noImg from '../../assets/thumnailEx.jpg';
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../Contexts/ThemeContext";
+import { useNewestArticles } from "../../Contexts/NewestArticleContext";
 
 const boxShadow = css`
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
@@ -223,6 +224,8 @@ function SideSticky({ entireArticleArr, isVideo, recentVideo, isTablet }) {
   const [videoIndex, setVideoIndex] = useState(null);
   const navigate = useNavigate();
   const { darkmode } = useTheme();
+  const { newestArticle } = useNewestArticles();
+  console.log(entireArticleArr);
 
   const handleClickArticle = (id, url) => {
     if (id) return navigate(`/news-list/article/${id}`);
@@ -246,18 +249,26 @@ function SideSticky({ entireArticleArr, isVideo, recentVideo, isTablet }) {
     setVideoIndex(null);
   }
 
+  // useEffect(() => {
+  //   const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
+
+  //   if (entireArticleArr?.length === 0 || viewArticleArray?.length === 0) return;
+
+  //   setViewArticles(() => {
+  //     const filterArray = entireArticleArr?.filter((item) => {
+  //       return viewArticleArray.includes(item.articleId);
+  //     })
+  //     return filterArray;
+  //   })
+  // }, [entireArticleArr]);
+
   useEffect(() => {
-    const viewArticleArray = JSON.parse(localStorage.getItem("articles")) || [];
+    if (!entireArticleArr ||
+      entireArticleArr.length === 0 ||
+      newestArticle.length === 0) return;
 
-    if (entireArticleArr?.length === 0 || viewArticleArray?.length === 0) return;
-
-    setViewArticles(() => {
-      const filterArray = entireArticleArr?.filter((item) => {
-        return viewArticleArray.includes(item.articleId);
-      })
-      return filterArray;
-    })
-  }, [entireArticleArr]);
+    setViewArticles(newestArticle);
+  }, [entireArticleArr, newestArticle]);
 
   useEffect(() => {
     if (!isVideo) return;
