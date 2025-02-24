@@ -1,39 +1,44 @@
 import axios from 'axios';
 
-
 // const BASE_URL = 'http://localhost:3001/api';
 const BASE_URL = 'https://astrab.shop/api';
 
+// axios 인스턴스를 생성합니다.
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true, // 모든 요청에 credentials(쿠키 등) 포함
+});
+
 // users
 export async function signupFunc(userInfo) {
-  const response = await axios.post(`${BASE_URL}/signup`, userInfo, {
+  const response = await axiosInstance.post('/signup', userInfo, {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
   return response.data;
 }
 
 export async function loginFunc(userInfo) {
-  const response = await axios.post(`${BASE_URL}/signin`, userInfo, {
+  const response = await axiosInstance.post('/signin', userInfo, {
     headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+      'Content-Type': 'application/json',
+    },
+  });
   return response.data;
 }
 
 export async function findUsers() {
-  const response = await axios.get(`${BASE_URL}/users`);
+  const response = await axiosInstance.get('/users');
   return response.data;
 }
 
 export async function findUser() {
   try {
-    const response = await axios.get(`${BASE_URL}/user`, {
+    const response = await axiosInstance.get('/user', {
       headers: {
-        'Authorization': `${localStorage.getItem('token')}`
-      }
+        'Authorization': `${localStorage.getItem('token')}`,
+      },
     });
     return response.data;
   } catch (e) {
@@ -43,10 +48,10 @@ export async function findUser() {
 
 export async function verifyToken() {
   try {
-    const response = await axios.get(`${BASE_URL}/verify/token`, {
+    const response = await axiosInstance.get('/verify/token', {
       headers: {
-        'Authorization': `${localStorage.getItem('token')}`
-      }
+        'Authorization': `${localStorage.getItem('token')}`,
+      },
     });
     return response.data;
   } catch (e) {
@@ -56,74 +61,74 @@ export async function verifyToken() {
 
 // categories
 export async function getCategories() {
-  const response = await axios.get(`${BASE_URL}/categories`);
+  const response = await axiosInstance.get('/categories');
   return response.data;
 }
 
 // articles
 export async function getTotalArticles() {
-  const response = await axios.get(`${BASE_URL}/total/articles`);
+  const response = await axiosInstance.get('/total/articles');
   return response.data;
 }
 
 export async function getViewMoreArticles({ pageParam }) {
-  const response = await axios.get(`${BASE_URL}/articles/pageNation?pageParam=${pageParam}&limit=10`);
-  return response.data
+  const response = await axiosInstance.get(`/articles/pageNation?pageParam=${pageParam}&limit=10`);
+  return response.data;
 }
 
 export async function getVideoArticle(articleId) {
-  const response = await axios.get(`${BASE_URL}/videoArticles/${articleId}`);
+  const response = await axiosInstance.get(`/videoArticles/${articleId}`);
   return response.data;
 }
 
 export async function getVideoArticles(limit) {
   if (!limit) {
-    const response = await axios.get(`${BASE_URL}/videoArticles`);
+    const response = await axiosInstance.get('/videoArticles');
     return response.data;
   } else {
-    const response = await axios.get(`${BASE_URL}/videoArticles?limit=${limit}`);
+    const response = await axiosInstance.get(`/videoArticles?limit=${limit}`);
     return response.data;
   }
 }
 
 export async function getCategoryByArticles(pageParam, id) {
-  const response = await axios.get(`${BASE_URL}/articles/category-list/${id}?pageParam=${pageParam}&limit=5`);
+  const response = await axiosInstance.get(`/articles/category-list/${id}?pageParam=${pageParam}&limit=5`);
   return response.data;
 }
 
 export async function getPageVideos({ pageParam }) {
-  const response = await axios.get(`${BASE_URL}/articles/page-videos?pageParam=${pageParam}&limit=9`);
+  const response = await axiosInstance.get(`/articles/page-videos?pageParam=${pageParam}&limit=9`);
   return response.data;
 }
 
 export async function getArticles() {
-  const response = await axios.get(`${BASE_URL}/articles`);
+  const response = await axiosInstance.get('/articles');
   return response.data;
 }
 
 export async function getIncludeVideoPagination({ pageParam }) {
-  const response = await axios.get(`${BASE_URL}/articles/includeVideo/pagination?page=${pageParam}&limit=10`);
+  const response = await axiosInstance.get(`/articles/includeVideo/pagination?page=${pageParam}&limit=10`);
   return response.data;
 }
 
 export async function getIncludeVideoArticles() {
-  const response = await axios.get(`${BASE_URL}/articles/videos`)
+  const response = await axiosInstance.get('/articles/videos');
   return response.data;
 }
 
 export async function getArticle(articleId) {
-  const response = await axios.get(`${BASE_URL}/article/${articleId}`);
+  const response = await axiosInstance.get(`/article/${articleId}`);
   return response.data;
 }
 
 export async function createArticle(formData) {
   try {
-    const response = await axios.post(`${BASE_URL}/article`, formData, {
+    const response = await axiosInstance.post('/article', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `${localStorage.getItem('token')}`
-      }
-    })
+        'Authorization': `${localStorage.getItem('token')}`,
+      },
+    });
     return response.data;
   } catch (e) {
     throw e;
@@ -132,13 +137,13 @@ export async function createArticle(formData) {
 
 export async function updateArticle(formData, articleId) {
   try {
-    const respoonse = await axios.patch(`${BASE_URL}/article/${articleId}`, formData, {
+    const response = await axiosInstance.patch(`/article/${articleId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `${localStorage.getItem('token')}`
-      }
+        'Authorization': `${localStorage.getItem('token')}`,
+      },
     });
-    return respoonse.data;
+    return response.data;
   } catch (e) {
     throw e;
   }
@@ -146,11 +151,11 @@ export async function updateArticle(formData, articleId) {
 
 export async function deleteArticle(articleId) {
   try {
-    const response = await axios.delete(`${BASE_URL}/article/${articleId}`, {
+    const response = await axiosInstance.delete(`/article/${articleId}`, {
       headers: {
-        'Authorization': `${localStorage.getItem("token")}`
-      }
-    })
+        'Authorization': `${localStorage.getItem("token")}`,
+      },
+    });
     return response.data;
   } catch (e) {
     throw e;
@@ -158,23 +163,22 @@ export async function deleteArticle(articleId) {
 }
 
 export async function getTodayArticle(limit = 5) {
-  const response = await axios.get(`${BASE_URL}/articles/today?limit=${limit}`);
+  const response = await axiosInstance.get(`/articles/today?limit=${limit}`);
   return response.data;
 }
 
 export async function getTopArticles(limit = 5) {
-  const response = await axios.get(`${BASE_URL}/articles/top?limit=${limit}`);
+  const response = await axiosInstance.get(`/articles/top?limit=${limit}`);
   return response.data;
 }
 
 export async function updateArticleStar(values) {
   try {
-    const response = await axios.patch(`${BASE_URL}/important/article`, values, {
+    const response = await axiosInstance.patch('/important/article', values, {
       headers: {
-        'Authorization': `${localStorage.getItem("token")}`
-      }
+        'Authorization': `${localStorage.getItem("token")}`,
+      },
     });
-
     return response.data;
   } catch (e) {
     throw e;
@@ -182,19 +186,19 @@ export async function updateArticleStar(values) {
 }
 
 export async function getImportantArticles() {
-  const response = await axios.get(`${BASE_URL}/important/articles`, {
+  const response = await axiosInstance.get('/important/articles', {
     headers: {
-      'Authorization': `${localStorage.getItem('token')}`
-    }
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
   });
   return response.data;
 }
 
 export async function getMyArticles() {
-  const response = await axios.get(`${BASE_URL}/myArticles`, {
+  const response = await axiosInstance.get('/myArticles', {
     headers: {
-      'Authorization': `${localStorage.getItem('token')}`
-    }
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
   });
   return response.data;
 }
