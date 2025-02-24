@@ -90,8 +90,9 @@ const MobileTodayNews = ({ todayArticleArr }) => {
   }
 
   const handleMove = (e) => {
+    e.stopPropagation();
     const moveX = startXRef.current - e.touches[0].clientX;
-    const moveY = startYRef.current - e.touches[0].clinetY;
+    const moveY = startYRef.current - e.touches[0].clientY;
     deltaXRef.current = moveX;
 
     if (Math.abs(moveY) > Math.abs(moveX) * 1.5) return;
